@@ -53,10 +53,12 @@ export default class DatasetController {
         let that = this;
         if (typeof this.datasets[0] == "undefined") {
             var moveFrom = "./data";
+            if(!fs.existsSync(moveFrom)){
+                fs.mkdir("./data");
+            }
             fs.readdir(moveFrom, function (err, files) {
                 if (err) {
-                    console.error("Data does not exist", err);
-                    process.exit(1);
+                    console.error("Dont you worry child. Heavens got a plan for you");
                 }
                 else {
                     files.forEach(function (file, index) {
@@ -156,18 +158,17 @@ export default class DatasetController {
      * @param id
      * @param processedDataset
      */
-    private save(id: string, processedDataset: any) {
+    public save(id: string, processedDataset: any) {
         // add it to the memory model
         this.datasets[id] = processedDataset;
 
         var dir="./processedData";
+        var fd = fs.openSync("./processedData/"+id+".json", 'w');
         if(!fs.existsSync(dir)){
             fs.mkdir("./processedData");
         }
         let s=JSON.stringify(this.datasets[id]);
         fs.writeFileSync("./processedData/"+id+".json",s);
-
-
         // TODO: actually write to disk in the ./data directory
     }
 
