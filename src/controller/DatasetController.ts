@@ -1,4 +1,17 @@
-///<reference path="../model/DataStructure.ts"/>
+/**
+ * Created by rtholmes on 2016-09-03.
+ */
+
+import Log from "../Util";
+import JSZip = require('jszip');
+
+/**
+ * In memory representation of all datasets.
+ */
+export interface Datasets {
+    [id: string]: {};
+}
+
 /**
  * Created by rtholmes on 2016-09-03.
  */
@@ -6,8 +19,8 @@
 import Log from "../Util";
 import JSZip = require('jszip');
 import fs=require('fs');
-import Course from "../model/Course";
-import DataStructure from "../model/DataStructure";
+import Course from "../rest/model/Course";
+import DataStructure from "../rest/model/DataStructure";
 import {exists} from "fs";
 
 /**
@@ -22,7 +35,6 @@ export default class DatasetController {
 
 
     public datasets: Datasets = {};
-
     constructor() {
         Log.trace('DatasetController::init()');
     }
@@ -49,30 +61,42 @@ export default class DatasetController {
 
     public getDatasets(): any {
         // TODO: if datasets is empty, load all dataset files in ./data from disk
-        var promises: any = {};
+        var promises:any = [];
         let that = this;
-        if (typeof this.datasets[0] == "undefined") {
-            var moveFrom = "./data";
+        if (typeof this.datasets[0] != "string") {
+            var moveFrom = "./data/courses";
             if(!fs.existsSync(moveFrom)){
-                fs.mkdir("./data");
+                fs.mkdir("./data/courses");
             }
-            fs.readdir(moveFrom, function (err, files) {
+            var promise2=fs.readdir(moveFrom, function (err, files) {
                 if (err) {
                     console.error("Dont you worry child. Heavens got a plan for you");
                 }
                 else {
-                    files.forEach(function (file, index) {
+                    files.forEach(function(file,index){
+
                         const opts = {
                             compression: 'deflate', compressionOptions: {level: 2}, type: 'base64'
                         };
-                        var zip = new JSZip();
-                        var promise = zip.generateAsync(opts).then(function (data) {
-                            that.process(this.filename, data);
+                        //Promise.all(promises).then(function() {
+                        let filedata = "";
+                        let zip = new JSZip();
+                        fs.readFile(moveFrom + file, function (err, data) {
+                            filedata = JSON.stringify(data);
                         });
-                        promises.push(promise);
+                        //      promises.push(promise);
+                        //        Promise.all(promises).then(function (results) {
+                        zip.file(moveFrom, filedata);
+                        zip.generateAsync(opts).then(function (data) {
+                            that.process(moveFrom, data);
+                        });
+                        //promises.push(promise);
                     });
+                    //        });
+                    //});
                 }
             });
+            promises.push(promise2);
             Promise.all(promises).catch(function(err) {
                 Log.trace("Bad files in /data");
             }).then(function () {
@@ -173,4 +197,5 @@ export default class DatasetController {
     }
 
 
+}
 }
