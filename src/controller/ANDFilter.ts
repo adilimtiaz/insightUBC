@@ -5,6 +5,8 @@
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
+import QueryFilter from "./QueryFilter";
+import {findRule} from "tslint/lib/ruleLoader";
 
 export default class ANDFilter {
 
@@ -33,10 +35,15 @@ export default class ANDFilter {
         Log.trace('ANDFilter::processANDFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
-        var innerQuery = query.slice(query.indexOf("[{"));
-        // if (innerQuery.indexOf("[{") !== -1) {
-        //
-        // }
+        var innerQuery = query.slice(query.indexOf("[{"), query.lastIndexOf("}]"));
+        if (innerQuery.indexOf("},{") === innerQuery.lastIndexOf("},{")) {
+            var firstQuery = innerQuery.slice(0, innerQuery.indexOf("},{"));
+            var secondQuery = innerQuery.slice(innerQuery.indexOf("},{")+3);
+            var queryFilter1 = new QueryFilter(this.datastructure);
+            var queryFilter2 = new QueryFilter(this.datastructure);
+            queryFilter1.processFilter(firstQuery);
+            queryFilter2.processFilter(secondQuery);
+        }
 
 
 

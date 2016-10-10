@@ -12,10 +12,11 @@ import NegationFilter from "./NegationFilter";
 
 
 export default class QueryFilter {
-    private datasets: Datasets = null;
 
-    constructor (datasets: Datasets) {
-        this.datasets = datasets;
+    private datastructure: DataStructure = null;
+
+    constructor(datastructure: DataStructure) {
+        this.datastructure = datastructure;
     }
 
     strRegExp(queryString: string): boolean {
@@ -108,16 +109,16 @@ export default class QueryFilter {
 
         if (this.filterRegExp(query)) {
             if(this.logicComparisonRegExp(query)) {
-                logicFilter = new LogicFilter(this.datasets["courses"]);
+                logicFilter = new LogicFilter(this.datastructure);
                 dataStructure = logicFilter.processLogicFilter(query);
             } else if (this.mathComparisonRegExp(query)) {
-                mathFilter = new MathFilter(this.datasets["courses"]);
+                mathFilter = new MathFilter(this.datastructure);
                 dataStructure = mathFilter.processMathFilter(query);
             } else if (this.sComparisonRegExp(query)) {
-                sFilter = new SFilter(this.datasets["courses"]);
+                sFilter = new SFilter(this.datastructure);
                 dataStructure = sFilter.processSFilter(query);
             } else if (this.negationRegExp(query)) {
-                negationFilter = new NegationFilter(this.datasets["courses"]);
+                negationFilter = new NegationFilter(this.datastructure);
                 dataStructure = negationFilter.processNegationFilter(query);
             }
             return dataStructure;

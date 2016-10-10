@@ -49,7 +49,7 @@ export default class QueryController {
         // queryWhere
         var queryWhere: string = JSON.stringify(query.WHERE);
         queryWhere = queryWhere.slice(queryWhere.indexOf('{'), queryWhere.lastIndexOf('}')).replace(" ", "");
-        let queryFilter: QueryFilter = new QueryFilter(this.datasets);
+        let queryFilter: QueryFilter = new QueryFilter(this.datasets["courses"]);
         let dataStructure = queryFilter.processFilter(queryWhere);
         let sortOrder = new SortOrder(dataStructure);
         dataStructure = sortOrder.processSortOrder(query.ORDER);

@@ -65,6 +65,7 @@ export default class DatasetController {
                     files.forEach(function (file, index) {
                         var fs = require("fs");
                         var contents = fs.readFileSync(moveFrom + file, 'utf8');
+                        // var contents = fs.readFileSync('../course2.zip', 'utf8');
                         let obj=JSON.parse(contents);
                         that.datasets[i]=obj;
                         i++;
