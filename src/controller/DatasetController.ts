@@ -7,7 +7,6 @@ import JSZip = require('jszip');
 import fs=require('fs');
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
-import {exists} from "fs";
 
 /**
  * In memory representation of all datasets.
@@ -65,7 +64,6 @@ export default class DatasetController {
                     files.forEach(function (file, index) {
                         var fs = require("fs");
                         var contents = fs.readFileSync(moveFrom + file, 'utf8');
-                        // var contents = fs.readFileSync('../course2.zip', 'utf8');
                         let obj=JSON.parse(contents);
                         that.datasets[i]=obj;
                         i++;
@@ -91,8 +89,9 @@ export default class DatasetController {
             try {
                 let myZip = new JSZip();
                 var promises:any=[];
-                myZip.loadAsync(data, {base64: true}).then(function (zip: JSZip) {
+                var promise=myZip.loadAsync(data, {base64: true}).then(function (zip: JSZip) {
                     Log.trace('DatasetController::process(..) - unzipped');
+                    promises.push(promise);
                     Promise.all(promises).then(function() {
                         let processedDataset = new DataStructure();
                         // TODO: iterate through files in zip (zip.files)
@@ -100,9 +99,7 @@ export default class DatasetController {
                         // some zips will contain .html files, some will contain .json files.
                         // You can depend on 'id' to differentiate how the zip should be handled,
                         // although you should still be tolerant to errors.
-                        let relativePat="./courses/";
-                        var promise2: void = myZip.folder("courses").forEach(function (relativePath, file) {
-                            promises.push(promise2);
+                        myZip.folder("courses").forEach(function (relativePath, file) {
                             Promise.all(promises).then(function () {
                                 let obj = file;
                                 var promise3= file.async("string").then(function (processedfile) {
@@ -111,7 +108,7 @@ export default class DatasetController {
                                     for (i = 0; i < obj2.result.length; i++) {
                                         let c = new Course();
                                         if (typeof obj2.result[i].id != "undefined") {
-                                            c.id=id;
+                                            c.id = id;
                                             c.courses_id = obj2.result[i].id;
                                             c.courses_dept = obj2.result[i].Subject;
                                             c.courses_title = obj2.result[i].Title;
@@ -122,18 +119,17 @@ export default class DatasetController {
                                             c.courses_audit = obj2.result[i].Audit;
                                             processedDataset.add(c);
                                             Log.trace("Controller size on end of process: " + processedDataset.getSize());
+                                            Promise.all(promises).then(function (results) {
+                                                Log.trace("Alll promises passed");
+                                                that.save(id, processedDataset);
+                                                fulfill(true);
+                                            });
                                         }
                                     }
-                                },function error(e) {
-                                    Log.trace(e.message);
                                 });
                                 promises.push(promise3);
-                                Promise.all(promises).then(function (results) {
-                                    Log.trace("Alll promises passed");
-                                    that.save(id, processedDataset);
-                                    fulfill(true);
-                                });
                             });
+
                         });
                     });
                 }).catch(function (err) {
@@ -145,8 +141,9 @@ export default class DatasetController {
                 reject(err);
             }
         });
-
     }
+
+
 
     /**
      * Writes the processed dataset to disk as 'id.json'. The function should overwrite

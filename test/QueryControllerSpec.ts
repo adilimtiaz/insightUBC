@@ -18,7 +18,7 @@ describe("QueryController", function () {
 
     it("Should be able to validate a valid query", function () {
         // NOTE: this is not actually a valid query for D1
-        let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'table'};
+        let query: QueryRequest = {GET: '["courses_dept", "courses_avg"]', WHERE: '{"GT": {"courses_avg": 90}}', ORDER: 'courses_avg', AS: 'table'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let isValid = controller.isValid(query);
