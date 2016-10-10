@@ -24,37 +24,40 @@ export default class LTFilter {
         keyString = query.slice(query.indexOf("{\"")+1, query.indexOf("\":"));
         numberString = query.slice(query.indexOf(":")+1, query.indexOf("}"));
         upperBound = parseFloat(numberString);
-
-        if (keyString === "courses_avg") {
-            for(var i=0; i < this.dataStructure.data.length; i++) {
-                var course: Course = this.dataStructure.data[i];
-                if (course.courses_avg < upperBound) {
-                    selectedCourses.push(course);
+        if(this.dataStructure == null){
+            structure = null;
+        } else {
+            if (keyString === "courses_avg") {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_avg < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (keyString === "courses_pass") {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_pass < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (keyString === "courses_fail") {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_fail < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (keyString === "courses_audit") {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_audit < upperBound) {
+                        selectedCourses.push(course);
+                    }
                 }
             }
-        } else if (keyString === "courses_pass") {
-            for(var i=0; i < this.dataStructure.data.length; i++) {
-                var course: Course = this.dataStructure.data[i];
-                if (course.courses_pass < upperBound) {
-                    selectedCourses.push(course);
-                }
-            }
-        } else if (keyString === "courses_fail") {
-            for(var i=0; i < this.dataStructure.data.length; i++) {
-                var course: Course = this.dataStructure.data[i];
-                if (course.courses_fail < upperBound) {
-                    selectedCourses.push(course);
-                }
-            }
-        } else if (keyString === "courses_audit") {
-            for(var i=0; i < this.dataStructure.data.length; i++) {
-                var course: Course = this.dataStructure.data[i];
-                if (course.courses_audit < upperBound) {
-                    selectedCourses.push(course);
-                }
-            }
+            structure.data = selectedCourses;
         }
-        structure.data = selectedCourses;
         return structure;
     }
 }

@@ -47,7 +47,7 @@ export default class QueryController {
         // Extract WHERE part for analysing filters
         // Get rid of the outter-most curly brace and any space inside
         // queryWhere
-        var queryWhere: string = <string> query.WHERE;
+        var queryWhere: string = JSON.stringify(query.WHERE);
         queryWhere = queryWhere.slice(queryWhere.indexOf('{'), queryWhere.lastIndexOf('}')).replace(" ", "");
         let queryFilter: QueryFilter = new QueryFilter(this.datasets);
         let dataStructure = queryFilter.processFilter(queryWhere);
