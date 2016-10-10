@@ -3,6 +3,7 @@
  */
 import DataStructure from "../rest/model/DataStructure";
 import Course from "../rest/model/Course";
+import Log from "../Util";
 
 export default class NegationFilter {
     private datastructure: DataStructure = null;
@@ -11,8 +12,9 @@ export default class NegationFilter {
         this.datastructure = datastructure;
     }
     public processNegationFilter(query: string): DataStructure {
+        Log.trace('NegationFilter::processNegationFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
-        var structure: DataStructure;
+        var structure: DataStructure = null;
         structure.data = selectedCourses;
         return structure;
     }

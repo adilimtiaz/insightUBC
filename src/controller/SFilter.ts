@@ -4,6 +4,7 @@
 
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
 
 export default class SFilter {
     private dataStructure: DataStructure = null;
@@ -13,6 +14,7 @@ export default class SFilter {
     }
 
     public processSFilter(query: string):  DataStructure {
+        Log.trace('SFilter::processSFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
         var keyString: string;

@@ -4,6 +4,7 @@
 
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
 
 export default class EQFilter {
     private dataStructure: DataStructure = null;
@@ -13,7 +14,7 @@ export default class EQFilter {
     }
 
     public processEQFilter(query: string):  DataStructure {
-
+        Log.trace('EQFilter::processEQFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
         var keyString: string;

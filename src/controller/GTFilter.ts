@@ -4,6 +4,7 @@
 
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
 
 export default class GTFilter {
     private dataStructure: DataStructure = null;
@@ -13,6 +14,7 @@ export default class GTFilter {
     }
 
     public processGTFilter(query: string):  DataStructure {
+        Log.trace('GTFilter::processGTFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
         var keyString: string;

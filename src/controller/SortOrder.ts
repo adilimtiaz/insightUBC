@@ -4,6 +4,7 @@
 
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
 
 export default class SortOrder {
     private dataStructure: DataStructure = null;
@@ -13,6 +14,7 @@ export default class SortOrder {
     }
 
     public processSortOrder(query: string): DataStructure {
+        Log.trace('SortOrder::processSortOrder( ' + query + ' )');
         if(query === "courses_avg") {
             for(var i=0; i < this.dataStructure.data.length-1; i++) {
                 let minimum = i;

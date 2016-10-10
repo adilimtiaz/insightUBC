@@ -4,6 +4,7 @@
 
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
 
 export default class LTFilter {
     private dataStructure: DataStructure = null;
@@ -13,7 +14,7 @@ export default class LTFilter {
     }
 
     public processLTFilter(query: string):  DataStructure {
-
+        Log.trace('LTFilter::processLTFilter( ' + query + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
         var keyString: string;

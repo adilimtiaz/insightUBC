@@ -9,7 +9,6 @@ import LogicFilter from "./LogicFilter";
 import MathFilter from "./MathFilter";
 import SFilter from "./SFilter";
 import NegationFilter from "./NegationFilter";
-import Course from "../rest/model/Course";
 
 
 export default class QueryFilter {
@@ -20,14 +19,17 @@ export default class QueryFilter {
     }
 
     strRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::strRegExp( ' + queryString + ' )');
         var regExp = new RegExp('[a-zA-Z0-9,_-]+');
         return regExp.test(queryString);
     }
     numberRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::numberRegExp( ' + queryString + ' )');
         var regExp = new RegExp('^-?\\d*\\.?\\d*$');
         return regExp.test(queryString);
     }
     keyRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::keyRegExp( ' + queryString + ' )');
         var firstString: string;
         var secondString: string;
         firstString = queryString.slice(0, queryString.indexOf("_"));
@@ -39,6 +41,7 @@ export default class QueryFilter {
         }
     }
     logicComparisonRegExp(queryString:string): boolean {
+        Log.trace('QueryFilter::logicComparisonRegExp( ' + queryString + ' )');
         var operator: string = null;
         var filterString: string = null;
         if((queryString.indexOf("\"AND\"") === 0)||(queryString.indexOf("\"OR\"") === 0)) {
@@ -48,6 +51,7 @@ export default class QueryFilter {
         //new RegExp('\"\":[{' + filterRegExp + '}]');
     }
     mathComparisonRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::mathComparisonRegExp( ' + queryString + ' )');
         var operator: string = null;
         var keyString: string;
         var numberString: string;
@@ -61,6 +65,7 @@ export default class QueryFilter {
         return false;
     }
     sComparisonRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::sComparisonRegExp( ' + queryString + ' )');
         var keyString: string;
         var regularString: string;
         keyString = queryString.slice(queryString.indexOf("{\"")+1, queryString.indexOf("\":"));
@@ -71,6 +76,7 @@ export default class QueryFilter {
         return false;
     }
     negationRegExp(queryString: string): boolean {
+        Log.trace('QueryFilter::negationRegExp( ' + queryString + ' )');
         var filterString: string;
         filterString = queryString.slice(queryString.indexOf(":{"), queryString.lastIndexOf("}"));
         if(queryString.indexOf("\"IS\"") === 0) {
@@ -82,6 +88,7 @@ export default class QueryFilter {
 
     }
     filterRegExp(queryString:string): boolean {
+        Log.trace('QueryFilter::filterRegExp( ' + queryString + ' )');
         if(this.logicComparisonRegExp(queryString)||this.mathComparisonRegExp(queryString)||this.sComparisonRegExp(queryString)||this.negationRegExp(queryString)) {
             return true;
         } else {
@@ -90,7 +97,7 @@ export default class QueryFilter {
     }
 
     public processFilter(query: string): DataStructure{
-        Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
+        Log.trace('QueryFilter::processFilter( ' + query + ' )');
 
         var logicFilter: LogicFilter;
         var mathFilter: MathFilter;

@@ -6,6 +6,7 @@ import DataStructure from "../rest/model/DataStructure";
 import LTFilter from "./LTFilter";
 import GTFilter from "./GTFilter";
 import EQFilter from "./EQFilter";
+import Log from "../Util";
 
 export default class MathFilter {
 
@@ -16,6 +17,8 @@ export default class MathFilter {
     }
 
     public processMathFilter(query: string): DataStructure{
+
+        Log.trace('MathFilter::processMathFilter( ' + query + ' )');
 
         var ltFilter: LTFilter;
         var gtFilter: GTFilter;
