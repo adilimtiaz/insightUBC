@@ -1,36 +1,38 @@
 /**
  * Created by Justin on 2016/10/5.
  */
-import Course from "../rest/model/Course";
+
+import DataStructure from "../rest/model/DataStructure";
 import LTFilter from "./LTFilter";
 import GTFilter from "./GTFilter";
 import EQFilter from "./EQFilter";
 
 export default class MathFilter {
-    private query: string;
 
-    constructor(query: string) {
-        this.query = query;
+    private dataStructure: DataStructure = null;
+
+    constructor(datastructure: DataStructure) {
+        this.dataStructure = datastructure;
     }
 
-    public processMathFilter(course: Course[]): Course[] {
+    public processMathFilter(query: string): DataStructure{
 
-        var keyString: string = null;
-        var numberString: string = null;
         var ltFilter: LTFilter;
         var gtFilter: GTFilter;
         var eqFilter: EQFilter;
+        var structure: DataStructure = null;
 
-        if(this.query.indexOf("\"LT\"") !== -1) {
-            ltFilter = new LTFilter(this.query);
-        } else if(this.query.indexOf("\"GT\"") !== -1) {
-            gtFilter = new GTFilter(this.query);
-        } else if(this.query.indexOf("\"EQ\"") !== -1) {
-            eqFilter = new EQFilter(this.query);
-        } else {
-            return course;
+        if(query.indexOf("\"LT\"") === 0) {
+            ltFilter = new LTFilter(this.dataStructure);
+            structure = ltFilter.processLTFilter(query);
+        } else if(query.indexOf("\"GT\"") === 0) {
+            gtFilter = new GTFilter(this.dataStructure);
+            structure = gtFilter.processGTFilter(query);
+        } else if(query.indexOf("\"EQ\"") === 0) {
+            eqFilter = new EQFilter(this.dataStructure);
+            structure = eqFilter.processEQFilter(query);
         }
-
+        return structure;
 
     }
 }

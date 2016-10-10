@@ -22,10 +22,11 @@ export interface QueryResponse {
 
 export default class QueryController {
     private datasets: Datasets = null;
-    private queryFilter: QueryFilter = new QueryFilter(this.datasets);
+    private queryFilter: QueryFilter;
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
+        queryFilter:QueryFilter = new QueryFilter(this.datasets);
     }
 
     public isValid(query: QueryRequest): boolean {

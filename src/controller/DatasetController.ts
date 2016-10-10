@@ -4,21 +4,7 @@
 
 import Log from "../Util";
 import JSZip = require('jszip');
-
-/**
- * In memory representation of all datasets.
- */
-export interface Datasets {
-    [id: string]: {};
-}
-
-/**
- * Created by rtholmes on 2016-09-03.
- */
-
-import Log from "../Util";
-import JSZip = require('jszip');
-import fs=require('fs');
+import fs = require('fs');
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import {exists} from "fs";

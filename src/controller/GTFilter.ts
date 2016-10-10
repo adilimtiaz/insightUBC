@@ -1,32 +1,59 @@
 /**
- * Created by justin on 2016/10/8.
+ * Created by Justin on 2016/10/8.
  */
 
 import Course from "../rest/model/Course";
+import DataStructure from "../rest/model/DataStructure";
 
 export default class GTFilter {
-    private query: string;
+    private dataStructure: DataStructure = null;
 
-    constructor(query: string) {
-        this.query = query;
+    constructor(datastructure: DataStructure) {
+        this.dataStructure = datastructure;
     }
 
-    public processGTFilter(courses: Course[]): Course[] {
-        var selectedCourses: Course[] = new Array();
-        var keyString: string = null;
-        var numberString: string = null;
+    public processGTFilter(query: string):  DataStructure {
+        var selectedCourses: Course[] = [];
+        var structure: DataStructure = new DataStructure();
+        var keyString: string;
+        var numberString: string;
         var lowerBound: number;
-        keyString = this.query.slice(this.query.indexOf("{\"")+1, this.query.indexOf("\":"));
-        numberString = this.query.slice(this.query.indexOf(":")+1, this.query.indexOf("}"));
-        lowerBound = parseInt(numberString, 10);
-        // TODO interpret keyString for Course fields
 
-        for(var i=0; i < courses.length; i++) {
-            var course: Course = courses[i];
-            if (course.courses_avg > lowerBound) {
-                selectedCourses.push(course);
+        keyString = query.slice(query.indexOf("{\"") + 1, query.indexOf("\":"));
+        numberString = query.slice(query.indexOf(":") + 1, query.indexOf("}"));
+        lowerBound = parseFloat(numberString);
+
+        if (keyString === "courses_avg") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_avg > lowerBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_pass") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_pass > lowerBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_fail") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_fail > lowerBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_audit") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_audit > lowerBound) {
+                    selectedCourses.push(course);
+                }
             }
         }
-        return selectedCourses;
+
+        structure.data = selectedCourses;
+        return structure;
     }
 }

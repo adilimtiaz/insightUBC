@@ -3,34 +3,58 @@
  */
 
 import Course from "../rest/model/Course";
+import DataStructure from "../rest/model/DataStructure";
 
 export default class EQFilter {
-    private query: string;
+    private dataStructure: DataStructure = null;
 
-    constructor(query: string) {
-        this.query = query;
+    constructor(datastructure: DataStructure) {
+        this.dataStructure = datastructure;
     }
 
-    public processEQFilter(courses: Course[]): Course[] {
+    public processEQFilter(query: string):  DataStructure {
 
-        var selectedCourses: Course[] = new Array();
-        var keyString: string = null;
-        var numberString: string = null;
+        var selectedCourses: Course[] = [];
+        var structure: DataStructure = new DataStructure();
+        var keyString: string;
+        var numberString: string;
         var specificBound: number;
 
-        keyString = this.query.slice(this.query.indexOf("{\"")+1, this.query.indexOf("\":"));
-        numberString = this.query.slice(this.query.indexOf(":")+1, this.query.indexOf("}"));
-        specificBound = parseInt(numberString, 10);
-        // TODO interpret keyString for Course fields
+        keyString = query.slice(query.indexOf("{\"")+1, query.indexOf("\":"));
+        numberString = query.slice(query.indexOf(":")+1, query.indexOf("}"));
+        specificBound = parseFloat(numberString);
 
-        for(var i=0; i < courses.length; i++) {
-            var course: Course = courses[i];
-            if (course.courses_avg === specificBound) {
-                selectedCourses.push(course);
+        if (keyString === "courses_avg") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_avg == specificBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_pass") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_pass == specificBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_fail") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_fail == specificBound) {
+                    selectedCourses.push(course);
+                }
+            }
+        } else if (keyString === "courses_audit") {
+            for(var i=0; i < this.dataStructure.data.length; i++) {
+                var course: Course = this.dataStructure.data[i];
+                if (course.courses_audit == specificBound) {
+                    selectedCourses.push(course);
+                }
             }
         }
-        return selectedCourses;
-    }
-    }
 
+        structure.data = selectedCourses;
+        return structure;
+    }
 }
