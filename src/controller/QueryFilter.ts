@@ -7,7 +7,7 @@ import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 import LogicFilter from "./LogicFilter";
 import MathFilter from "./MathFilter";
-import SFilter from "./LogicFilter";
+import SFilter from "./SFilter";
 import NegationFilter from "./NegationFilter";
 import Course from "../rest/model/Course";
 
@@ -99,8 +99,6 @@ export default class QueryFilter {
         var dataStructure: DataStructure = new DataStructure();
 
 
-
-
         if (this.filterRegExp(query)) {
             if(this.logicComparisonRegExp(query)) {
                 logicFilter = new LogicFilter(this.datasets["courses"]);
@@ -110,7 +108,7 @@ export default class QueryFilter {
                 dataStructure = mathFilter.processMathFilter(query);
             } else if (this.sComparisonRegExp(query)) {
                 sFilter = new SFilter(this.datasets["courses"]);
-                dataStructure = sFilter.processLogicFilter(query);
+                dataStructure = sFilter.processSFilter(query);
             } else if (this.negationRegExp(query)) {
                 negationFilter = new NegationFilter(this.datasets["courses"]);
                 dataStructure = negationFilter.processNegationFilter(query);

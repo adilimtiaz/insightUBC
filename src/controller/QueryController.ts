@@ -6,6 +6,8 @@
 import {Datasets} from "./DatasetController";
 import QueryFilter from "./QueryFilter";
 import Log from "../Util";
+import SortOrder from "./SortOrder";
+import {error} from "util";
 
 export interface QueryRequest {
     GET: string|string[];
@@ -15,14 +17,19 @@ export interface QueryRequest {
 }
 
 export interface QueryResponse {
-    TABLE: string[];
-    ERROR: boolean;
-    MESSAGE: string;
+    // status: string;
+    // ts: any;
+    // TABLE: string[];
+    // ERROR: boolean;
+    // MESSAGE: string;
 }
 
 export default class QueryController {
     private datasets: Datasets = null;
     private queryFilter: QueryFilter;
+    private error: boolean = false;
+    private message: string = null;
+
 
     constructor(datasets: Datasets) {
         this.datasets = datasets;
@@ -46,10 +53,13 @@ export default class QueryController {
         var queryWhere: string = <string> query.WHERE;
         queryWhere = queryWhere.slice(queryWhere.indexOf('{'), queryWhere.lastIndexOf('}')).replace(" ", "");
 
-        this.queryFilter.processFilter(queryWhere);
+        let dataStructure = this.queryFilter.processFilter(queryWhere);
+        let sortOrder = new SortOrder(dataStructure);
+        dataStructure = sortOrder.processSortOrder(query.ORDER);
 
 
 
-        return {status: 'received', ts: new Date().getTime()};
+
+        return {status: 'received', ts: new Date().getTime(), TABLE: dataStructure, ERROR: this.error, MESSAGE: this.message};
     }
 }
