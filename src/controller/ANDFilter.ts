@@ -6,7 +6,6 @@ import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 import QueryFilter from "./QueryFilter";
-import {findRule} from "tslint/lib/ruleLoader";
 
 export default class ANDFilter {
 

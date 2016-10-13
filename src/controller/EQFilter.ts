@@ -1,5 +1,5 @@
 /**
- * Created by justin on 2016/10/8.
+ * Created by Justin on 2016/10/8.
  */
 
 import Course from "../rest/model/Course";
