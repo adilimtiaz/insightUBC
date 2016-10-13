@@ -5,9 +5,9 @@
 import Course from "./Course";
 
 export default class DataStructure {
-    data: Course[]=[];
+    data: any[]=[];
 
-    add(c: Course){
+    add(c: any){
         this.data.push(c);
     }
 
