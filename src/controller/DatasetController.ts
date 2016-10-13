@@ -85,7 +85,6 @@ export default class DatasetController {
      */
     public process(id: string, data:any): Promise<boolean> {
         Log.trace('DatasetController::process( ' + id + '... )');
-
         let that = this;
         return new Promise(function (fulfill, reject) {
             try {
@@ -106,7 +105,7 @@ export default class DatasetController {
                             let i = 0;
                             for (i = 0; i < obj2.result.length; i++) {
                                 let c = new Course();
-                                if (typeof obj2.result[i].id != "undefined") {
+                                if (typeof obj2.result[i].hasOwnProperty(id)) {
                                     c.id = id;
                                     c.courses_id = obj2.result[i].id;
                                     c.courses_dept = obj2.result[i].Subject;
@@ -126,11 +125,15 @@ export default class DatasetController {
                         promises.push(promise);
                     });
 
+
                     Promise.all(promises).catch(function(err) {
                         // log that I have an error, return the entire array;
                         console.log('A promise failed to resolve', err);
                         reject(err);
                     }).then(function() {
+                        if(processedDataset.data.length==0){
+                            reject(false);
+                        }
                         that.save(id, processedDataset);
                         fulfill(true);
                     });
