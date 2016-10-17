@@ -2,13 +2,33 @@
  * Created by Justin on 2016/10/5.
  */
 
-import {Datasets} from "./DatasetController";
+
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
-import LogicFilter from "./LogicFilter";
-import MathFilter from "./MathFilter";
+import ANDFilter from "./ANDFilter";
+import ORFilter from "./ORFilter";
+import LTFilter from "./LTFilter";
+import GTFilter from "./GTFilter";
+import EQFilter from "./EQFilter";
 import SFilter from "./SFilter";
 import NegationFilter from "./NegationFilter";
+
+
+export interface Query {
+    [key:string]: any;
+}
+// export interface LogicQuery {
+//
+// }
+export interface MathQuery {
+    [key:string]: number;
+}
+export interface SQuery {
+    [key:string]: string;
+}
+// export interface NegationQuery {
+//     NOT: Query;
+// }
 
 
 export default class QueryFilter {
@@ -19,112 +39,55 @@ export default class QueryFilter {
         this.datastructure = datastructure;
     }
 
-    strRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::strRegExp( ' + queryString + ' )');
-        var regExp = new RegExp('[a-zA-Z0-9,_-]+');
-        return regExp.test(queryString);
-    }
-    numberRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::numberRegExp( ' + queryString + ' )');
-        var regExp = new RegExp('^-?\\d*\\.?\\d*$');
-        return regExp.test(queryString);
-    }
-    keyRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::keyRegExp( ' + queryString + ' )');
-        var firstString: string;
-        var secondString: string;
-        firstString = queryString.slice(0, queryString.indexOf("_"));
-        secondString = queryString.slice(queryString.indexOf("_")+1);
-        if (this.strRegExp(firstString) && this.strRegExp(secondString)) {
-            return true;
+
+    public processFilter(query: Query): DataStructure{
+        Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
+
+        let structure: DataStructure = null;
+        let key = Object.keys(query)[0];
+        console.log("processFilter...key is"+ key);
+        console.log("processFilter...typeof key is"+ typeof key);
+        let value = query[key];
+        console.log("processFilter...value is"+ JSON.stringify(value));
+        console.log("processFilter...typeof value is"+ typeof value);
+
+        // let newKey = Object.keys(value);
+        // for (var j=0; j<newKey.length; j++) {
+        //     var name = newKey[j];
+        //     var newValue = value[name];
+        //     console.log("newKey is..." + name);
+        //     console.log("type of newKey is..." + typeof name);
+        //     console.log('newValue is ...' + newValue);
+        //     console.log("type of newValue is..." + typeof newValue);
+        //     // Do something
+        // }
+
+
+        if(key === "LT") {
+            let ltFilter = new LTFilter(this.datastructure);
+            structure = ltFilter.processLTFilter(value);
+        } else if (key === "GT") {
+            let gtFilter = new GTFilter(this.datastructure);
+            structure = gtFilter.processGTFilter(value);
+        } else if (key === "EQ") {
+            let eqFilter = new EQFilter(this.datastructure);
+            structure = eqFilter.processEQFilter(value);
+        } else if (key === "IS") {
+            let sFilter = new SFilter(this.datastructure);
+            structure = sFilter.processSFilter(value);
+        } else if (key === "OR") {
+            let orFilter = new ORFilter(this.datastructure);
+            structure = orFilter.processORFilter(value);
+        } else if (key === "AND") {
+            let andFilter = new ANDFilter(this.datastructure);
+            structure = andFilter.processANDFilter(value);
+        // } else if (key === "NOT") {
+        //     let negationFilter = new NegationFilter(this.datastructure);
+        //     structure = negationFilter.processNegationFilter(value);
         } else {
-            return false;
-        }
-    }
-    logicComparisonRegExp(queryString:string): boolean {
-        Log.trace('QueryFilter::logicComparisonRegExp( ' + queryString + ' )');
-        var operator: string = null;
-        var filterString: string = null;
-        if((queryString.indexOf("\"AND\"") === 0)||(queryString.indexOf("\"OR\"") === 0)) {
-            return true;
-        }
-        return false;
-        //new RegExp('\"\":[{' + filterRegExp + '}]');
-    }
-    mathComparisonRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::mathComparisonRegExp( ' + queryString + ' )');
-        var operator: string = null;
-        var keyString: string;
-        var numberString: string;
-        keyString = queryString.slice(queryString.indexOf("{\"")+1, queryString.indexOf("\":"));
-        numberString = queryString.slice(queryString.indexOf(":")+1, queryString.indexOf("}"));
-        if((queryString.indexOf("\"LT\"") === 0)||(queryString.indexOf("\"GT\"") === 0)||(queryString.indexOf("\"EQ\"") === 0)) {
-            if(this.keyRegExp(keyString) && this.numberRegExp(numberString)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    sComparisonRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::sComparisonRegExp( ' + queryString + ' )');
-        var keyString: string;
-        var regularString: string;
-        keyString = queryString.slice(queryString.indexOf("{\"")+1, queryString.indexOf("\":"));
-        regularString = queryString.slice(queryString.indexOf(":\"")+1, queryString.indexOf("\"}"));
-        if(queryString.indexOf("\"IS\"") === 0) {
-            return this.keyRegExp(keyString);
-        }
-        return false;
-    }
-    negationRegExp(queryString: string): boolean {
-        Log.trace('QueryFilter::negationRegExp( ' + queryString + ' )');
-        var filterString: string;
-        filterString = queryString.slice(queryString.indexOf(":{"), queryString.lastIndexOf("}"));
-        if(queryString.indexOf("\"IS\"") === 0) {
-            if(this.filterRegExp(filterString)) {
-                return true;
-            }
-        }
-        return false;
 
-    }
-    filterRegExp(queryString:string): boolean {
-        Log.trace('QueryFilter::filterRegExp( ' + queryString + ' )');
-        if(this.logicComparisonRegExp(queryString)||this.mathComparisonRegExp(queryString)||this.sComparisonRegExp(queryString)||this.negationRegExp(queryString)) {
-            return true;
-        } else {
-            return false;
         }
-    }
-
-    public processFilter(query: string): DataStructure{
-        Log.trace('QueryFilter::processFilter( ' + query + ' )');
-
-        var logicFilter: LogicFilter;
-        var mathFilter: MathFilter;
-        var sFilter: SFilter;
-        var negationFilter: NegationFilter;
-        var dataStructure: DataStructure = new DataStructure();
-
-
-        if (this.filterRegExp(query)) {
-            if(this.logicComparisonRegExp(query)) {
-                logicFilter = new LogicFilter(this.datastructure);
-                dataStructure = logicFilter.processLogicFilter(query);
-            } else if (this.mathComparisonRegExp(query)) {
-                mathFilter = new MathFilter(this.datastructure);
-                dataStructure = mathFilter.processMathFilter(query);
-            } else if (this.sComparisonRegExp(query)) {
-                sFilter = new SFilter(this.datastructure);
-                dataStructure = sFilter.processSFilter(query);
-            } else if (this.negationRegExp(query)) {
-                negationFilter = new NegationFilter(this.datastructure);
-                dataStructure = negationFilter.processNegationFilter(query);
-            }
-            return dataStructure;
-        }
-
-
+        return structure;
     }
 
 }

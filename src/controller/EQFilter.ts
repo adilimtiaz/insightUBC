@@ -5,6 +5,7 @@
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
+import {MathQuery} from "./QueryFilter"
 
 export default class EQFilter {
     private dataStructure: DataStructure = null;
@@ -13,52 +14,52 @@ export default class EQFilter {
         this.dataStructure = datastructure;
     }
 
-    public processEQFilter(query: string):  DataStructure {
-        Log.trace('EQFilter::processEQFilter( ' + query + ' )');
+    public processEQFilter(query: MathQuery):  DataStructure {
+        Log.trace('EQFilter::processEQFilter( ' + JSON.stringify(query) + ' )');
         var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
-        var keyString: string;
-        var numberString: string;
-        var specificBound: number;
 
-        keyString = query.slice(query.indexOf("{\"")+1, query.indexOf("\":"));
-        numberString = query.slice(query.indexOf(":")+1, query.indexOf("}"));
-        specificBound = parseFloat(numberString);
+        let key = Object.keys(query)[0];
+        console.log("processEQFilter key is..." + key);
+        console.log("processEQFilter type of key is..." + typeof key);
+        let specificBound: number = query[key];
+        console.log("processEQFilter lowerBound is..." + specificBound);
+        console.log("processEQFilter type of lowerBound is..." + typeof specificBound);
 
-        if(this.dataStructure == null){
-            structure = null;
-        } else {
-            if (keyString === "courses_avg") {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_avg == specificBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (keyString === "courses_pass") {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_pass == specificBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (keyString === "courses_fail") {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_fail == specificBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (keyString === "courses_audit") {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_audit == specificBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            }
-            structure.data = selectedCourses;
-        }
+        // if(this.dataStructure == null){
+        //     structure = null;
+        // } else {
+        //     if (keyString === "courses_avg") {
+        //         for(var i=0; i < this.dataStructure.data.length; i++) {
+        //             var course: Course = this.dataStructure.data[i];
+        //             if (course.courses_avg == specificBound) {
+        //                 selectedCourses.push(course);
+        //             }
+        //         }
+        //     } else if (keyString === "courses_pass") {
+        //         for(var i=0; i < this.dataStructure.data.length; i++) {
+        //             var course: Course = this.dataStructure.data[i];
+        //             if (course.courses_pass == specificBound) {
+        //                 selectedCourses.push(course);
+        //             }
+        //         }
+        //     } else if (keyString === "courses_fail") {
+        //         for(var i=0; i < this.dataStructure.data.length; i++) {
+        //             var course: Course = this.dataStructure.data[i];
+        //             if (course.courses_fail == specificBound) {
+        //                 selectedCourses.push(course);
+        //             }
+        //         }
+        //     } else if (keyString === "courses_audit") {
+        //         for(var i=0; i < this.dataStructure.data.length; i++) {
+        //             var course: Course = this.dataStructure.data[i];
+        //             if (course.courses_audit == specificBound) {
+        //                 selectedCourses.push(course);
+        //             }
+        //         }
+        //     }
+        //     structure.data = selectedCourses;
+        // }
         return structure;
     }
 }
