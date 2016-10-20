@@ -33,12 +33,16 @@ export default class DatasetController {
      */
     public getDataset(id: string): DataStructure {
         // TODO: this should check if the dataset is on disk in ./data if it is not already in memory.
+        let d=new DataStructure();
         Log.trace("Entered getDataset");
         try {
             var stats = fs.lstatSync('data/' + id + '.json');
 
-            if (stats.isDirectory()) {
-                return this.datasets[id];
+           if (stats.isDirectory()) {
+                d=this.datasets[id];
+                console.log(d.data);
+                console.log(d.data.length);
+                return d;
             }
         }
         catch (e){
@@ -65,12 +69,15 @@ export default class DatasetController {
                         var fs = require("fs");
                         var contents = fs.readFileSync(moveFrom + file, 'utf8');
                         let obj=JSON.parse(contents);
-                        that.datasets[i]=obj;
+                        that.datasets[file.substring(0,file.length-5)]=obj;
                         i++;
+                        Log.trace("22");
                     });
+                    Log.trace("11");
+                 //   Log.trace(that.getSize("aa"));
+                    return that.datasets;
                 }
             });
-            return this.datasets;
         }
     }
 
@@ -175,6 +182,33 @@ export default class DatasetController {
         // TODO: actually write to disk in the ./data directory
 
     }
+/**
+    public getSize(id: string): number{
+        let i=0;
+        if(typeof this.datasets[id]!="undefined") {
+            i = this.datasets[id].data.length;
+        }
+        return i;
+    }
 
+    public delete(id: string): Promise<boolean> {
+        Log.trace('DatasetController::delete( ' + id + '... )');
+        let that = this;
+        return new Promise(function (fulfill, reject) {
+            try {
+                var stats = fs.lstatSync('./data/'+id+".json");
+                if (!stats.isFile()) {
+                    reject(false);
+                }
+                fs.unlinkSync('./data/'+id+".json");
+                delete that.datasets[id];
+                fulfill(true);
+            } catch (err) {
+                Log.trace('DatasetController:delete(..) - ERROR: ' + err);
+                reject(err);
+            }
+        });
+    }
 
+*/
 }
