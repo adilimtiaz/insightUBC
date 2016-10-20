@@ -14,10 +14,7 @@ export default class NegationFilter {
         this.dataStructure = dataStructure;
     }
     public processNegationFilter(query: Query): DataStructure {
-        Log.trace('NegationFilter::processNegationFilter( ' + query + ' )');
-        // var innerQuery = query.slice(query.indexOf(":{")+2, query.lastIndexOf("}"));
-        // let queryFilter = new QueryFilter(this.datastructure);
-        // var returnStructure: DataStructure = queryFilter.processFilter(innerQuery);
+        Log.trace('NegationFilter::processNegationFilter( ' + JSON.stringify(query) + ' )');
 
         var selectedCourses: Course[] = [];
         var structure: DataStructure = null;
@@ -25,7 +22,8 @@ export default class NegationFilter {
         let filter = new QueryFilter(this.dataStructure);
         let innerStructure = filter.processFilter(query);
 
-        // TODO dataStructure minus innerStructure
+        // TODO this.dataStructure minus innerStructure
+
 
         structure.data = selectedCourses;
         return this.dataStructure;

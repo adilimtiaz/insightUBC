@@ -28,41 +28,41 @@ export default class LTFilter {
         console.log("processLTFilter type of lowerBound is..." + typeof upperBound);
 
 
-        //
-        // if(this.dataStructure == null){
-        //     structure = null;
-        // } else {
-        //     if (key === "courses_avg") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_avg < upperBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (key === "courses_pass") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_pass < upperBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (key === "courses_fail") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_fail < upperBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (key === "courses_audit") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_audit < upperBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     }
-        //     structure.data = selectedCourses;
-        // }
+
+        if(this.dataStructure == null){
+            structure = null;
+        } else {
+            if (key.indexOf("avg") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_avg < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("pass") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_pass < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("fail") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_fail < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("audit") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_audit < upperBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            }
+            structure.data = selectedCourses;
+        }
         return structure;
     }
 }

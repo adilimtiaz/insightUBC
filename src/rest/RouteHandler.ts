@@ -74,7 +74,12 @@ export default class RouteHandler {
 
             if (isValid === true) {
                 let result = controller.query(query);
-                res.json(200, result);
+                if(controller.missResources()) {
+                    res.json(424, controller.getMissArray());
+                } else {
+                    res.json(200, result);
+                }
+
             } else {
                 res.json(400, {status: 'invalid query'});
             }

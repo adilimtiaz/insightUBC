@@ -17,19 +17,19 @@ export interface QueryRequest {
 }
 
 export interface QueryResponse {
-    // status: string;
-    // ts: any;
-    // TABLE: string[];
-    // ERROR: boolean;
-    // MESSAGE: string;
+    render: string;
+    result: [{}];
 }
 
+export interface missArray {
+    missing: string[];
+}
 
 
 export default class QueryController {
     private datasets: Datasets = null;
-    private error: boolean = false;
-    private message: string = null;
+    private missRes: boolean = false;
+    private missArr: missArray;
 
 
     constructor(datasets: Datasets) {
@@ -43,56 +43,45 @@ export default class QueryController {
         return false;
     }
 
+    public missResources(): boolean {
+        return this.missRes;
+    }
+
+    public getMissArray(): missArray {
+        return this.missArr;
+    }
+
     public query(query: QueryRequest): QueryResponse {
         Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
 
         // TODO: implement this
-        // Extract WHERE part for analysing filters
-        // Get rid of the outter-most curly brace and any space inside
-        // queryWhere
+        let id: string = query.ORDER.slice(0, query.ORDER.indexOf("_"));
 
-        let queryFilter: QueryFilter = new QueryFilter(this.datasets["courses"]);
-        let dataStructure = queryFilter.processFilter(query.WHERE);
-        //
-        // let sortOrder = new SortOrder(dataStructure);
-        // dataStructure = sortOrder.processSortOrder(query.ORDER);
+        let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
+        let filterRes = queryFilter.processFilter(query.WHERE);
 
-        // Log.test("This is a test on WHERE JSON...");
-        // Log.test("This is a keys in WHERE JSON...");
-        // let key = Object.keys(query.WHERE)[0];
-        // console.log(key);
-        //
-        // let value = query.WHERE[key];
-        // console.log(value);
+        let sortOrder = new SortOrder(filterRes);
+        let sortedRes = sortOrder.processSortOrder(query.ORDER);
 
 
-        //
-        // for(var myKey in query.WHERE) {
-        //     console.log("key:"+myKey+", value:"+ JSON.stringify(query.WHERE[myKey]));
-        //     console.log(myKey);
-        //     console.log(typeof myKey);
-        // }
-        //
-        // Log.test("This is a values in WHERE JSON...");
-        // Log.test(JSON.stringify(query.WHERE[key]));
-        //
-        // if(query.WHERE.hasOwnProperty(key)) {
-        //     Log.test("WHERE JSON has property" + key + " ...");
-        //     Log.test("And the value is ...");
-        //     Log.test(JSON.stringify(query.WHERE[key]));
-        // } else {
-        //     Log.test("WHERE JSON does not have property" + key + " ...");
-        // }
-        // Log.test("The typeof WHERE keys is...");
-        // Log.test(typeof key);
-        // if(JSON.stringify(key) === "[\"GT\"]") {
-        //     Log.test("WHERE key is \"GT\"");
-        // }
+
+        // TODO get the query.GET and implement it to return array
 
 
 
 
+        let render = query.AS;
+        var renderstr: string;
+        if(JSON.stringify(render) === "TABLE") {
+            renderstr = "TABLE";
+        }
 
-        return {status: 'received', ts: new Date().getTime()};
+        // TODO try catch for error handling
+
+
+
+        let response: QueryResponse = {render: renderstr, result: [{}]};
+        return response;
+        // return {status: 'received', ts: new Date().getTime()};
     }
 }

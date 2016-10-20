@@ -28,44 +28,41 @@ export default class GTFilter {
         console.log("processGTFilter lowerBound is..." + lowerBound);
         console.log("processGTFilter type of lowerBound is..." + typeof lowerBound);
 
-        //
-        // keyString = query.slice(query.indexOf("{\"") + 1, query.indexOf("\":"));
-        // numberString = query.slice(query.indexOf(":") + 1, query.indexOf("}"));
-        // lowerBound = parseFloat(numberString);
-        // if(this.dataStructure == null){
-        //     structure = null;
-        // } else {
-        //     if (keyString === "courses_avg") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_avg > lowerBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_pass") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_pass > lowerBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_fail") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_fail > lowerBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_audit") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_audit > lowerBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     }
-        //     structure.data = selectedCourses;
-        // }
+
+        if(this.dataStructure == null){
+            structure = null;
+        } else {
+            if (key.indexOf("avg") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_avg > lowerBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("pass") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_pass > lowerBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("fail") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_fail > lowerBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("audit") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_audit > lowerBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            }
+            structure.data = selectedCourses;
+        }
         return structure;
     }
 }

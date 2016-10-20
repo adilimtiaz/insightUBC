@@ -26,40 +26,40 @@ export default class EQFilter {
         console.log("processEQFilter lowerBound is..." + specificBound);
         console.log("processEQFilter type of lowerBound is..." + typeof specificBound);
 
-        // if(this.dataStructure == null){
-        //     structure = null;
-        // } else {
-        //     if (keyString === "courses_avg") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_avg == specificBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_pass") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_pass == specificBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_fail") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_fail == specificBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     } else if (keyString === "courses_audit") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if (course.courses_audit == specificBound) {
-        //                 selectedCourses.push(course);
-        //             }
-        //         }
-        //     }
-        //     structure.data = selectedCourses;
-        // }
+        if(this.dataStructure == null){
+            structure = null;
+        } else {
+            if (key.indexOf("avg") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_avg == specificBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("pass") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_pass == specificBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("fail") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_fail == specificBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            } else if (key.indexOf("audit") !== -1) {
+                for(var i=0; i < this.dataStructure.data.length; i++) {
+                    var course: Course = this.dataStructure.data[i];
+                    if (course.courses_audit == specificBound) {
+                        selectedCourses.push(course);
+                    }
+                }
+            }
+            structure.data = selectedCourses;
+        }
         return structure;
     }
 }

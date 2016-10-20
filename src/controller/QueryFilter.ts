@@ -17,19 +17,12 @@ import NegationFilter from "./NegationFilter";
 export interface Query {
     [key:string]: any;
 }
-// export interface LogicQuery {
-//
-// }
 export interface MathQuery {
     [key:string]: number;
 }
 export interface SQuery {
     [key:string]: string;
 }
-// export interface NegationQuery {
-//     NOT: Query;
-// }
-
 
 export default class QueryFilter {
 
@@ -50,6 +43,7 @@ export default class QueryFilter {
         let value = query[key];
         console.log("processFilter...value is"+ JSON.stringify(value));
         console.log("processFilter...typeof value is"+ typeof value);
+
 
         // let newKey = Object.keys(value);
         // for (var j=0; j<newKey.length; j++) {
@@ -81,12 +75,14 @@ export default class QueryFilter {
         } else if (key === "AND") {
             let andFilter = new ANDFilter(this.datastructure);
             structure = andFilter.processANDFilter(value);
-        // } else if (key === "NOT") {
-        //     let negationFilter = new NegationFilter(this.datastructure);
-        //     structure = negationFilter.processNegationFilter(value);
+        } else if (key === "NOT") {
+            let negationFilter = new NegationFilter(this.datastructure);
+            structure = negationFilter.processNegationFilter(value);
         } else {
 
         }
+
+
         return structure;
     }
 

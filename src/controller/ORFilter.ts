@@ -17,7 +17,7 @@ export default class ORFilter {
 
     public processORFilter(query: [Query]): DataStructure {
         Log.trace('ORFilter::processORFilter( ' + JSON.stringify(query) + ' )');
-        var selectedCourses: Course[] = [];
+        // var selectedCourses: Course[] = [];
 
         var structure: DataStructure = null;
 
@@ -27,19 +27,30 @@ export default class ORFilter {
             for (var i=0; i<query.length; i++) {
 
                 let filter = new QueryFilter(this.dataStructure);
-                filter.processFilter(query[i]);
-                // innerStructure.push(filter.processFilter(query[i]));
+                let innerstruct = filter.processFilter(query[i]);
+                innerStructure.push(innerstruct);
 
-                console.log("processORFilter query " + i + " is... " + JSON.stringify(query[i]));
-                console.log("processORFilter type of query " + i + " is... " + typeof JSON.stringify(query[i]));
+                console.log("ORFilter::processORFilter inner query " + i + " is... " + JSON.stringify(query[i]));
+                console.log("ORFilter::processORFilter type of inner query " + i + " is... " + typeof JSON.stringify(query[i]));
             }
+
             //TODO combine the two dataStructure
+            //TODO remove duplicate
+            if(innerStructure.length === 1) {
+                structure = innerStructure[0];
+            } else if (innerStructure.length === 2) {
+                for (var j=0; j<innerStructure[1].data.length; j++) {
+                    innerStructure[0].data.push(innerStructure[1].data[j]);
+                }
+                structure = innerStructure[0];
+            }
+
         } else {
             // TODO exception handling
         }
 
 
-        structure.data = selectedCourses;
+
         return structure;
     }
 }
