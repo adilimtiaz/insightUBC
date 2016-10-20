@@ -18,7 +18,7 @@ describe("QueryController", function () {
 
     it("Should be able to validate a valid query", function () {
         // NOTE: this is not actually a valid query for D1
-        let query: QueryRequest = {GET: '["courses_dept", "courses_avg"]', WHERE: '{"GT": {"courses_avg": 90}}', ORDER: 'courses_avg', AS: 'table'};
+        let query: QueryRequest = {GET: ["courses_dept", "courses_avg"], WHERE: {GT: {"courses_avg": 90}}, ORDER: 'courses_avg', AS: 'table'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let isValid = controller.isValid(query);
@@ -38,6 +38,24 @@ describe("QueryController", function () {
     it("Should be able to query, although the answer will be empty", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
         let query: QueryRequest = {GET: 'food', WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'table'};
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.query(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).not.to.be.equal(null);
+        // should check that the value is meaningful
+    });
+
+    it("Should be able to validate a valid query, but too complicated", function () {
+        // NOTE: this is not actually a valid query for D1, nor is the result correct.
+        let query: QueryRequest = {GET: ["courses_dept", "courses_id", "courses_avg"], WHERE: {
+            OR: [
+                {AND: [
+                    {GT: {"courses_avg": 70}},
+                    {IS: {"courses_dept": "adhe"}}
+                ]},
+                {EQ: {"courses_avg": 90}}
+                ]}, ORDER: 'courses_avg', AS: 'table'};
         let dataset: Datasets = {};
         let controller = new QueryController(dataset);
         let ret = controller.query(query);
