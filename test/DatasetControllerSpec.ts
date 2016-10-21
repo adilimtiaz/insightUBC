@@ -20,26 +20,9 @@ describe("DatasetController", function () {
     afterEach(function () {
     });
 
-    /**
-     it("Should be able to receive a Dataset", function () {
-        Log.test('Creating dataset');
-        let content = {key: 'value'};
-        let zip = new JSZip();
-        zip.file('content.obj', JSON.stringify(content));
-        const opts = {
-            compression: 'deflate', compressionOptions: {level: 2}, type: 'base64'
-        };
-        return zip.generateAsync(opts).then(function (data) {
-            Log.test('Dataset created');
-            let controller = new DatasetController();
-            return controller.process('setA', data);
-        }).then(function (result) {
-            Log.test('Dataset processed; result: ' + result);
-            expect(result).to.equal(true);
-        });
 
-    });
-     */
+
+
 
     it("Should be able to enter a .JSON file", function (done: Function) {
         Log.test('Getting dataset zip');
@@ -62,31 +45,31 @@ describe("DatasetController", function () {
             });
         });
     });
-});
-/**
-
-        it("Should be able to delete a file", function (done: Function) {
-            Log.test('Getting dataset zip');
-            let content = {key: 'value'};
-            let zipDirectory = "./courses.zip";
-            let zip = new JSZip();
-
-            fs.readFile(zipDirectory, function (err, data) {
-                if (err) throw err;
-                console.log(data);
-
-                let controller = new DatasetController();
-                var promise=controller.process('courses', data);
-                promise.then(function(){
-                   // controller.delete("courses");
-                    controller.getSize("courses");
-                    done();
-                });
 
 
+    it("Should be able to delete a file", function (done: Function) {
+        Log.test('Getting dataset zip');
+        let content = {key: 'value'};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller = new DatasetController();
+            var promise = controller.process('courses', data);
+            promise.then(function () {
+                // controller.delete("courses");
+                //controller.getSize("courses");
+                done();
             });
 
+
+        });
+
     });
-    */
+});
+
 
 //});
