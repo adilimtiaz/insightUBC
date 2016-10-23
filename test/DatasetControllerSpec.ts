@@ -21,7 +21,7 @@ describe("DatasetController", function () {
     });
 
 
-    it.only("Should be able to enter a .JSON file", function (done: Function) {
+    it.only("Should be able to enter a .JSON file1", function (done: Function) {
         Log.test('Getting dataset zip');
         let content = {key: 'value'};
         let zipDirectory = "./courses.zip";
@@ -30,6 +30,7 @@ describe("DatasetController", function () {
 
             let controller = new DatasetController();
             controller.getDatasets();
+            done();
 
 
 
