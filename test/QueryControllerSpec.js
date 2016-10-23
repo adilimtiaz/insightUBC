@@ -10,7 +10,7 @@ describe("QueryController", function () {
     });
     afterEach(function () {
     });
-    it("Should be able to validate a valid query", function (done) {
+    it("Should be able to validate a valid query", function () {
         var query = { GET: ["courses_dept", "courses_avg"], WHERE: { "AND": [
                     { "IS": { "courses_dept": "anth" } },
                     { "IS": { "courses_id": "213" } }
@@ -34,7 +34,6 @@ describe("QueryController", function () {
                 Util_1.default.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
                 chai_1.expect(ret).not.to.be.equal(null);
                 chai_1.expect(isValid).to.equal(true);
-                done();
             });
         });
     });

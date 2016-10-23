@@ -83,7 +83,8 @@ export default class DatasetController {
                 }
             });
         }
-         */
+    */
+
         let that=this;
         if (this.datasets == {}||typeof this.datasets["courses"] == "undefined"){
             try {
@@ -106,6 +107,7 @@ export default class DatasetController {
 
         }
         return this.datasets;
+
     }
 
 

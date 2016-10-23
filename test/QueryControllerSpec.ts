@@ -108,7 +108,7 @@ it("Should be able to validate a valid query", function (done: Function) {
     });
 });
  */
-it("Should be able to validate a valid query", function (done: Function) {
+it("Should be able to validate a valid query", function () {
     // NOTE: this is not actually a valid query for D1
     let query: QueryRequest = {GET: ["courses_dept", "courses_avg"], WHERE:  {"AND": [
         {"IS": {"courses_dept": "anth"}},
@@ -135,7 +135,7 @@ it("Should be able to validate a valid query", function (done: Function) {
             Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
             expect(ret).not.to.be.equal(null);
             expect(isValid).to.equal(true);
-            done();
+
         });
     });
 });
