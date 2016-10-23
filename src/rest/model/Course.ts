@@ -3,6 +3,7 @@
  */
 export default class Course {
     id:string;
+    courses_uuid: string;
     courses_id: string;
     courses_dept: string;
     courses_avg: number;
@@ -14,6 +15,7 @@ export default class Course {
 
     constructor(){
         this.id="";
+        this.courses_uuid="";
         this.courses_id="";
         this.courses_dept="";
         this.courses_avg=0;

@@ -15,105 +15,22 @@ export default class SFilter {
     }
 
     public processSFilter(query: SQuery):  DataStructure {
-        Log.trace('SFilter::processSFilter( ' + JSON.stringify(query) + ' )');
-        var selectedCourses: Course[] = [];
+        Log.trace('GTFilter::processGTFilter( ' + JSON.stringify(query) + ' )');
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
-        console.log("processSFilter key is... " + key);
-        console.log("processSFilter type of key is... " + typeof key);
+        console.log("processGTFilter key is..." + key);
+        console.log("processGTFilter type of key is..." + typeof key);
 
-        if(query.hasOwnProperty(key)) {
-            console.log("processSFilter... " + JSON.stringify(query) + " has Property " + key);
+     //   let equal = query[key];
+        let str: string = (<any>query)[key];
+        let i=0;
+        for(i=0;i<this.dataStructure.data.length;i++){
+            let c=this.dataStructure.data[i];
+            if(c[key].toLowerCase()===str.toLowerCase()){
+                structure.data.push(c);
+            }
         }
-
-        // let specificBound: string = query[key];
-        // console.log("processEQFilter lowerBound is..." + specificBound);
-        // console.log("processEQFilter type of lowerBound is..." + typeof specificBound);
-
-        // if(this.dataStructure.data == null) {
-        //     structure = null;
-        // } else {
-        //     if (keyString === "courses_id") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if(regularString.indexOf("*") !== regularString.lastIndexOf("*")) {
-        //                 if(course.courses_id.indexOf(regularString) !== -1) {
-        //                     selectedCourses.push(course);
-        //                 }
-        //             } else {
-        //                 if(regularString.indexOf("*") == 0) {
-        //                     if(course.courses_id.indexOf(regularString) == (course.courses_id.length-regularString.length-1)) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 } else {
-        //                     if(course.courses_id.indexOf(regularString) == 0) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     } else if (keyString === "courses_dept") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if(regularString.indexOf("*") !== regularString.lastIndexOf("*")) {
-        //                 if(course.courses_dept.indexOf(regularString) !== -1) {
-        //                     selectedCourses.push(course);
-        //                 }
-        //             } else {
-        //                 if(regularString.indexOf("*") == 0) {
-        //                     if(course.courses_dept.indexOf(regularString) == (course.courses_dept.length-regularString.length-1)) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 } else {
-        //                     if(course.courses_dept.indexOf(regularString) == 0) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 }
-        //             }
-        //
-        //         }
-        //     } else if (keyString === "courses_title") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if(regularString.indexOf("*") !== regularString.lastIndexOf("*")) {
-        //                 if(course.courses_title.indexOf(regularString) !== -1) {
-        //                     selectedCourses.push(course);
-        //                 }
-        //             } else {
-        //                 if(regularString.indexOf("*") == 0) {
-        //                     if(course.courses_title.indexOf(regularString) == (course.courses_title.length-regularString.length-1)) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 } else {
-        //                     if(course.courses_title.indexOf(regularString) == 0) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     } else if (keyString === "courses_instructor") {
-        //         for(var i=0; i < this.dataStructure.data.length; i++) {
-        //             var course: Course = this.dataStructure.data[i];
-        //             if(regularString.indexOf("*") !== regularString.lastIndexOf("*")) {
-        //                 if(course.courses_instructor.indexOf(regularString) !== -1) {
-        //                     selectedCourses.push(course);
-        //                 }
-        //             } else {
-        //                 if(regularString.indexOf("*") == 0) {
-        //                     if(course.courses_instructor.indexOf(regularString) == (course.courses_instructor.length-regularString.length-1)) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 } else {
-        //                     if(course.courses_instructor.indexOf(regularString) == 0) {
-        //                         selectedCourses.push(course);
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     structure.data = selectedCourses;
-        // }
         return structure;
     }
 }

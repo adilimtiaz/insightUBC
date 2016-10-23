@@ -18,39 +18,22 @@ export default class ANDFilter {
     }
 
     public processANDFilter(query: [Query]): DataStructure {
-        Log.trace('ANDFilter::processANDFilter( ' + JSON.stringify(query) + ' )');
-        // var selectedCourses: Course[] = [];
-        var structure: DataStructure = new DataStructure();
 
-        if (query.length == 1 || query.length == 2) {
+        var innerStructure: DataStructure = new DataStructure();
+        let index=-2;
 
-            var innerStructure: DataStructure[] = null;
+        let filter = new QueryFilter(this.dataStructure);
+        let innerstruct2: DataStructure = filter.processFilter(query[0]);
+        for (var i=0; i<innerstruct2.data.length; i++) {
+            innerStructure.add(innerstruct2.data[i]);
+        }
+        for (var j = 1; j < query.length; j++) {
 
-            for (var i=0; i<query.length; i++) {
-
-                Log.trace("ANDFilter::processANDFilter inner query " + i + " is... " + JSON.stringify(query[i]));
-                Log.trace("ANDFilter::processANDFilter type of inner query " + i + " is... " + typeof JSON.stringify(query[i]));
-
-                let filter = new QueryFilter(this.dataStructure);
-                let innerstruct = filter.processFilter(query[i]);
-                innerStructure.push(innerstruct);
-            }
-
-            //TODO combine the two dataStructure
-            //TODO check equal
-            if(innerStructure.length === 1) {
-                structure = innerStructure[0];
-            } else if (innerStructure.length === 2) {
-                for (var j=0; j<innerStructure[1].data.length; j++) {
-                    innerStructure[0].data.push(innerStructure[1].data[j]);
-                }
-                structure = innerStructure[0];
-            }
-        } else {
-            // TODO exception handling
+            let filter = new QueryFilter(innerStructure);
+            innerStructure= filter.processFilter(query[j]);
         }
 
 
-        return structure;
+        return innerStructure;
     }
 }

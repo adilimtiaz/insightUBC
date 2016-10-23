@@ -16,8 +16,6 @@ export default class GTFilter {
 
     public processGTFilter(query: MathQuery):  DataStructure {
         Log.trace('GTFilter::processGTFilter( ' + JSON.stringify(query) + ' )');
-
-        var selectedCourses: Course[] = [];
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
@@ -27,42 +25,14 @@ export default class GTFilter {
         let lowerBound = query[key];
         console.log("processGTFilter lowerBound is..." + lowerBound);
         console.log("processGTFilter type of lowerBound is..." + typeof lowerBound);
-
-
-        if(this.dataStructure == null){
-            structure = null;
-        } else {
-            if (key.indexOf("avg") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_avg > lowerBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("pass") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_pass > lowerBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("fail") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_fail > lowerBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("audit") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_audit > lowerBound) {
-                        selectedCourses.push(course);
-                    }
-                }
+        let i=0;
+        for(i=0;i<this.dataStructure.data.length;i++){
+            let c=this.dataStructure.data[i];
+            if(c[key]>lowerBound){
+                structure.add(c);
             }
-            structure.data = selectedCourses;
         }
-        return structure;
+       return structure;
+
     }
 }

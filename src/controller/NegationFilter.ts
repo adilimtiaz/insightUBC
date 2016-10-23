@@ -16,16 +16,21 @@ export default class NegationFilter {
     public processNegationFilter(query: Query): DataStructure {
         Log.trace('NegationFilter::processNegationFilter( ' + JSON.stringify(query) + ' )');
 
-        var selectedCourses: Course[] = [];
-        var structure: DataStructure = null;
+        var structure: DataStructure = this.dataStructure;
 
         let filter = new QueryFilter(this.dataStructure);
         let innerStructure = filter.processFilter(query);
 
         // TODO this.dataStructure minus innerStructure
+        var index=-2;
+        for (var i=0; i<innerStructure.data.length; i++) {
+            index = structure.data.indexOf(innerStructure.data[i]);
+            if (index > -1) {
+                structure.data.splice(index, 1);
+            }
+        }
 
 
-        structure.data = selectedCourses;
-        return this.dataStructure;
+       return structure;
     }
 }

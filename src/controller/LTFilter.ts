@@ -16,52 +16,20 @@ export default class LTFilter {
     }
 
     public processLTFilter(query: MathQuery):  DataStructure {
-        Log.trace('LTFilter::processLTFilter( ' + JSON.stringify(query) + ' )');
-        var selectedCourses: Course[] = [];
+        Log.trace('GTFilter::processGTFilter( ' + JSON.stringify(query) + ' )');
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
-        console.log("processLTFilter key is..." + key);
-        console.log("processLTFilter type of key is..." + typeof key);
-        let upperBound: number = query[key];
-        console.log("processLTFilter lowerBound is..." + upperBound);
-        console.log("processLTFilter type of lowerBound is..." + typeof upperBound);
+        console.log("processGTFilter key is..." + key);
+        console.log("processGTFilter type of key is..." + typeof key);
 
-
-
-        if(this.dataStructure == null){
-            structure = null;
-        } else {
-            if (key.indexOf("avg") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_avg < upperBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("pass") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_pass < upperBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("fail") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_fail < upperBound) {
-                        selectedCourses.push(course);
-                    }
-                }
-            } else if (key.indexOf("audit") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length; i++) {
-                    var course: Course = this.dataStructure.data[i];
-                    if (course.courses_audit < upperBound) {
-                        selectedCourses.push(course);
-                    }
-                }
+        let upperBound = query[key];
+        let i=0;
+        for(i=0;i<this.dataStructure.data.length;i++){
+            let c=this.dataStructure.data[i];
+            if(c[key]>upperBound){
+                structure.add(c);
             }
-            structure.data = selectedCourses;
         }
         return structure;
     }

@@ -21,7 +21,7 @@ export interface MathQuery {
     [key:string]: number;
 }
 export interface SQuery {
-    [key:string]: string;
+    [key:string]: any;
 }
 
 export default class QueryFilter {

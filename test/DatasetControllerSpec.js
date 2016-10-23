@@ -8,6 +8,14 @@ describe("DatasetController", function () {
     });
     afterEach(function () {
     });
+    it.only("Should be able to enter a .JSON file", function (done) {
+        Util_1.default.test('Getting dataset zip');
+        var content = { key: 'value' };
+        var zipDirectory = "./courses.zip";
+        var zip = new JSZip();
+        var controller = new DatasetController_1.default();
+        controller.getDatasets();
+    });
     it("Should be able to enter a .JSON file", function (done) {
         Util_1.default.test('Getting dataset zip');
         var content = { key: 'value' };
@@ -22,6 +30,7 @@ describe("DatasetController", function () {
             promise.then(function () {
                 var d = {};
                 console.log(controller.datasets["courses"].getSize());
+                controller.getDatasets();
                 done();
             });
         });

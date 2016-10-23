@@ -46,11 +46,19 @@ export default class RouteHandler {
                 let concated = Buffer.concat(buffer);
                 req.body = concated.toString('base64');
                 Log.trace('RouteHandler::postDataset(..) on end; total length: ' + req.body.length);
-
+                let flag=0;
                 let controller = RouteHandler.datasetController;
+                if(typeof controller.datasets[id] == "undefined"){
+                    flag=1; // if id doesnt exist
+                 }
                 controller.process(id, req.body).then(function (result) {
                     Log.trace('RouteHandler::postDataset(..) - processed');
-                    res.json(200, {success: result});
+                    if(flag==1) {
+                        res.json(204, {success: result});
+                    }
+                    else {
+                        res.json(201, {success: result});
+                    }
                 }).catch(function (err: Error) {
                     Log.trace('RouteHandler::postDataset(..) - ERROR: ' + err.message);
                     res.json(400, {err: err.message});
@@ -86,6 +94,50 @@ export default class RouteHandler {
         } catch (err) {
             Log.error('RouteHandler::postQuery(..) - ERROR: ' + err);
             res.send(403);
+        }
+        return next();
+    }
+
+    public static  deleteDataset(req: restify.Request, res: restify.Response, next: restify.Next) {
+        Log.trace('RouteHandler::deleteDataset(..) - params: ' + JSON.stringify(req.params));
+        try {
+            var id: string = req.params.id;
+
+            // stream bytes from request into buffer and convert to base64
+            // adapted from: https://github.com/restify/node-restify/issues/880#issuecomment-133485821
+            let buffer: any = [];
+            req.on('data', function onRequestData(chunk: any) {
+                Log.trace('RouteHandler::deleteDataset(..) on data; chunk length: ' + chunk.length);
+                buffer.push(chunk);
+            });
+
+            req.once('end', function () {
+                let concated = Buffer.concat(buffer);
+                req.body = concated.toString('base64');
+                Log.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
+                let flag=0;
+                let controller = RouteHandler.datasetController;
+                if(typeof controller.datasets[id] == "undefined"){
+                    flag=1; // if id doesnt exist
+                }
+                try {
+                    let b=controller.delete(id);
+                    Log.trace('RouteHandler::deleteDataset(..) - processed');
+                    if(flag==1) {
+                        throw new Error("File was not Put already");
+                    }
+                    else {
+                            res.json(204, {success: "valid query"});
+                    }
+                }catch(err) {
+                    Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+                    res.json(404, {err: err.message});
+                }
+            });
+
+        } catch (err) {
+            Log.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+            res.send(400, {err: err.message});
         }
         return next();
     }

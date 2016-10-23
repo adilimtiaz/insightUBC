@@ -16,62 +16,12 @@ export default class SortOrder {
 
     public processSortOrder(query: string): DataStructure {
         Log.trace('SortOrder::processSortOrder( ' + query + ' )');
+        Log.trace(query);
 
-        if((this.dataStructure == null)||(this.dataStructure.data == null)||(typeof this.dataStructure === 'undefined')||(typeof this.dataStructure.data === 'undefined')) {
-            Log.trace('SortOrder::processSortOrder( dataStructure is null )');
-            return null;
-        } else {
-            if(query.indexOf("avg") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length-1; i++) {
-                    let minimum = i;
-                    for (var j=i+1; j < this.dataStructure.data.length; j++) {
-                        if(this.dataStructure.data[j].courses_avg < this.dataStructure.data[minimum].courses_avg) {
-                            minimum = j;
-                        }
-                        var tempCourse: Course = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
-                    }
-                }
-                Log.trace('SortOrder::processSortOrder( finish course_avg sorting )');
-            } else if (query.indexOf("pass") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length-1; i++) {
-                    let minimum = i;
-                    for (var j=i+1; j < this.dataStructure.data.length; j++) {
-                        if(this.dataStructure.data[j].courses_pass < this.dataStructure.data[minimum].courses_pass) {
-                            minimum = j;
-                        }
-                        var tempCourse: Course = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
-                    }
-                }
-            } else if(query.indexOf("fail") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length-1; i++) {
-                    let minimum = i;
-                    for (var j=i+1; j < this.dataStructure.data.length; j++) {
-                        if(this.dataStructure.data[j].courses_fail < this.dataStructure.data[minimum].courses_fail) {
-                            minimum = j;
-                        }
-                        var tempCourse: Course = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
-                    }
-                }
-            } else if(query.indexOf("audit") !== -1) {
-                for(var i=0; i < this.dataStructure.data.length-1; i++) {
-                    let minimum = i;
-                    for (var j=i+1; j < this.dataStructure.data.length; j++) {
-                        if(this.dataStructure.data[j].courses_audit < this.dataStructure.data[minimum].courses_audit) {
-                            minimum = j;
-                        }
-                        var tempCourse: Course = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
-                    }
-                }
-            }
-            return this.dataStructure;
-        }
+
+        this.dataStructure.data.sort(function(a, b) {
+            return parseFloat(a.query) - parseFloat(b.query);
+        });
+        return this.dataStructure;
     }
 }

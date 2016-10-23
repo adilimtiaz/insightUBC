@@ -21,7 +21,19 @@ describe("DatasetController", function () {
     });
 
 
+    it.only("Should be able to enter a .JSON file", function (done: Function) {
+        Log.test('Getting dataset zip');
+        let content = {key: 'value'};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
 
+
+            let controller = new DatasetController();
+            controller.getDatasets();
+
+
+
+    });
 
 
     it("Should be able to enter a .JSON file", function (done: Function) {
@@ -39,7 +51,7 @@ describe("DatasetController", function () {
             promise.then(function () {
                 let d = {};
                 console.log(controller.datasets["courses"].getSize());
-                //controller.getDatasets();
+                controller.getDatasets();
                 done();
                 //console.log(controller.getSize("aa"));
             });

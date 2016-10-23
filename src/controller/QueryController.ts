@@ -8,6 +8,7 @@ import QueryFilter from "./QueryFilter";
 import Log from "../Util";
 import {Query} from "./QueryFilter"
 import SortOrder from "./SortOrder";
+import Course from "../rest/model/Course";
 
 export interface QueryRequest {
     GET: string|string[];
@@ -18,7 +19,7 @@ export interface QueryRequest {
 
 export interface QueryResponse {
     render: string;
-    result: [{}];
+    result: Course[];
 }
 
 export interface missArray {
@@ -38,6 +39,7 @@ export default class QueryController {
 
     public isValid(query: QueryRequest): boolean {
         if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
+            console.log(Object.keys);
             return true;
         }
         return false;
@@ -64,7 +66,14 @@ export default class QueryController {
         let sortedRes = sortOrder.processSortOrder(query.ORDER);
 
 
-
+        var get=query.GET;
+        for(var i=0;i<sortedRes.data.length;i++){
+            for(var p in sortedRes.data[i]){
+             if(get.indexOf(p)==-1){
+                 delete sortedRes.data[i][p];
+             }
+            }
+        }
         // TODO get the query.GET and implement it to return array
 
 
@@ -79,9 +88,9 @@ export default class QueryController {
         // TODO try catch for error handling
 
 
+        Log.trace("Returning something");
+        return {render: renderstr, result: sortedRes.data};
 
-        let response: QueryResponse = {render: renderstr, result: [{}]};
-        return response;
         // return {status: 'received', ts: new Date().getTime()};
     }
 }

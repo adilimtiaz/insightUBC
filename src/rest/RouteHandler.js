@@ -32,10 +32,19 @@ var RouteHandler = (function () {
                 var concated = Buffer.concat(buffer_1);
                 req.body = concated.toString('base64');
                 Util_1.default.trace('RouteHandler::postDataset(..) on end; total length: ' + req.body.length);
+                var flag = 0;
                 var controller = RouteHandler.datasetController;
+                if (typeof controller.datasets[id] == "undefined") {
+                    flag = 1;
+                }
                 controller.process(id, req.body).then(function (result) {
                     Util_1.default.trace('RouteHandler::postDataset(..) - processed');
-                    res.json(200, { success: result });
+                    if (flag == 1) {
+                        res.json(204, { success: result });
+                    }
+                    else {
+                        res.json(201, { success: result });
+                    }
                 }).catch(function (err) {
                     Util_1.default.trace('RouteHandler::postDataset(..) - ERROR: ' + err.message);
                     res.json(400, { err: err.message });
@@ -57,7 +66,12 @@ var RouteHandler = (function () {
             var isValid = controller.isValid(query);
             if (isValid === true) {
                 var result = controller.query(query);
-                res.json(200, result);
+                if (controller.missResources()) {
+                    res.json(424, controller.getMissArray());
+                }
+                else {
+                    res.json(200, result);
+                }
             }
             else {
                 res.json(400, { status: 'invalid query' });
@@ -66,6 +80,46 @@ var RouteHandler = (function () {
         catch (err) {
             Util_1.default.error('RouteHandler::postQuery(..) - ERROR: ' + err);
             res.send(403);
+        }
+        return next();
+    };
+    RouteHandler.deleteDataset = function (req, res, next) {
+        Util_1.default.trace('RouteHandler::deleteDataset(..) - params: ' + JSON.stringify(req.params));
+        try {
+            var id = req.params.id;
+            var buffer_2 = [];
+            req.on('data', function onRequestData(chunk) {
+                Util_1.default.trace('RouteHandler::deleteDataset(..) on data; chunk length: ' + chunk.length);
+                buffer_2.push(chunk);
+            });
+            req.once('end', function () {
+                var concated = Buffer.concat(buffer_2);
+                req.body = concated.toString('base64');
+                Util_1.default.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
+                var flag = 0;
+                var controller = RouteHandler.datasetController;
+                if (typeof controller.datasets[id] == "undefined") {
+                    flag = 1;
+                }
+                try {
+                    var b = controller.delete(id);
+                    Util_1.default.trace('RouteHandler::deleteDataset(..) - processed');
+                    if (flag == 1) {
+                        throw new Error("File was not Put already");
+                    }
+                    else {
+                        res.json(204, { success: "valid query" });
+                    }
+                }
+                catch (err) {
+                    Util_1.default.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+                    res.json(404, { err: err.message });
+                }
+            });
+        }
+        catch (err) {
+            Util_1.default.error('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
+            res.send(400, { err: err.message });
         }
         return next();
     };

@@ -29,6 +29,7 @@ var Server = (function () {
                 }));
                 that.rest.get('/', RouteHandler_1.default.getHomepage);
                 that.rest.put('/dataset/:id', RouteHandler_1.default.putDataset);
+                that.rest.del('/dataset/:id', RouteHandler_1.default.deleteDataset);
                 that.rest.post('/query', restify.bodyParser(), RouteHandler_1.default.postQuery);
                 that.rest.listen(that.port, function () {
                     Util_1.default.info('Server::start() - restify listening: ' + that.rest.url);
