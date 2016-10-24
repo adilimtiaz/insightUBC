@@ -140,7 +140,7 @@ export default class QueryFilter {
         }
 
 
-
+       //lla
 
 
         return structure;

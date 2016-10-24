@@ -197,7 +197,7 @@ export default class QueryController {
 
         Log.trace("Returning something");
         return {render: renderstr, result: sortedRes.data};
-
+        //lalla
         // return {status: 'received', ts: new Date().getTime()};
     }
 }

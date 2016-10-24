@@ -485,7 +485,7 @@ describe("QueryController", function () {
         expect(ret).to.equal(true);
         // should check that the value is meaningful
     });
-
+    ///la
     it("Should be able to validate a valid query, and call OrderFilter", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
         let query: QueryRequest = {
