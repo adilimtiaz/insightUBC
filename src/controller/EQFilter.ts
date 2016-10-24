@@ -23,8 +23,7 @@ export default class EQFilter {
         console.log("processGTFilter type of key is..." + typeof key);
 
         let equal = query[key];
-        let i=0;
-        for(i=0;i<this.dataStructure.data.length;i++){
+        for(var i=0;i<this.dataStructure.data.length;i++){
             let c=this.dataStructure.data[i];
             if(c[key]==equal){
                 structure.add(c);

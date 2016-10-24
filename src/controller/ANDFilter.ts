@@ -2,7 +2,7 @@
  * Created by Justin on 2016/10/9.
  */
 
-import Course from "../rest/model/Course";
+
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 import Query from "./QueryFilter";
@@ -18,9 +18,9 @@ export default class ANDFilter {
     }
 
     public processANDFilter(query: [Query]): DataStructure {
+        Log.trace('ANDFilter::processANDFilter( ' + JSON.stringify(query) + ' )');
 
         var innerStructure: DataStructure = new DataStructure();
-        let index=-2;
 
         let filter = new QueryFilter(this.dataStructure);
         let innerstruct2: DataStructure = filter.processFilter(query[0]);

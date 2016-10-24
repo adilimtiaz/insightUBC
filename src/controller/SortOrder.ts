@@ -2,10 +2,8 @@
  * Created by Justin on 2016/10/10.
  */
 
-import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
-import {type} from "os";
 
 export default class SortOrder {
     private dataStructure: DataStructure = null;
@@ -14,7 +12,7 @@ export default class SortOrder {
         this.dataStructure = datastructure;
     }
 
-    public processSortOrder(query: string): DataStructure {
+    public processSortOrder(query: any): DataStructure {
         Log.trace('SortOrder::processSortOrder( ' + query + ' )');
         Log.trace(query);
 

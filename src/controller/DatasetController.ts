@@ -56,9 +56,9 @@ export default class DatasetController {
         // TODO: if datasets is empty, load all dataset files in ./data from disk
 
         /**
-        Log.trace("Entered get datasets");
-        let that = this;
-        if (typeof this.datasets[0] != "string") {
+         Log.trace("Entered get datasets");
+         let that = this;
+         if (typeof this.datasets[0] != "string") {
             var moveFrom = "./data/";
             if (!fs.existsSync(moveFrom)) {
                 fs.mkdir("./data/");
@@ -84,6 +84,7 @@ export default class DatasetController {
             });
         }
          */
+
         let that=this;
         if (this.datasets == {}||typeof this.datasets["courses"] == "undefined"){
             try {
@@ -106,6 +107,7 @@ export default class DatasetController {
 
         }
         return this.datasets;
+
     }
 
 
@@ -164,7 +166,7 @@ export default class DatasetController {
                     Promise.all(promises).catch(function (err) {
                         // log that I have an error, return the entire array;
                         console.log('A promise failed to resolve', err);
-                        reject(err);
+                        reject(false);
                     }).then(function () {
                         if (processedDataset.data.length == 0) {
                             reject(false);
@@ -174,11 +176,11 @@ export default class DatasetController {
                     });
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
-                    reject(err);
+                    reject(false);
                 });
             } catch (err) {
                 Log.trace('DatasetController::process(..) - ERROR: ' + err);
-                reject(err);
+                reject(false);
             }
         });
     }
@@ -221,17 +223,17 @@ export default class DatasetController {
         Log.trace('DatasetController::delete( ' + id + '... )');
         let that = this;
         try {
-                var stats = fs.lstatSync('./data/' + id + ".json");
-                if (!stats.isFile()) {
-                    throw new Error("Trying to delete dataset that does not exist")
-                }
-                fs.unlinkSync('./data/' + id + ".json");
-                delete that.datasets[id];
-                return true;
-            } catch (err) {
-                Log.trace('DatasetController:delete(..) - ERROR: ' + err);
-                return false;
+            var stats = fs.lstatSync('./data/' + id + ".json");
+            if (!stats.isFile()) {
+                throw new Error("Trying to delete dataset that does not exist")
             }
+            fs.unlinkSync('./data/' + id + ".json");
+            delete that.datasets[id];
+            return true;
+        } catch (err) {
+            Log.trace('DatasetController:delete(..) - ERROR: ' + err);
+            return false;
+        }
     }
 }
 

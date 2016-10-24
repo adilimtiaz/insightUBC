@@ -1,8 +1,8 @@
 /**
  * Created by Justin on 2016/10/8.
  */
+
 import DataStructure from "../rest/model/DataStructure";
-import Course from "../rest/model/Course";
 import Log from "../Util";
 import Query from "./QueryFilter";
 import QueryFilter from "./QueryFilter";
@@ -31,6 +31,6 @@ export default class NegationFilter {
         }
 
 
-       return structure;
+        return structure;
     }
 }

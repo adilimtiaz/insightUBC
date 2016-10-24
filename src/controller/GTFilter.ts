@@ -2,7 +2,6 @@
  * Created by Justin on 2016/10/8.
  */
 
-import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 import {MathQuery} from "./QueryFilter"
@@ -25,14 +24,14 @@ export default class GTFilter {
         let lowerBound = query[key];
         console.log("processGTFilter lowerBound is..." + lowerBound);
         console.log("processGTFilter type of lowerBound is..." + typeof lowerBound);
-        let i=0;
-        for(i=0;i<this.dataStructure.data.length;i++){
+
+        for(var i=0;i<this.dataStructure.data.length;i++){
             let c=this.dataStructure.data[i];
             if(c[key]>lowerBound){
                 structure.add(c);
             }
         }
-       return structure;
+        return structure;
 
     }
 }

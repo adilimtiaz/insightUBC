@@ -50,7 +50,7 @@ export default class RouteHandler {
                 let controller = RouteHandler.datasetController;
                 if(typeof controller.datasets[id] == "undefined"){
                     flag=1; // if id doesnt exist
-                 }
+                }
                 controller.process(id, req.body).then(function (result) {
                     Log.trace('RouteHandler::postDataset(..) - processed');
                     if(flag==1) {
@@ -127,7 +127,7 @@ export default class RouteHandler {
                         throw new Error("File was not Put already");
                     }
                     else {
-                            res.json(204, {success: "valid query"});
+                        res.json(204, {success: "valid query"});
                     }
                 }catch(err) {
                     Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);
