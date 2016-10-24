@@ -163,9 +163,6 @@ export default class QueryController {
         if(typeof query.ORDER === 'string') {
             let sortOrder = new SortOrder(sortedRes);
             sortedRes = sortOrder.processSortOrder(query.ORDER);
-        } else {
-            let orderFilter = new OrderFilter(sortedRes);
-            sortedRes = orderFilter.processOrderFilter(query.ORDER, 0);
         }
 
 
