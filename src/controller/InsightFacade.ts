@@ -74,16 +74,16 @@ export default class InsightFacade implements IInsightFacade{
                 var s=query.GET[0];
                 var s2=s.substring(0,s.indexOf("_"));
                 if(typeof that.controller.datasets[s2]=="undefined"){
-                    reject({code: 424, body: {err: "Missing:"+ s}});
+                    reject({code: 424, body: {error: "Missing:"+ s}});
                 }
                 var b=qcon.isValid(query);
                 if(!b){
-                    reject({code: 400, body: {err: "Bad query design"}});
+                    reject({code: 400, body: {error: "Bad query design"}});
                 }
                 let result2=qcon.query(query);
-                fulfill({code: 200, body: {result:result2}});
+                fulfill({code: 200, body:{result2}});
             }catch(err){
-                reject({code: 400, body: {err: err.message}});
+                reject({code: 400, body: {error: err.message}});
             }
         });
     }

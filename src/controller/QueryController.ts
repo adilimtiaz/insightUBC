@@ -218,6 +218,15 @@ export default class QueryController {
 
         Log.trace("Returning something");
         let render2 = query.AS;
+        if(query.hasOwnProperty("ORDER")) {
+            if (typeof query.ORDER === 'string') {
+                let sortOrder = new SortOrder(sortedRes);
+                sortedRes = sortOrder.processSortOrder(query.ORDER);
+            } else {
+                let orderFilter = new OrderFilter(sortedRes);
+                sortedRes = orderFilter.processOrderFilter(query.ORDER, 0);
+            }
+        }
 
         return {render: render2, result: sortedRes.data};
         //lallala
