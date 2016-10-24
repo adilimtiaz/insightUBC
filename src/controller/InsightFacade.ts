@@ -7,7 +7,9 @@
 /*
  * Thisa should be in the same folder as your controllers
  */
-import {QueryRequest, default as QueryController} from "./QueryController";
+
+import QueryController from '../controller/QueryController';
+import {QueryRequest} from "./QueryController";
 import DatasetController from "./DatasetController";
 import {Datasets} from "./DatasetController";
 import {IInsightFacade} from "./IInsightFacade";
