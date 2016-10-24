@@ -16,7 +16,7 @@ import DataStructure from "../rest/model/DataStructure";
 
 
 export interface QueryRequest {
-    GET: string[];
+    GET: string|string[];
     WHERE: Query;
     ORDER?: string|OrderQuery;
     GROUP?: string[];
@@ -113,25 +113,63 @@ export default class QueryController {
     }
          */
         if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-            let c=new Course();
-            let v=Object.keys(c);
+            var flag: boolean = true;
+            let c = new Course();
+            let v = Object.keys(c);
+            let v2: string[] = [];
+            var v3: string[] = [];
             //check group only has course keys
-            let arr=Object.keys(query);
-            if(arr.indexOf("GROUP")!==-1&&arr.indexOf("APPLY")!==-1){
-                for(var i=0;i<query.APPLY.length;i++){
-                    v.push(Object.keys(query.APPLY[i])[0]);
+            let arr = Object.keys(query);
+            if (arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") !== -1) {
+                let flag2 = false;
+                if (query.GROUP.length === 0) {
+                    return false;
                 }
-                return true;
+                for (var i = 0; i < query.GROUP.length; i++) {
+                    flag = flag && this.validKey(query.GROUP[i], v);
+                    let str = query.GROUP[i];
+                    v2.push(str);
+                }
+                for (var i = 0; i < v2.length; i++) {
+                    console.log(v2[i]);
+                    if (query.GET.indexOf(v2[i]) == -1) {
+                        flag2 = true;
+                    }
+                }
+
+
+                for (var i = 0; i < query.APPLY.length; i++) {
+                    v.push(Object.keys(query.APPLY[i])[0]);
+                    v3.push(Object.keys(query.APPLY[i])[0]);
+                }
+                for (var i = 0; i < v3.length; i++) {
+                    {
+                        if (query.GET.indexOf(v3[i]) == -1 && flag2) {
+                            return false;
+                        }
+                    }
+                }
             }
-            if((arr.indexOf("GROUP")!==-1&&arr.indexOf("APPLY")===-1)||(arr.indexOf("GROUP")===-1&&arr.indexOf("APPLY")!==-1)){
-                return false;
-            }
+                if ((arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") === -1) || (arr.indexOf("GROUP") === -1 && arr.indexOf("APPLY") !== -1)) {
+                    return false;
+                }
+                if (typeof query.GET == "string") {
+                    flag = flag && this.validKey(query.GET, v);
+                    if (arr.indexOf("GROUP") !== -1) {
+                        if (v2.indexOf(query.GROUP[i]) == -1 && v3.indexOf(query.GROUP[i]) == -1) {
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < query.GET.length; i++) {
+                        flag = flag && this.validKey(query.GET[i], v);
+                    }
+
+                }
+                return flag;
         }
-
         return false;
-
-
-
     }
 
     public validKey(key: any,v:any):boolean{

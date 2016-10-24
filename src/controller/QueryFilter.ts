@@ -40,6 +40,8 @@ export default class QueryFilter {
         Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
 
         let structure: DataStructure = new DataStructure();
+        let arr=Object.keys(query);
+        if(arr.length==0){return this.datastructure;}
         let key = Object.keys(query)[0];
         console.log("processFilter...key is"+ key);
         console.log("processFilter...typeof key is"+ typeof key);
