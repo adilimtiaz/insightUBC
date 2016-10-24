@@ -81,7 +81,7 @@ export default class InsightFacade implements IInsightFacade{
                     reject({code: 400, body: {err: "Bad query design"}});
                 }
                 let result2=qcon.query(query);
-                fulfill({code: 200, body: {result:result2 }});
+                fulfill({code: 200, body: {result:result2.result }});
             }catch(err){
                 reject({code: 400, body: {err: err.message}});
             }
