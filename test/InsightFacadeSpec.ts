@@ -210,6 +210,47 @@ describe("InsightFacade", function () {
         });
     });
 
+    it.only("Should be able to empty apply (200)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_id"],
+                "WHERE": {} ,
+                "GROUP": [ "courses_id" ],
+                "APPLY": [ ],
+                "ORDER": { "dir": "UP", "keys": ["courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+            });
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+
+    it("Should be able to validate empty where2 (200)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_id", "courseAverage"],
+                "WHERE": {} ,
+                "GROUP": [ "courses_id" ],
+                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverag", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+        });
+    });
+
     it("Should be able to invalidate bad query (400)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);

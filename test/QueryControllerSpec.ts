@@ -418,7 +418,7 @@ describe("QueryController", function () {
             "GT" : {"courses_avg" : 90}
         } ,
         "GROUP": [ "courses_dept","courses_id" ],
-        "APPLY": [ ],
+        "APPLY": [],
         "ORDER": "courses_pass",
         "AS":"TABLE"
     };
@@ -477,7 +477,7 @@ describe("QueryController", function () {
 
 
 
-    it.only("Should be able to validate a valid query", function (done: Function) {
+    it("Should be able to validate a valid query", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {GET: ["courses_pass", "courses_avg"],
         WHERE:  {"IS": {"courses_dept": "anth"}},

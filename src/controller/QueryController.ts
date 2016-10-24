@@ -166,10 +166,34 @@ export default class QueryController {
                 }
 
             }
+            if(query.hasOwnProperty("ORDER")){
+                if (typeof query.ORDER == "string") {
+                    if (query.GET.indexOf(<string> query.ORDER)==-1) {
+                            return false;
+                    }
+                }
+                else {
+                    let g:any=query.ORDER;
+                    if(g.hasOwnProperty("dir")&&g.hasOwnProperty("keys")){
+                        if(g.dir!=="UP" && g.dir!=="DOWN"){
+                            return false;
+                        }
+                        for(var i=0;i<g.keys.length;i++) {
+                            if(query.GET.indexOf(g.keys[i])==-1) {
+                                return false;
+                            }
+                        }
+                    }
+                    else{
+                        return false;
+                    }
+                }
+            }
+
             return flag;
         }
         return false;
-    }
+}
 
     public validKey(key: any, v: any): boolean {
         if (v.indexOf(key) == -1) {

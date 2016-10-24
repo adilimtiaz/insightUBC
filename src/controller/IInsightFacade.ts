@@ -2,7 +2,7 @@ import {QueryRequest} from "./QueryController";
 
 export interface InsightResponse {
     code: number;
-    body: any; // this is what you would return to a requestee in the REST body
+    body: {}; // this is what you would return to a requestee in the REST body
 }
 
 export interface IInsightFacade {
