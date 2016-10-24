@@ -24,7 +24,7 @@ describe("InsightFacade", function () {
             // silently fail, but don't crash; this is fine
             Log.warn('InsightController::before() - id.json not removed (probably not present)');
         }
-        Log.info('InsightController::before() - done');
+        //Log.info('InsightController::before() - done');
     });
 
     beforeEach(function () {
