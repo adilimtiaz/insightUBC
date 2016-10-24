@@ -5,7 +5,7 @@
  * Created by rtholmes on 2016-10-04.
  */
 /*
- * This should be in the same folder as your controllers
+ * Thisa should be in the same folder as your controllers
  */
 import {QueryRequest, default as QueryController} from "./QueryController";
 import DatasetController from "./DatasetController";

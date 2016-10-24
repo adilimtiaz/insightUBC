@@ -1,5 +1,5 @@
 /**
- * Created by Adil Imtiaz on 23-10-2016.
+ * Created by Adil Imtiaza on 23-10-2016.
  */
 
 import fs = require('fs');
