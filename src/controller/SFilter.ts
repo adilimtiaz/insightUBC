@@ -21,7 +21,7 @@ export default class SFilter {
         console.log("processGTFilter key is..." + key);
         console.log("processGTFilter type of key is..." + typeof key);
 
-        
+
         let str: string = (<any>query)[key];
 
         for(var i=0;i<this.dataStructure.data.length;i++){

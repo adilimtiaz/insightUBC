@@ -11,9 +11,11 @@ import SortOrder from "./SortOrder";
 import Course from "../rest/model/Course";
 
 export interface QueryRequest {
-    GET: string|string[];
+    GET: string[];
     WHERE: Query;
-    ORDER: any;
+    ORDER?: any;
+    GROUP?: string[];
+    APPLY?: Query[];
     AS: string;
 }
 
@@ -38,81 +40,98 @@ export default class QueryController {
     private missArr: missArray;
 
 
-
     constructor(datasets: Datasets) {
         this.datasets = datasets;
     }
 
     public isValid(query: QueryRequest): boolean {
-        let validget:boolean=false;
-        let validorder:boolean=false;
-        let that=this;
-        try {
+        /**
+         let validget: boolean = false;
+         let validorder: boolean = false;
+         let that = this;
+         try {
             if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-                if(typeof query.GET=="string"){
-                    var s:any=query.GET;
-                    validget=that.validKey(s);
+                if (query.GET instanceof Array) {
+                    validget = true;
+                    for (var i = 0; i < query.GET.length; i++) {
+                        if (typeof query.GET[i] == "string") {
+                            validget = validget && that.validKey(query.GET[i]);
+                        }
+                        else
+                            return false;
+                    }
                 }
                 else {
-                    if (query.GET instanceof Array) {
-                        validget=true;
-                        for (var i = 0; i < query.GET.length; i++) {
-                            if (typeof query.GET[i] == "string") {
-                                validget = validget && that.validKey(query.GET[i]);
-                            }
-                            else
-                                return false;
-                        }
-                    }
-                }
-                if(typeof query.ORDER=="string"){
-                    if(typeof query.GET=="string"){
-                        validorder=query.GET===query.ORDER;
-                    }
-                    else{
-                        for (var i = 0; i < query.GET.length; i++) {
-                            if (query.GET[i] === query.ORDER) {
-                                validorder=true;
-                            }
-                        }
-                    }
-                }
-                if(query.ORDER.hasOwnProperty("dir")&&query.ORDER.hasOwnProperty("keys")){
-                    let s:GetQuery=query.ORDER;
-                    if(s.dir.toLowerCase()==="up"||"down"){
-                        if(typeof query.GET=="string"){
-                            validorder=query.GET===query.ORDER.keys[0];
-                        }
-                        else{
-                            for(var i=0;i<s.keys.length;i++){
-                                if(query.GET.indexOf(s.keys[i])==-1){
-                                    return false;
-                                }
-                            }
-                            validorder=true;
-                        }
-
-                    }
-                }
-                if(typeof query.WHERE=="undefined" || typeof query.AS =="undefined"){
                     return false;
                 }
+                let arr = Object.keys(query);
+                if (arr.indexOf("ORDER" +
+                        "") !== -1) {
+                    if (typeof query.ORDER == "string") {
+                        if (typeof query.GET == "string") {
+                            validorder = query.GET === query.ORDER;
+                        }
+                        else {
+                            for (var i = 0; i < query.GET.length; i++) {
+                                if (query.GET[i] === query.ORDER) {
+                                    validorder = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (query.ORDER.hasOwnProperty("dir") && query.ORDER.hasOwnProperty("keys")) {
+                        let s: GetQuery = query.ORDER;
+                        if (s.dir.toLowerCase() === "up" || "down") {
+                            if (typeof query.GET == "string") {
+                                validorder = query.GET === query.ORDER.keys[0];
+                            }
+                            else {
+                                for (var i = 0; i < s.keys.length; i++) {
+                                    if (query.GET.indexOf(s.keys[i]) == -1) {
+                                        return false;
+                                    }
+                                }
+                                validorder = true;
+                            }
 
-
-
-
+                        }
+                    }
+                }
+                else{
+                    validorder=true;
+                }
             }
-            return validget&&validorder;
-        }catch(err){
-            Log.error(err);
-        }
+            if (typeof query.WHERE == "undefined" || typeof query.AS == "undefined") {
+                return false;
+            }
+                 return validget && validorder;
     }
 
-    public validKey(key: any):boolean{
-        if (key==="courses_avg"||"courses_uuid"||"courses_id"||"courses_audit"||"courses_pass"||"courses_fail"||"courses_title"||"courses_instructor"||"courses_dept"){
+         catch(err) {
+        Log.error(err);
+        return false;
+    }
+         */
+        if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
+            let arr=Object.keys(query);
+            if(arr.indexOf("GET")==-1||arr.indexOf("WHERE")==-1||arr.indexOf("AS")==-1){
+                return false;
+            }
             return true;
         }
         return false;
+
+
+
+    }
+
+    public validKey(key: any):boolean{
+        let c=new Course();
+        let v=Object.keys(c);
+        if(v.indexOf(key)==-1){
+            return false;
+        }
+        return true;
     }
 
     public missResources(): boolean {

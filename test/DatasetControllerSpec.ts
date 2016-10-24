@@ -27,7 +27,6 @@ describe("DatasetController", function () {
         let zipDirectory = "./courses.zip";
         let zip = new JSZip();
 
-
         let controller = new DatasetController();
         controller.getDatasets();
 

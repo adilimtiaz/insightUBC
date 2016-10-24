@@ -6,7 +6,7 @@ import fs = require('fs');
 import Log from "../src/Util";
 import {expect} from 'chai';
 import InsightFacade from "../src/controller/InsightFacade";
-import {InsightResponse} from "../src/controller/InsightFacade";
+import {InsightResponse} from "../src/controller/IInsightFacade";
 
 describe("InsightFacade", function () {
 
@@ -53,6 +53,7 @@ describe("InsightFacade", function () {
             }).catch(function (response: InsightResponse) {
                 expect.fail('Should not happen');
             });
+
         });
     });
 
@@ -74,6 +75,7 @@ describe("InsightFacade", function () {
             return facade.removeDataset('courses').then(function(res:InsightResponse){
                 expect(res.code).to.equal(204);
             }).catch(function(response: InsightResponse){
+
                 expect.fail("should not happen");
             });
         }).catch(function (response: InsightResponse) {
@@ -113,18 +115,42 @@ describe("InsightFacade", function () {
         });
     });
 
-    it("Should be able to identify missing resource (424)", function () {
+    it("Should be able to validate good query 1 (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
-        return facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
             expect(response.code).to.equal(204);
-            facade.performQuery({GET: ["courses_dept", "courses_avg"], WHERE:  {"AND": [
+            return facade.performQuery({GET: ["courses_dept", "courses_avg"], WHERE:  {"AND": [
                 {"IS": {"courses_dept": "anth"}},
                 {"IS": {"courses_id": "213"}}
-            ]}, ORDER: 'courses_avg', AS: 'table'});
-
+            ]}, ORDER: 'courses_avg', AS: 'table'}).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+            });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
         });
     });
+
+    it.only("Should be able to validate good query (200)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_avg"],
+                "WHERE" : {
+                    "GT" : {"courses_avg" : 90}
+                },
+                "ORDER" : "courses_avg",
+                "AS" : "TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+            });
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+
+
 });
