@@ -31,7 +31,7 @@ export interface GetQuery {
 
 export interface QueryResponse {
     render: string;
-    result: Course[];
+    result: any[];
 }
 
 
