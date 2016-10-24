@@ -131,7 +131,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to validate good query (200)", function () {
+    it("Should be able to validate good query (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {

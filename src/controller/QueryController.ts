@@ -8,12 +8,15 @@ import QueryFilter from "./QueryFilter";
 import Log from "../Util";
 import {Query} from "./QueryFilter"
 import SortOrder from "./SortOrder";
+import Groupfilter from "./Groupfilter";
 import Course from "../rest/model/Course";
+import OrderFilter from "./OrderFilter";
+import {OrderQuery} from "./OrderFilter";
 
 export interface QueryRequest {
     GET: string[];
     WHERE: Query;
-    ORDER?: any;
+    ORDER?: string|OrderQuery;
     GROUP?: string[];
     APPLY?: Query[];
     AS: string;
@@ -151,11 +154,22 @@ export default class QueryController {
         let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
         let sortedRes = queryFilter.processFilter(query.WHERE);
 
-        let sortOrder = new SortOrder(sortedRes);//CHANGE BACKKKKK
-        if(typeof query.ORDER=="string") {
-            let s:any=query.ORDER;
-            let sortedRes = sortOrder.processSortOrder(query.ORDER);
+        let arr=Object.keys(query);
+        if(arr.indexOf("GROUP")!==-1){
+            let groupFilter=new Groupfilter(sortedRes);
+            sortedRes=groupFilter.processGroups(query.GROUP,query.APPLY);
         }
+
+        if(typeof query.ORDER === 'string') {
+            let sortOrder = new SortOrder(sortedRes);
+            sortedRes = sortOrder.processSortOrder(query.ORDER);
+        } else {
+            let orderFilter = new OrderFilter(sortedRes);
+            sortedRes = orderFilter.processOrderFilter(query.ORDER, 0);
+        }
+
+
+
 
 
         var get=query.GET;
@@ -164,6 +178,7 @@ export default class QueryController {
                 if(get.indexOf(p)==-1){
                     delete sortedRes.data[i][p];
                 }
+
             }
         }
         // TODO get the query.GET and implement it to return array

@@ -296,13 +296,93 @@ describe("QueryController", function () {
     });
 });
      */
-    /**
-     it("Should be able to validate a valid query", function (done: Function) {
+    it("Should be able to avg", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courses_id","courses_pass", "courseAverage"],
+            "WHERE": {
+                "GT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_dept","courses_id" ],
+            "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
+            "ORDER": "courses_pass",
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                let ret = controller.query(query);
+                Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+                expect(ret).not.to.be.equal(null);
+                expect(isValid).to.equal(true);
+                done();
+            });
+        });
+    });
+    it("Should be able to max", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courses_id","courses_pass", "courseAverage"],
+            "WHERE": {
+                "GT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_dept","courses_id" ],
+            "APPLY": [ {"courseMax": {"MAX": "courses_avg"}},{"numSections": {"COUNT": "courses_uuid"}},{"courseMin": {"MIN": "courses_avg"}} ],
+            "ORDER": "courses_pass",
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                let ret = controller.query(query);
+                Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+                expect(ret).not.to.be.equal(null);
+                expect(isValid).to.equal(true);
+                done();
+            });
+        });
+    });
+
+     it("Should be able to empty apply", function (done: Function) {
     // NOTE: this is not actually a valid query for D1
-    let query: QueryRequest = {GET: ["courses_dept", "courses_avg"], WHERE:  {"AND": [
-        {"IS": {"courses_dept": "anth"}},
-        {"IS": {"courses_id": "213"}}
-    ]}, ORDER: { "dir": "UP", "keys": ["courses_dept", "courses_id"]}, AS: 'table'};
+    let query: QueryRequest = {
+        "GET": ["courses_id","courses_pass", "courseAverage"],
+        "WHERE": {
+            "GT" : {"courses_avg" : 90}
+        } ,
+        "GROUP": [ "courses_dept","courses_id" ],
+        "APPLY": [ ],
+        "ORDER": "courses_pass",
+        "AS":"TABLE"
+    };
     let dataset: Datasets = {};
     let zipDirectory = "./courses.zip";
     let zip = new JSZip();
@@ -313,11 +393,11 @@ describe("QueryController", function () {
         let controller2 = new DatasetController();
         var promise = controller2.process('courses', data);
         promise.then(function () {
-            console.log(controller2.datasets["courses"].getSize());
+            console.log(controller2.datasets["courses"].data.length);
             //controller.getDatasets();
             //console.log(controller.getSize("aa"));
             dataset=controller2.datasets;
-            console.log(dataset["courses"].getSize());
+            console.log(dataset["courses"].data.length);
             let controller = new QueryController(dataset);
             let isValid = controller.isValid(query);
             let ret = controller.query(query);
@@ -328,9 +408,10 @@ describe("QueryController", function () {
         });
     });
 });
+    /**
      */
 
-    /**
+
 
 
      it("Should be able to invalidate an invalid query", function () {
@@ -341,7 +422,7 @@ describe("QueryController", function () {
 
         expect(isValid).to.equal(false);
     });
-     */
+/**
     it("Should be able to invalidate", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
         let query: QueryRequest = {GET: ["food"], WHERE: {IS: 'apple'}, ORDER: 'food', AS: 'table'};
@@ -356,6 +437,7 @@ describe("QueryController", function () {
 
 
 
+*/
     it("Should be able to validate a valid query, but too complicated", function () {
         // NOTE: this is not actually a valid query for D1, nor is the result correct.
         let query: QueryRequest = {
@@ -369,7 +451,7 @@ describe("QueryController", function () {
                     ]},
                     {"IS": {"courses_instructor": "*gregor*"}}
                 ]
-            },
+            },"ORDER":"courses_avg",
             "AS": "TABLE"
         };
         let dataset: Datasets = {};
@@ -379,6 +461,86 @@ describe("QueryController", function () {
         expect(ret).to.equal(true);
         // should check that the value is meaningful
     });
+
+    it("Should be able to validate a valid query, and call SortOrder", function () {
+        // NOTE: this is not actually a valid query for D1, nor is the result correct.
+        let query: QueryRequest = {
+            "GET": ["courses_dept", "courses_id", "courses_instructor"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}},
+                        {"IS": {"courses_dept": "cp*"}},
+                        {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                    ]},
+                    {"IS": {"courses_instructor": "*gregor*"}}
+                ]
+            },"ORDER": "courses_avg",
+            "AS": "TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.isValid(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.equal(true);
+        // should check that the value is meaningful
+    });
+
+    it("Should be able to validate a valid query, and call OrderFilter", function () {
+        // NOTE: this is not actually a valid query for D1, nor is the result correct.
+        let query: QueryRequest = {
+            "GET": ["courses_dept", "courses_id", "courses_instructor"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}},
+                        {"IS": {"courses_dept": "cp*"}},
+                        {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                    ]},
+                    {"IS": {"courses_instructor": "*gregor*"}}
+                ]
+            },"ORDER": {"dir": "UP", "keys": ["numSections", "courses_dept", "courses_id"]},
+            "AS": "TABLE"
+        };
+        let dataset: Datasets = {};
+        let controller = new QueryController(dataset);
+        let ret = controller.isValid(query);
+        Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+        expect(ret).to.equal(true);
+        // should check that the value is meaningful
+    });
+    /**
+    it("Should be able to validate a valid query", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {GET: ["courses_pass", "courses_avg"],
+        WHERE:  {"IS": {"courses_dept": "cpsc"}},
+         ORDER: {"dir": "DOWN", "keys": ["courses_pass", "courses_avg"]}, AS: 'table'};
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                let ret = controller.query(query);
+                Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+                expect(ret).not.to.be.equal(null);
+                expect(isValid).to.equal(true);
+                done();
+            });
+        });
+    });
+  */
 
 
 

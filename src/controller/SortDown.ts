@@ -1,43 +1,82 @@
-// /**
-//  * Created by justin on 2016/10/23.
-//  */
-//
-// import DataStructure from "../rest/model/DataStructure";
-//
-// export default class SortDown {
-//
-//     private dataStructure: DataStructure = null;
-//
-//     constructor(datastructure: DataStructure) {
-//         this.dataStructure = datastructure;
-//     }
-//
-//     public processSortDownString(key: string): DataStructure {
-//         for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
-//             let minimum = i;
-//             for (var j = i + 1; j < this.dataStructure.data.length; j++) {
-//                 if (this.dataStructure.data[j].courses_avg < this.dataStructure.data[minimum].courses_avg) {
-//                     minimum = j;
-//                 }
-//                 var tempCourse: any = this.dataStructure.data[i];
-//                 this.dataStructure.data[i] = this.dataStructure.data[minimum];
-//                 this.dataStructure.data[minimum] = tempCourse;
-//             }
-//         }
-//     }
-//
-//
-//     public processSortDownNumber(key: string): DataStructure {
-//         for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
-//             let minimum = i;
-//             for (var j = i + 1; j < this.dataStructure.data.length; j++) {
-//                 if (this.dataStructure.data[j].courses_avg < this.dataStructure.data[minimum].courses_avg) {
-//                     minimum = j;
-//                 }
-//                 var tempCourse: any = this.dataStructure.data[i];
-//                 this.dataStructure.data[i] = this.dataStructure.data[minimum];
-//                 this.dataStructure.data[minimum] = tempCourse;
-//             }
-//         }
-//     }
-// }
+/**
+ * Created by justin on 2016/10/23.
+ */
+
+import DataStructure from "../rest/model/DataStructure";
+import Log from "../Util";
+
+export default class SortDown {
+
+    private dataStructure: DataStructure = null;
+
+    constructor(dataStructure: DataStructure) {
+        this.dataStructure = dataStructure;
+    }
+
+    public processSortDownString(preKey: string, key: string): DataStructure {
+        Log.trace('SortDown::processSortDownString( ' + preKey + ' , ' + key +' )');
+        if (preKey === "nothing"){
+            for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
+                let maximum = i;
+                for (var j = i + 1; j < this.dataStructure.data.length; j++) {
+                    if (parseInt(this.dataStructure.data[j][key]) > parseInt(this.dataStructure.data[maximum][key])) {
+                        maximum = j;
+                    }
+                    var tempCourse: any = this.dataStructure.data[i];
+                    this.dataStructure.data[i] = this.dataStructure.data[maximum];
+                    this.dataStructure.data[maximum] = tempCourse;
+                }
+            }
+        } else {
+            for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
+                let margin = this.dataStructure.data[i][preKey];
+                let maximum = i;
+                for (var j = i + 1; j < this.dataStructure.data.length; j++) {
+                    if (this.dataStructure.data[j][preKey] === margin) {
+                        if (parseInt(this.dataStructure.data[j][key]) > parseInt(this.dataStructure.data[maximum][key])) {
+                            maximum = j;
+                        }
+                        var tempCourse: any = this.dataStructure.data[i];
+                        this.dataStructure.data[i] = this.dataStructure.data[maximum];
+                        this.dataStructure.data[maximum] = tempCourse;
+                    }
+                }
+            }
+        }
+        return this.dataStructure;
+    }
+
+
+    public processSortDownNumber(preKey: string, key: string): DataStructure {
+        Log.trace('SortDown::processSortDownNumber( ' + preKey + ' , ' + key +' )');
+        if (preKey === "nothing"){
+            for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
+                let maximum = i;
+                for (var j = i + 1; j < this.dataStructure.data.length; j++) {
+                    if (this.dataStructure.data[j][key] > this.dataStructure.data[maximum][key]) {
+                        maximum = j;
+                    }
+                    var tempCourse: any = this.dataStructure.data[i];
+                    this.dataStructure.data[i] = this.dataStructure.data[maximum];
+                    this.dataStructure.data[maximum] = tempCourse;
+                }
+            }
+        } else {
+            for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
+                let margin = this.dataStructure.data[i][preKey];
+                let maximum = i;
+                for (var j = i + 1; j < this.dataStructure.data.length; j++) {
+                    if (this.dataStructure.data[j][preKey] === margin) {
+                        if (this.dataStructure.data[j][key] > this.dataStructure.data[maximum][key]) {
+                            maximum = j;
+                        }
+                        var tempCourse: any = this.dataStructure.data[i];
+                        this.dataStructure.data[i] = this.dataStructure.data[maximum];
+                        this.dataStructure.data[maximum] = tempCourse;
+                    }
+                }
+            }
+        }
+        return this.dataStructure;
+    }
+}
