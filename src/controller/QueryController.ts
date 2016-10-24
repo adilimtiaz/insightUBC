@@ -39,7 +39,6 @@ export default class QueryController {
     private datasets: Datasets = {};
 
 
-
     constructor(datasets: Datasets) {
         this.datasets = datasets;
     }
@@ -150,30 +149,30 @@ export default class QueryController {
                     }
                 }
             }
-                if ((arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") === -1) || (arr.indexOf("GROUP") === -1 && arr.indexOf("APPLY") !== -1)) {
-                    return false;
-                }
-                if (typeof query.GET == "string") {
-                    flag = flag && this.validKey(query.GET, v);
-                    if (arr.indexOf("GROUP") !== -1) {
-                        if (v2.indexOf(query.GROUP[i]) == -1 && v3.indexOf(query.GROUP[i]) == -1) {
-                            return false;
-                        }
+            if ((arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") === -1) || (arr.indexOf("GROUP") === -1 && arr.indexOf("APPLY") !== -1)) {
+                return false;
+            }
+            if (typeof query.GET == "string") {
+                flag = flag && this.validKey(query.GET, v);
+                if (arr.indexOf("GROUP") !== -1) {
+                    if (v2.indexOf(query.GROUP[i]) == -1 && v3.indexOf(query.GROUP[i]) == -1) {
+                        return false;
                     }
                 }
-                else {
-                    for (var i = 0; i < query.GET.length; i++) {
-                        flag = flag && this.validKey(query.GET[i], v);
-                    }
+            }
+            else {
+                for (var i = 0; i < query.GET.length; i++) {
+                    flag = flag && this.validKey(query.GET[i], v);
+                }
 
-                }
-                return flag;
+            }
+            return flag;
         }
         return false;
     }
 
-    public validKey(key: any,v:any):boolean{
-        if(v.indexOf(key)==-1){
+    public validKey(key: any, v: any): boolean {
+        if (v.indexOf(key) == -1) {
             return false;
         }
         return true;
@@ -185,28 +184,26 @@ export default class QueryController {
 
         // TODO: implement this
         let id: string = "courses";
-        let sortedRes=new DataStructure();
-        let where:any=query.WHERE;
+        let sortedRes = new DataStructure();
+        let where: any = query.WHERE;
 
         let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
         sortedRes = queryFilter.processFilter(where);
 
-        let arr=Object.keys(query);
-        if(arr.indexOf("GROUP")!==-1){
-            let apply:any=query.APPLY;
-            let groupFilter=new Groupfilter(sortedRes);
-            sortedRes=groupFilter.processGroups(query.GROUP,query.APPLY);
+        let arr = Object.keys(query);
+        if (arr.indexOf("GROUP") !== -1) {
+            let apply: any = query.APPLY;
+            let groupFilter = new Groupfilter(sortedRes);
+            sortedRes = groupFilter.processGroups(query.GROUP, query.APPLY);
         }
-
-
 
 
         Log.trace("We here now");
 
-        var get=query.GET;
-        for(var i=0;i<sortedRes.data.length;i++){
-            for(var p in sortedRes.data[i]){
-                if(get.indexOf(p)==-1){
+        var get = query.GET;
+        for (var i = 0; i < sortedRes.data.length; i++) {
+            for (var p in sortedRes.data[i]) {
+                if (get.indexOf(p) == -1) {
                     delete sortedRes.data[i][p];
                 }
 
@@ -216,18 +213,15 @@ export default class QueryController {
         // TODO get the query.GET and implement it to return array
 
 
-
-
-        let render2 = query.AS;
-        var renderstr: string;
-
-
         // TODO try catch for error handling
 
 
         Log.trace("Returning something");
+        let render2 = query.AS;
+
         return {render: render2, result: sortedRes.data};
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
     }
 }
+

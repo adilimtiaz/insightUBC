@@ -91,6 +91,7 @@ describe("InsightFacade", function () {
             return facade.removeDataset('course').then(function(res:InsightResponse){
                 expect(res.code).to.equal(404);
             }).catch(function(response: InsightResponse){
+                expect(response.code).to.equal(404);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -106,12 +107,11 @@ describe("InsightFacade", function () {
                 {"IS": {"course_dept": "anth"}},
                 {"IS": {"course_id": "213"}}
             ]}, ORDER: 'course_avg', AS: 'table'}).then(function (res: InsightResponse){
-                expect(res.code).to.equal(424);
+
             });
 
         }).catch(function (response: InsightResponse) {
-
-
+            expect(response.code).to.equal(424);
         });
     });
 
@@ -218,11 +218,11 @@ describe("InsightFacade", function () {
             return facade.performQuery({
                 "GET": ["courses_id"],
                 "WHERE": {"IS": {"courses_dept": "anth"}} ,
-                "GROUP": [ "courses_id" ],
+                "GROUP": [ "courses_dept" ],
                 "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(400);
+
             });
         }).catch(function (response: InsightResponse) {
             expect(response.code).to.equal(400);
