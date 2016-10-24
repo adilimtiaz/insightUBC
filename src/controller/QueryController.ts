@@ -34,15 +34,10 @@ export interface QueryResponse {
     result: Course[];
 }
 
-export interface missArray {
-    missing: string[];
-}
-
 
 export default class QueryController {
     private datasets: Datasets = {};
-    private missRes: boolean = false;
-    private missArr: missArray;
+
 
 
     constructor(datasets: Datasets) {
@@ -122,6 +117,7 @@ export default class QueryController {
             if(arr.indexOf("GET")==-1||arr.indexOf("WHERE")==-1||arr.indexOf("AS")==-1){
                 return false;
             }
+
             return true;
         }
         return false;
@@ -139,13 +135,6 @@ export default class QueryController {
         return true;
     }
 
-    public missResources(): boolean {
-        return this.missRes;
-    }
-
-    public getMissArray(): missArray {
-        return this.missArr;
-    }
 
     public query(query: QueryRequest): QueryResponse {
         Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
@@ -193,6 +182,7 @@ export default class QueryController {
 
         let render2 = query.AS;
         var renderstr: string;
+
 
         // TODO try catch for error handling
 

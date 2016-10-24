@@ -141,7 +141,7 @@ export default class DatasetController {
                             let obj2 = JSON.parse(processedfile);
                             let i = 0;
                             for (i = 0; i < obj2.result.length; i++) {
-                                let c = new Course();
+                                let c:any={};
                                 if (typeof obj2.result[i].hasOwnProperty(id)) {
                                     c.courses_uuid = obj2.result[i].id;
                                     c.courses_id = obj2.result[i].Course;
