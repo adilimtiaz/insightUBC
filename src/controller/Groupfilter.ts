@@ -10,7 +10,7 @@ export interface Data {
 
 export default class QueryFilter {
 
-    private datastructure: DataStructure = null;
+    private datastructure: DataStructure = new DataStructure();
     private data:Data={};
 
     constructor(datastructure: DataStructure) {

@@ -8,7 +8,7 @@ import {MathQuery} from "./QueryFilter";
 
 
 export default class LTFilter {
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(datastructure: DataStructure) {
         this.dataStructure = datastructure;

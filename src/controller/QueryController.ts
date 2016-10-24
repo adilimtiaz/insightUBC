@@ -12,6 +12,7 @@ import Groupfilter from "./Groupfilter";
 import Course from "../rest/model/Course";
 import OrderFilter from "./OrderFilter";
 import {OrderQuery} from "./OrderFilter";
+import DataStructure from "../rest/model/DataStructure";
 
 export interface QueryRequest {
     GET: string[];
@@ -38,7 +39,7 @@ export interface missArray {
 
 
 export default class QueryController {
-    private datasets: Datasets = null;
+    private datasets: Datasets = {};
     private missRes: boolean = false;
     private missArr: missArray;
 
@@ -150,9 +151,9 @@ export default class QueryController {
 
         // TODO: implement this
         let id: string = "courses";
-
+        let sortedRes=new DataStructure();
         let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
-        let sortedRes = queryFilter.processFilter(query.WHERE);
+        sortedRes = queryFilter.processFilter(query.WHERE);
 
         let arr=Object.keys(query);
         if(arr.indexOf("GROUP")!==-1){
@@ -169,6 +170,8 @@ export default class QueryController {
 
 
 
+        Log.trace("We here now");
+        /**
         var get=query.GET;
         for(var i=0;i<sortedRes.data.length;i++){
             for(var p in sortedRes.data[i]){
@@ -178,6 +181,7 @@ export default class QueryController {
 
             }
         }
+         */
         // TODO get the query.GET and implement it to return array
 
 

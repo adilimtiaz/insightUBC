@@ -7,7 +7,7 @@ import Log from "../Util";
 import {MathQuery} from "./QueryFilter"
 
 export default class GTFilter {
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(datastructure: DataStructure) {
         this.dataStructure = datastructure;

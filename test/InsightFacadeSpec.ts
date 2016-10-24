@@ -131,18 +131,26 @@ describe("InsightFacade", function () {
         });
     });
 
-    it("Should be able to validate good query (200)", function () {
+    it.only("Should be able to validate good query (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
             expect(response.code).to.equal(204);
             return facade.performQuery({
-                "GET": ["courses_dept", "courses_avg"],
-                "WHERE" : {
-                    "GT" : {"courses_avg" : 90}
-                },
-                "ORDER" : "courses_avg",
-                "AS" : "TABLE"
+                "GET": ["courses_dept", "courses_id", "courses_instructor"],
+                "WHERE": {
+                    "OR": [
+                        {
+                            "AND": [
+                                {"GT": {"courses_avg": 70}},
+                                {"IS": {"courses_dept": "cp*"}},
+                                {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                            ]
+                        },
+                        {"IS": {"courses_instructor": "*gregor*"}}
+                    ]
+                }, "ORDER": "courses_id",
+                "AS": "TABLE"
             }).then(function(res :InsightResponse){
                 expect(res.code).to.equal(200);
             });

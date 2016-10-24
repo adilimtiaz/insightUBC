@@ -6,7 +6,7 @@ import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 
 export default class SortOrder {
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(datastructure: DataStructure) {
         this.dataStructure = datastructure;

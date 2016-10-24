@@ -11,7 +11,7 @@ import QueryFilter from "./QueryFilter";
 
 export default class ANDFilter {
 
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(dataStructure: DataStructure) {
         this.dataStructure = dataStructure;

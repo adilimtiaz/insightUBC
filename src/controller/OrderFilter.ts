@@ -13,7 +13,7 @@ export interface OrderQuery {
 }
 
 export default class OrderFilter {
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure;
 
     constructor(datastructure: DataStructure) {
         this.dataStructure = datastructure;

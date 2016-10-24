@@ -509,7 +509,7 @@ describe("QueryController", function () {
         expect(ret).to.equal(true);
         // should check that the value is meaningful
     });
-    /**
+/**
     it("Should be able to validate a valid query", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {GET: ["courses_pass", "courses_avg"],
@@ -540,8 +540,8 @@ describe("QueryController", function () {
             });
         });
     });
-  */
 
 
+*/
 
 });

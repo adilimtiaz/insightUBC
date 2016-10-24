@@ -9,7 +9,7 @@ import Query from "./QueryFilter";
 import QueryFilter from "./QueryFilter";
 
 export default class ORFilter {
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(dataStructure: DataStructure) {
         this.dataStructure = dataStructure;

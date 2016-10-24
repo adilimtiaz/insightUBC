@@ -26,7 +26,7 @@ export interface SQuery {
 
 export default class QueryFilter {
 
-    private datastructure: DataStructure = null;
+    private datastructure: DataStructure = new DataStructure();
 
     constructor(datastructure: DataStructure) {
         this.datastructure = datastructure;
@@ -36,7 +36,7 @@ export default class QueryFilter {
     public processFilter(query: Query): DataStructure{
         Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
 
-        let structure: DataStructure = null;
+        let structure: DataStructure = new DataStructure();
         let key = Object.keys(query)[0];
         console.log("processFilter...key is"+ key);
         console.log("processFilter...typeof key is"+ typeof key);

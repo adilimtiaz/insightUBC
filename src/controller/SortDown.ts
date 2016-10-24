@@ -7,7 +7,7 @@ import Log from "../Util";
 
 export default class SortDown {
 
-    private dataStructure: DataStructure = null;
+    private dataStructure: DataStructure = new DataStructure();
 
     constructor(dataStructure: DataStructure) {
         this.dataStructure = dataStructure;
