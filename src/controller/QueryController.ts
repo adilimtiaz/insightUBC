@@ -113,22 +113,28 @@ export default class QueryController {
     }
          */
         if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
+            let c=new Course();
+            let v=Object.keys(c);
+            //check group only has course keys
             let arr=Object.keys(query);
-            if(arr.indexOf("GET")==-1||arr.indexOf("WHERE")==-1||arr.indexOf("AS")==-1){
+            if(arr.indexOf("GROUP")!==-1&&arr.indexOf("APPLY")!==-1){
+                for(var i=0;i<query.APPLY.length;i++){
+                    v.push(Object.keys(query.APPLY[i])[0]);
+                }
+                return true;
+            }
+            if((arr.indexOf("GROUP")!==-1&&arr.indexOf("APPLY")===-1)||(arr.indexOf("GROUP")===-1&&arr.indexOf("APPLY")!==-1)){
                 return false;
             }
-
-            return true;
         }
+
         return false;
 
 
 
     }
 
-    public validKey(key: any):boolean{
-        let c=new Course();
-        let v=Object.keys(c);
+    public validKey(key: any,v:any):boolean{
         if(v.indexOf(key)==-1){
             return false;
         }
@@ -153,12 +159,6 @@ export default class QueryController {
             let groupFilter=new Groupfilter(sortedRes);
             sortedRes=groupFilter.processGroups(query.GROUP,query.APPLY);
         }
-
-        if(typeof query.ORDER === 'string') {
-            let sortOrder = new SortOrder(sortedRes);
-            sortedRes = sortOrder.processSortOrder(query.ORDER);
-        }
-
 
 
 

@@ -131,7 +131,26 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to validate good query (200)", function () {
+    it.only("Should be able to validate empty apply (200)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_id", "courseAverage"],
+                "WHERE": {"IS": {"courses_dept": "anth"}} ,
+                "GROUP": [ "courses_id" ],
+                "APPLY": [ ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+            });
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+    it("Should be able to validate good query (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
@@ -148,6 +167,25 @@ describe("InsightFacade", function () {
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to invalidate good query (400)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_id", "courseAverage"],
+                "WHERE": {"IS": {"courses_dept": "anth"}} ,
+                "GROUP": [ "courses_id" ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(400);
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
         });
     });
 
