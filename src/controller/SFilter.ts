@@ -21,10 +21,10 @@ export default class SFilter {
         console.log("processGTFilter key is..." + key);
         console.log("processGTFilter type of key is..." + typeof key);
 
-        //   let equal = query[key];
+        
         let str: string = (<any>query)[key];
-        let i=0;
-        for(i=0;i<this.dataStructure.data.length;i++){
+
+        for(var i=0;i<this.dataStructure.data.length;i++){
             let c=this.dataStructure.data[i];
             if(c[key].toLowerCase()===str.toLowerCase()){
                 structure.data.push(c);
