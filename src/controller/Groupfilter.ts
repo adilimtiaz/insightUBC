@@ -18,7 +18,7 @@ export default class QueryFilter {
     }
 
 
-    public processGroups(query: string[],queryarr: Query[]):DataStructure{
+    public processGroups(query: string[],queryarr: any[]):DataStructure{
         let that=this;
         let structure=new DataStructure();
         let groups:any[]=[];

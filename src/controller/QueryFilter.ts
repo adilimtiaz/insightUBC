@@ -17,6 +17,9 @@ import NegationFilter from "./NegationFilter";
 export interface Query {
     [key:string]: any;
 }
+
+
+
 export interface MathQuery {
     [key:string]: number;
 }

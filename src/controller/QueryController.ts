@@ -14,6 +14,7 @@ import OrderFilter from "./OrderFilter";
 import {OrderQuery} from "./OrderFilter";
 import DataStructure from "../rest/model/DataStructure";
 
+
 export interface QueryRequest {
     GET: string[];
     WHERE: Query;
@@ -152,11 +153,14 @@ export default class QueryController {
         // TODO: implement this
         let id: string = "courses";
         let sortedRes=new DataStructure();
+        let where:any=query.WHERE;
+
         let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
-        sortedRes = queryFilter.processFilter(query.WHERE);
+        sortedRes = queryFilter.processFilter(where);
 
         let arr=Object.keys(query);
         if(arr.indexOf("GROUP")!==-1){
+            let apply:any=query.APPLY;
             let groupFilter=new Groupfilter(sortedRes);
             sortedRes=groupFilter.processGroups(query.GROUP,query.APPLY);
         }
@@ -171,7 +175,7 @@ export default class QueryController {
 
 
         Log.trace("We here now");
-        /**
+
         var get=query.GET;
         for(var i=0;i<sortedRes.data.length;i++){
             for(var p in sortedRes.data[i]){
@@ -181,23 +185,20 @@ export default class QueryController {
 
             }
         }
-         */
+
         // TODO get the query.GET and implement it to return array
 
 
 
 
-        let render = query.AS;
+        let render2 = query.AS;
         var renderstr: string;
-        if(JSON.stringify(render) === "TABLE") {
-            renderstr = "TABLE";
-        }
 
         // TODO try catch for error handling
 
 
         Log.trace("Returning something");
-        return {render: renderstr, result: sortedRes.data};
+        return {render: render2, result: sortedRes.data};
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
     }

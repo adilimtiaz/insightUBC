@@ -137,20 +137,12 @@ describe("InsightFacade", function () {
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
             expect(response.code).to.equal(204);
             return facade.performQuery({
-                "GET": ["courses_dept", "courses_id", "courses_instructor"],
-                "WHERE": {
-                    "OR": [
-                        {
-                            "AND": [
-                                {"GT": {"courses_avg": 70}},
-                                {"IS": {"courses_dept": "cp*"}},
-                                {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
-                            ]
-                        },
-                        {"IS": {"courses_instructor": "*gregor*"}}
-                    ]
-                }, "ORDER": "courses_id",
-                "AS": "TABLE"
+                "GET": ["courses_id", "courseAverage"],
+                "WHERE": {"IS": {"courses_dept": "anth"}} ,
+                "GROUP": [ "courses_id" ],
+                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+                "AS":"TABLE"
             }).then(function(res :InsightResponse){
                 expect(res.code).to.equal(200);
             });
