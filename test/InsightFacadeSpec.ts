@@ -210,7 +210,27 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to empty apply (200)", function () {
+    it("Should be able to empty apply and sort numerically (200)", function () {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_avg"],
+                "WHERE": {} ,
+                "GROUP": [ "courses_avg" ],
+                "APPLY": [ ],
+                "ORDER":  "courses_avg",
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+            });
+        }).catch(function (response: InsightResponse) {
+            expect.fail('Should not happen');
+        });
+    });
+
+    it("Should be able to empty apply and sort alphanumerically (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
@@ -220,7 +240,7 @@ describe("InsightFacade", function () {
                 "WHERE": {} ,
                 "GROUP": [ "courses_id" ],
                 "APPLY": [ ],
-                "ORDER": { "dir": "UP", "keys": ["courses_id"]},
+                "ORDER":  "courses_id",
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
                 expect(res.code).to.equal(200);

@@ -44,73 +44,6 @@ export default class QueryController {
     }
 
     public isValid(query: QueryRequest): boolean {
-        /**
-         let validget: boolean = false;
-         let validorder: boolean = false;
-         let that = this;
-         try {
-            if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-                if (query.GET instanceof Array) {
-                    validget = true;
-                    for (var i = 0; i < query.GET.length; i++) {
-                        if (typeof query.GET[i] == "string") {
-                            validget = validget && that.validKey(query.GET[i]);
-                        }
-                        else
-                            return false;
-                    }
-                }
-                else {
-                    return false;
-                }
-                let arr = Object.keys(query);
-                if (arr.indexOf("ORDER" +
-                        "") !== -1) {
-                    if (typeof query.ORDER == "string") {
-                        if (typeof query.GET == "string") {
-                            validorder = query.GET === query.ORDER;
-                        }
-                        else {
-                            for (var i = 0; i < query.GET.length; i++) {
-                                if (query.GET[i] === query.ORDER) {
-                                    validorder = true;
-                                }
-                            }
-                        }
-                    }
-                    else if (query.ORDER.hasOwnProperty("dir") && query.ORDER.hasOwnProperty("keys")) {
-                        let s: GetQuery = query.ORDER;
-                        if (s.dir.toLowerCase() === "up" || "down") {
-                            if (typeof query.GET == "string") {
-                                validorder = query.GET === query.ORDER.keys[0];
-                            }
-                            else {
-                                for (var i = 0; i < s.keys.length; i++) {
-                                    if (query.GET.indexOf(s.keys[i]) == -1) {
-                                        return false;
-                                    }
-                                }
-                                validorder = true;
-                            }
-
-                        }
-                    }
-                }
-                else{
-                    validorder=true;
-                }
-            }
-            if (typeof query.WHERE == "undefined" || typeof query.AS == "undefined") {
-                return false;
-            }
-                 return validget && validorder;
-    }
-
-         catch(err) {
-        Log.error(err);
-        return false;
-    }
-         */
         if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
             var flag: boolean = true;
             let c = new Course();
@@ -122,7 +55,7 @@ export default class QueryController {
             if (arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") !== -1) {
                 let flag2 = false;
                 if (query.GROUP.length === 0) {
-                    return false;
+                    return  false;
                 }
                 for (var i = 0; i < query.GROUP.length; i++) {
                     flag = flag && this.validKey(query.GROUP[i], v);
@@ -246,10 +179,11 @@ export default class QueryController {
             if (typeof query.ORDER === 'string') {
                 let sortOrder = new SortOrder(sortedRes);
                 sortedRes = sortOrder.processSortOrder(query.ORDER);
-            } else {
+            }/** else {
                 let orderFilter = new OrderFilter(sortedRes);
                 sortedRes = orderFilter.processOrderFilter(query.ORDER, 0);
             }
+ */
         }
 
         return {render: render2, result: sortedRes.data};
