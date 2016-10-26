@@ -175,7 +175,7 @@ export default class QueryController {
         for (var i = 0; i < sortedRes.data.length; i++) {
             for (var p in sortedRes.data[i]) {
                 if (get.indexOf(p) == -1) {
-                    delete sortedRes.data[i].p;
+                    delete sortedRes.data[i][p];
                 }
             }
         }
