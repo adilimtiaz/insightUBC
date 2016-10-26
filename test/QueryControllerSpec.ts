@@ -301,7 +301,7 @@ describe("QueryController", function () {
         let query: QueryRequest = {
             "GET": ["courses_id","courses_pass", "courseAverage"],
             "WHERE": {
-                "GT" : {"courses_avg" : 90}
+                "IS" : {"courses_avg" : 90}
             } ,
             "GROUP": [ "courses_dept","courses_id" ],
             "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
@@ -325,14 +325,156 @@ describe("QueryController", function () {
                 console.log(dataset["courses"].data.length);
                 let controller = new QueryController(dataset);
                 let isValid = controller.isValid(query);
-                let ret = controller.query(query);
-                Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
-                expect(ret).not.to.be.equal(null);
-                expect(isValid).to.equal(true);
+                expect(isValid).to.equal(false);
                 done();
             });
         });
     });
+
+    it("Should be able to avg", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courseAverage","courses_id","courses_pass", ],
+            "WHERE": {
+                "LT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_dept","courses_id" ],
+            "APPLY": [ {"courseAverage": {"MIN": "courses_avg"}} ],
+            "ORDER": "courses_pass",
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                expect(isValid).to.equal(false);
+                done();
+            });
+        });
+    });
+
+    it("Should be able to low avg", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courseAverage","courses_id","courses_pass", ],
+            "WHERE": {
+                "LT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_pass","courses_id" ],
+            "APPLY": [ {"courseAverage": {"MAX": "courses_avg"}} ],
+            "ORDER": "courses_pass",
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                expect(isValid).to.equal(true);
+                controller.query(query);
+                done();
+            });
+        });
+    });
+
+    it("Should be able to high avg", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: any = {
+            "GET": ["courses_dept","courses_id","numSections"],
+            "WHERE": {
+                "LT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_dept","courses_id" ],
+            "APPLY": [ {"numSections": {"COUNT": "courses_uuid"}} ],
+            "ORDER": { "dir": "DOWN", "keys": ["numSections"]},
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                expect(isValid).to.equal(true);
+                controller.query(query);
+                done();
+            });
+        });
+    });
+
+    it("Should be able to not high avg", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courseAverag","courses_id","courses_pass", ],
+            "WHERE": {
+                "LT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_pass","courses_id" ],
+            "APPLY": [ {"courseAverage": {"MAX": "courses_avg"}} ],
+            "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
+            "AS":"TABLE"
+        };
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                expect(isValid).to.equal(false);
+                done();
+            });
+        });
+    });
+
+
+
     it("Should be able to invalidate max", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {
@@ -374,13 +516,13 @@ describe("QueryController", function () {
     it("Should be able to max", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {
-            "GET": ["courses_dept","courses_id","courses_pass", "courseMax"],
+            "GET": ["courses_dept","courses_id","courseMax","numSections","courseMin"],
             "WHERE": {
                 "GT" : {"courses_avg" : 90}
             } ,
             "GROUP": [ "courses_dept","courses_id" ],
             "APPLY": [ {"courseMax": {"MAX": "courses_avg"}},{"numSections": {"COUNT": "courses_uuid"}},{"courseMin": {"MIN": "courses_avg"}} ],
-            "ORDER": "courses_pass",
+            "ORDER": "numSections",
             "AS":"TABLE"
         };
         let dataset: Datasets = {};
@@ -479,11 +621,22 @@ describe("QueryController", function () {
 
     it("Should be able to validate a valid query", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
-        let query: QueryRequest = {GET: ["courses_pass", "courses_avg"],
-        WHERE:  {"IS": {"courses_dept": "anth"}},
-         ORDER: {"dir": "DOWN", "keys": ["courses_pass", "courses_avg"]}, AS: 'table'};
+        let query: QueryRequest = {
+            "GET": ["courses_dept", "courses_id", "courses_instructor"],
+            "WHERE": {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}},
+                        {"IS": {"courses_dept": "*cp*"}},
+                        {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                    ]},
+                    {"IS": {"courses_instructor": "*william*"}}
+                ]
+            },
+            "AS": "TABLE"
+        };
         let dataset: Datasets = {};
-        let zipDirectory = "./courses.zip";
+        let zipDirectory = "./310courses.1.0.zip";
         let zip = new JSZip();
         fs.readFile(zipDirectory, function (err, data) {
             if (err) throw err;

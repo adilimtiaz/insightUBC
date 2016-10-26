@@ -10,6 +10,7 @@
   "keywords": [],
   "version": "0.0.1",
   "devDependencies": {
+    "babel-preset-es2015": "^6.18.0",
     "chai": "^3.5.0",
     "icedfrisby": "^0.2.4",
     "istanbul": "^0.4.4",

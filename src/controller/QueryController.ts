@@ -47,36 +47,56 @@ export default class QueryController {
         if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
             var flag: boolean = true;
             let c = new Course();
-            let v = Object.keys(c);
+            let v = Object.keys(c);//all valid course properties
+            let get=query.GET;
+            let getkeyArr: any=[]; //all course properties in get
+            let getkeyarr2:any=[];//all properties apply must have
             let v2: string[] = [];
             var v3: string[] = [];
             //check group only has course keys
             let arr = Object.keys(query);
-            if (arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") !== -1) {
-                let flag2 = false;
-                if (query.GROUP.length === 0) {
+            if(arr.indexOf("GET")==-1||arr.indexOf("WHERE")==-1||arr.indexOf("AS")==-1){
+                return false;
+            }
+            if (arr.indexOf("GROUP") !== -1 && arr.indexOf("APPLY") !== -1) { //check group and apply
+                if (query.GROUP.length === 0) {  //empty GROUP error
                     return  false;
                 }
-                for (var i = 0; i < query.GROUP.length; i++) {
-                    flag = flag && this.validKey(query.GROUP[i], v);
+                if(typeof query.GET=="string"){
+                    getkeyArr.push(get);
+                }
+                else{
+                    for (var i = 0; i < v.length; i++) {
+                        if (v.indexOf(get[i]) !== -1) {
+                            getkeyArr.push(get[i]);
+                        }
+                        else{
+                            getkeyarr2.push(get[i]);
+                        }
+                    }
+                }
+                for (var i = 0; i < query.GROUP.length; i++) { //group has validkeys
+                    if(!this.validKey(query.GROUP[i], v)){
+                        return false;
+                    }
                     let str = query.GROUP[i];
                     v2.push(str);
-                }
+                }               //v2==keys in GROUP
                 for (var i = 0; i < v2.length; i++) {
                     console.log(v2[i]);
-                    if (query.GET.indexOf(v2[i]) == -1) {
-                        flag2 = true;
+                    if (getkeyArr.indexOf(v2[i]) == -1) {
+                        return false;   //Get has a underscorekey group doesnt
                     }
                 }
 
 
                 for (var i = 0; i < query.APPLY.length; i++) {
-                    v.push(Object.keys(query.APPLY[i])[0]);
-                    v3.push(Object.keys(query.APPLY[i])[0]);
+                    v.push(Object.keys(query.APPLY[i])[0]);  //v3=array of all keys in APPLY
+                    v3.push(Object.keys(query.APPLY[i])[0]); //v=all valid getkeys
                 }
                 for (var i = 0; i < v3.length; i++) {
                     {
-                        if (query.GET.indexOf(v3[i]) == -1 && flag2) {
+                        if (getkeyarr2.indexOf(v3[i]) == -1) {  //get has keys that are not defined in apply or order
                             return false;
                         }
                     }
@@ -86,22 +106,16 @@ export default class QueryController {
                 return false;
             }
             if (typeof query.GET == "string") {
-                flag = flag && this.validKey(query.GET, v);
-                if (arr.indexOf("GROUP") !== -1) {
-                    if (v2.indexOf(query.GROUP[i]) == -1 && v3.indexOf(query.GROUP[i]) == -1) {
-                        return false;
-                    }
-                }
+                if(!this.validKey(query.GET, v)){return false;} // invalid get key
             }
             else {
                 for (var i = 0; i < query.GET.length; i++) {
-                    flag = flag && this.validKey(query.GET[i], v);
+                    if(!this.validKey(get[i],v)){return false}
                 }
-
             }
             if(query.hasOwnProperty("ORDER")){
                 if (typeof query.ORDER == "string") {
-                    if (query.GET.indexOf(<string> query.ORDER)==-1) {
+                    if (get.indexOf(<string> query.ORDER)==-1) {
                             return false;
                     }
                 }
@@ -123,7 +137,7 @@ export default class QueryController {
                 }
             }
 
-            return flag;
+            return true;
         }
         return false;
 }
@@ -161,9 +175,8 @@ export default class QueryController {
         for (var i = 0; i < sortedRes.data.length; i++) {
             for (var p in sortedRes.data[i]) {
                 if (get.indexOf(p) == -1) {
-                    delete sortedRes.data[i][p];
+                    delete sortedRes.data[i].p;
                 }
-
             }
         }
 
@@ -173,7 +186,7 @@ export default class QueryController {
         // TODO try catch for error handling
 
 
-        Log.trace("Returning something");
+
         let render2 = query.AS;
         if(query.hasOwnProperty("ORDER")) {
             if (typeof query.ORDER === 'string') {
@@ -186,6 +199,7 @@ export default class QueryController {
  */
         }
 
+        Log.trace("Returning something");
         return {render: render2, result: sortedRes.data};
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
