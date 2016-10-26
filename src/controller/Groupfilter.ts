@@ -8,7 +8,7 @@ export interface Data {
     [id: string]:DataStructure;
 }
 
-export default class QueryFilter {
+export default class Groupfilter {
 
     private datastructure: DataStructure = new DataStructure();
     private data:Data={};
