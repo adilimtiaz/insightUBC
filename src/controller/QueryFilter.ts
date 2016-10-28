@@ -24,7 +24,7 @@ export interface MathQuery {
     [key:string]: number;
 }
 export interface SQuery {
-    [key:string]: any;
+    [key:string]: string;
 }
 
 export default class QueryFilter {
@@ -38,7 +38,6 @@ export default class QueryFilter {
 
     public processFilter(query: Query): DataStructure{
         Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
-
         let structure: DataStructure = new DataStructure();
         let arr=Object.keys(query);
         if(arr.length==0){return this.datastructure;}
@@ -84,7 +83,7 @@ export default class QueryFilter {
             let negationFilter = new NegationFilter(this.datastructure);
             structure = negationFilter.processNegationFilter(value);
         } else {
-
+            throw new Error("Bad key");
         }
 
 

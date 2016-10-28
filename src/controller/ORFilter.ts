@@ -8,8 +8,14 @@ import Log from "../Util";
 import Query from "./QueryFilter";
 import QueryFilter from "./QueryFilter";
 
+export interface Data {
+    [id: number]:DataStructure;
+}
+
 export default class ORFilter {
     private dataStructure: DataStructure = new DataStructure();
+    private dataset:Data={};
+
 
     constructor(dataStructure: DataStructure) {
         this.dataStructure = dataStructure;
@@ -19,16 +25,19 @@ export default class ORFilter {
         Log.trace('ORFilter::processORFilter( ' + JSON.stringify(query) + ' )');
 
         var innerStructure: DataStructure = new DataStructure();
-
-        for (var i = 0; i < query.length; i++) {
+        let i=0;
+        for (i = 0; i < query.length; i++) {
 
             let filter = new QueryFilter(this.dataStructure);
-            let innerstruct: DataStructure = filter.processFilter(query[i]);
-            for (var j = 0; j < innerstruct.data.length;j++){
-                innerStructure.add(innerstruct.data[i]);
-            }
+            this.dataset[i] = filter.processFilter(query[i]);
             console.log("ORFilter::processORFilter inner query " + i + " is... " + JSON.stringify(query[i]));
             console.log("ORFilter::processORFilter type of inner query " + i + " is... " + typeof JSON.stringify(query[i]));
+        }
+
+        for (var j = 0; j < i;j++){
+            for(var k=0;k<this.dataset[j].data.length;k++) {
+                innerStructure.add(this.dataset[j].data[k]);
+            }
         }
 
         //TODO remove duplicate

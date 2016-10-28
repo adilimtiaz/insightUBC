@@ -66,7 +66,7 @@ export default class QueryController {
                     getkeyArr.push(get);
                 }
                 else{
-                    for (var i = 0; i < v.length; i++) {
+                    for (var i = 0; i < get.length; i++) {
                         if (v.indexOf(get[i]) !== -1) {
                             getkeyArr.push(get[i]);
                         }
@@ -110,7 +110,7 @@ export default class QueryController {
             }
             else {
                 for (var i = 0; i < query.GET.length; i++) {
-                    if(!this.validKey(get[i],v)){return false}
+                    if(!this.validKey(get[i],v)){return false;}
                 }
             }
             if(query.hasOwnProperty("ORDER")){
@@ -159,26 +159,20 @@ export default class QueryController {
         let where: any = query.WHERE;
 
         let queryFilter: QueryFilter = new QueryFilter(this.datasets[id]);
-        sortedRes = queryFilter.processFilter(where);
+        sortedRes=queryFilter.processFilter(where);
 
         let arr = Object.keys(query);
         if (arr.indexOf("GROUP") !== -1) {
-            let apply: any = query.APPLY;
-            let groupFilter = new Groupfilter(sortedRes);
-            sortedRes = groupFilter.processGroups(query.GROUP, query.APPLY);
+            sortedRes = this.groupHelper(sortedRes,query);
         }
 
 
         Log.trace("We here now");
 
-        var get = query.GET;
-        for (var i = 0; i < sortedRes.data.length; i++) {
-            for (var p in sortedRes.data[i]) {
-                if (get.indexOf(p) == -1) {
-                    delete sortedRes.data[i][p];
-                }
-            }
-        }
+        sortedRes=this.getHelper(sortedRes,query);
+
+
+
 
         // TODO get the query.GET and implement it to return array
 
@@ -204,5 +198,24 @@ export default class QueryController {
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
     }
+
+    public groupHelper(data: DataStructure, groupquery: any): DataStructure{
+        let groupFilter = new Groupfilter(data);
+        let structure = groupFilter.processGroups(groupquery.GROUP, groupquery.APPLY);
+        return structure;
+    }
+
+    public getHelper(filtereddata: DataStructure, groupquery: any): DataStructure{
+        let get=groupquery.GET;
+        for (var i = 0; i < filtereddata.data.length; i++) {
+            for (var p in filtereddata.data[i]) {
+                if (get.indexOf(p) == -1) {
+                    delete filtereddata.data[i][p];
+                }
+            }
+        }
+        return filtereddata;
+    }
+
 }
 

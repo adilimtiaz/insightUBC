@@ -22,11 +22,11 @@ export default class LTFilter {
         console.log("processLTFilter key is..." + key);
         console.log("processLTFilter type of key is..." + typeof key);
 
-        let upperBound = query[key];
+        let lowerBound = query[key];
 
         for(var i=0;i<this.dataStructure.data.length;i++){
             let c=this.dataStructure.data[i];
-            if(c[key]>upperBound){
+            if(c[key]<lowerBound){
                 structure.add(c);
             }
         }

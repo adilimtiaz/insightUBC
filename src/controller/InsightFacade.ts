@@ -35,17 +35,17 @@ export default class InsightFacade implements IInsightFacade{
                     if(result==true){
                         if(flag==1) {
                             console.log("204");
-                            fulfill({code: 204, body: {success: result}});
+                            fulfill({statusCode: 204, body: {success: result}});
                         }
                         else
                             console.log("201");
-                        fulfill({code: 201, body: {success: result}});
+                        fulfill({statusCode: 201, body: {success: result}});
                     }
                 }).catch(function(err){
-                    reject({code: 400, body: {err: err.message}});
+                    reject({statusCode: 400, body: {err: err.message}});
                 });
             }catch(err){
-                reject({code: 400, body: {err: err.message}});
+                reject({statusCode: 400, body: {err: err.message}});
             }
         });
 
@@ -59,10 +59,10 @@ export default class InsightFacade implements IInsightFacade{
                     throw new Error("the operation was unsuccessful because the delete was for a resource that was not previously PUT");
                 }
                 that.controller.delete(id);
-                fulfill({code: 204, body: {success: "the operation was successful."}})
+                fulfill({statusCode: 204, body: {success: "the operation was successful."}})
 
             }catch(err){
-                reject({code: 404, body: {err: err.message}});
+                reject({statusCode: 404, body: {err: err.message}});
             }
         });
     }
@@ -76,18 +76,18 @@ export default class InsightFacade implements IInsightFacade{
                 var s=query.GET[0];
                 var s2=s.substring(0,s.indexOf("_"));
                 if(typeof that.controller.datasets[s2]=="undefined"){
-                    reject({code: 424, body: {error: "Missing:"+ s}});
+                    reject({statusCode: 424, error: "Missing:"+ s});
                 }
                 var b=qcon.isValid(query);
                 if(!b){
-                    reject({code: 400, body: {error:"Bad query design"}});
+                    reject({statusCode: 400, error:"Bad query design"});
                 }
                 else {
                     let result2 = qcon.query(query);
-                    fulfill({code: 200, body: result2});
+                    fulfill({statusCode: 200, body: result2});
                 }
             }catch(err){
-                reject({code: 400, body: {error: err.message}});
+                reject({statusCode: 400, error: err.message});
             }
         });
     }

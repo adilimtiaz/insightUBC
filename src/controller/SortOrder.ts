@@ -21,10 +21,12 @@ export default class SortOrder {
             this.dataStructure.data.sort(((a:any,b:any) => a[query] - b[query]));
         }
         else{
-            let that=this;
-            this.dataStructure.data.sort(function(a:any,b:any){
-                return that.alphanumCase(a[query],b[query]);
-            });
+            if(typeof a==="string") {
+                let that = this;
+                this.dataStructure.data.sort(function (a: any, b: any) {
+                    return that.alphanumCase(a[query], b[query]);
+                });
+            }
         }
         return this.dataStructure;
     }

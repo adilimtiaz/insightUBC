@@ -201,11 +201,27 @@ describe("QueryController", function () {
             });
         });
     });
+    it("Should be able to invalidate max 2", function (done) {
+        var query = {
+            "GET": ["courses_dept", "courses_id"],
+            "WHERE": {
+                "GT": { "courses_avg": 90 }
+            },
+            "GROUP": ["courses_dept", "courses_id"],
+            "APPLY": [],
+            "ORDER": "courses_pass",
+            "AS": "TABLE"
+        };
+        var controller = new QueryController_1.default({});
+        var isValid = controller.isValid(query);
+        chai_1.expect(isValid).to.equal(false);
+        done();
+    });
     it("Should be able to max", function (done) {
         var query = {
             "GET": ["courses_dept", "courses_id", "courseMax", "numSections", "courseMin"],
             "WHERE": {
-                "GT": { "courses_avg": 90 }
+                "IS": { "courses_dept": "an*" }
             },
             "GROUP": ["courses_dept", "courses_id"],
             "APPLY": [{ "courseMax": { "MAX": "courses_avg" } }, { "numSections": { "COUNT": "courses_uuid" } }, { "courseMin": { "MIN": "courses_avg" } }],
@@ -227,10 +243,10 @@ describe("QueryController", function () {
                 console.log(dataset["courses"].data.length);
                 var controller = new QueryController_1.default(dataset);
                 var isValid = controller.isValid(query);
+                chai_1.expect(isValid).to.equal(true);
                 var ret = controller.query(query);
                 Util_1.default.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
                 chai_1.expect(ret).not.to.be.equal(null);
-                chai_1.expect(isValid).to.equal(true);
                 done();
             });
         });
@@ -292,10 +308,10 @@ describe("QueryController", function () {
                 "OR": [
                     { "AND": [
                             { "GT": { "courses_avg": 70 } },
-                            { "IS": { "courses_dept": "*cp*" } },
+                            { "IS": { "courses_dept": "cp*" } },
                             { "NOT": { "IS": { "courses_instructor": "murphy, gail" } } }
                         ] },
-                    { "IS": { "courses_instructor": "*william*" } }
+                    { "IS": { "courses_instructor": "*gregor*" } }
                 ]
             },
             "AS": "TABLE"

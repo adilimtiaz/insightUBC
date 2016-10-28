@@ -15,7 +15,7 @@ describe("InsightFacade", function () {
     before(function () {
         Log.info('InsightController::before() - start');
         // this zip might be in a different spot for you
-        zipFileContents = new Buffer(fs.readFileSync('courses.zip')).toString('base64');
+        zipFileContents = new Buffer(fs.readFileSync('310courses.1.0.zip')).toString('base64');
         try {
             // what you delete here is going to depend on your impl, just make sure
             // all of your temporary files and directories are deleted
@@ -216,20 +216,27 @@ describe("InsightFacade", function () {
         });
     });
 
-    it("Should be able to empty apply and sort numerically (200)", function () {
+    it.only("Should be able to empty apply and sort numerically (200)", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
-                "GET": ["courses_avg"],
-                "WHERE": {} ,
-                "GROUP": [ "courses_avg" ],
-                "APPLY": [ ],
-                "ORDER":  "courses_avg",
-                "AS":"TABLE"
+                "GET": ["courses_dept", "courses_id", "courses_instructor"],
+                "WHERE": {
+                    "OR": [
+                        {"AND": [
+                            {"GT": {"courses_avg": 70}},
+                            {"IS": {"courses_dept": "cp*"}},
+                            {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                        ]},
+                        {"IS": {"courses_instructor": "*gregor*"}}
+                    ]
+                },
+                "AS": "TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
+                console.log(res.body);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');

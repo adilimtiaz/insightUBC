@@ -513,12 +513,34 @@ describe("QueryController", function () {
         });
     });
 
+    it("Should be able to invalidate max 2", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1
+        let query: QueryRequest = {
+            "GET": ["courses_dept","courses_id"],
+            "WHERE": {
+                "GT" : {"courses_avg" : 90}
+            } ,
+            "GROUP": [ "courses_dept","courses_id" ],
+            "APPLY": [],
+            "ORDER": "courses_pass",
+            "AS":"TABLE"
+        };
+
+                let controller = new QueryController({});
+                let isValid = controller.isValid(query);
+                expect(isValid).to.equal(false);
+                done();
+    });
+
+
+
+
     it("Should be able to max", function (done: Function) {
         // NOTE: this is not actually a valid query for D1
         let query: QueryRequest = {
             "GET": ["courses_dept","courses_id","courseMax","numSections","courseMin"],
-            "WHERE": {
-                "GT" : {"courses_avg" : 90}
+            "WHERE":{
+                "IS" : {"courses_dept" : "an*"}
             } ,
             "GROUP": [ "courses_dept","courses_id" ],
             "APPLY": [ {"courseMax": {"MAX": "courses_avg"}},{"numSections": {"COUNT": "courses_uuid"}},{"courseMin": {"MIN": "courses_avg"}} ],
@@ -542,10 +564,10 @@ describe("QueryController", function () {
                 console.log(dataset["courses"].data.length);
                 let controller = new QueryController(dataset);
                 let isValid = controller.isValid(query);
+                expect(isValid).to.equal(true);
                 let ret = controller.query(query);
                 Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
                 expect(ret).not.to.be.equal(null);
-                expect(isValid).to.equal(true);
                 done();
             });
         });
@@ -627,10 +649,10 @@ describe("QueryController", function () {
                 "OR": [
                     {"AND": [
                         {"GT": {"courses_avg": 70}},
-                        {"IS": {"courses_dept": "*cp*"}},
+                        {"IS": {"courses_dept": "cp*"}},
                         {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
                     ]},
-                    {"IS": {"courses_instructor": "*william*"}}
+                    {"IS": {"courses_instructor": "*gregor*"}}
                 ]
             },
             "AS": "TABLE"

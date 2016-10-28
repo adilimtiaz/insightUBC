@@ -142,16 +142,16 @@ export default class DatasetController {
                             let i = 0;
                             for (i = 0; i < obj2.result.length; i++) {
                                 let c:any={};
-                                if (typeof obj2.result[i].hasOwnProperty(id)) {
-                                    c.courses_uuid = obj2.result[i].id;
-                                    c.courses_id = obj2.result[i].Course;
-                                    c.courses_dept = obj2.result[i].Subject;
-                                    c.courses_title = obj2.result[i].Title;
-                                    c.courses_avg = obj2.result[i].Avg;
-                                    c.courses_instructor = obj2.result[i].Professor;
-                                    c.courses_pass = obj2.result[i].Pass;
-                                    c.courses_fail = obj2.result[i].Fail;
-                                    c.courses_audit = obj2.result[i].Audit;
+                                if (typeof obj2.result[i].hasOwnProperty(Course)) {
+                                    c[id+'_uuid'] = obj2.result[i].id;
+                                    c[id+'_id'] = obj2.result[i].Course;
+                                    c[id+'_dept'] = obj2.result[i].Subject;
+                                    c[id+'_title'] = obj2.result[i].Title;
+                                    c[id+'_avg'] = obj2.result[i].Avg;
+                                    c[id+'_instructor'] = obj2.result[i].Professor;
+                                    c[id+'_pass'] = obj2.result[i].Pass;
+                                    c[id+'_fail'] = obj2.result[i].Fail;
+                                    c[id+'_audit'] = obj2.result[i].Audit;
                                     processedDataset.add(c);
                                 }
                             }
