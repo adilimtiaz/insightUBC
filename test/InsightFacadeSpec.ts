@@ -35,7 +35,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         return facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
         });
@@ -48,7 +48,7 @@ describe("InsightFacade", function () {
 
         promise.then(function(){
             return facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-                expect(response.code).to.equal(201);
+                expect(response.statusCode).to.equal(201);
                 done();
             }).catch(function (response: InsightResponse) {
                 expect.fail('Should not happen');
@@ -63,7 +63,7 @@ describe("InsightFacade", function () {
         return facade.addDataset('courses', 'some random bytes').then(function (response: InsightResponse) {
             expect.fail();
         }).catch(function (response: InsightResponse) {
-            expect(response.code).to.equal(400);
+            expect(response.statusCode).to.equal(400);
         });
     });
 
@@ -71,9 +71,9 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.removeDataset('courses').then(function(res:InsightResponse){
-                expect(res.code).to.equal(204);
+                expect(res.statusCode).to.equal(204);
             }).catch(function(response: InsightResponse){
 
                 expect.fail("should not happen");
@@ -87,11 +87,11 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.removeDataset('course').then(function(res:InsightResponse){
-                expect(res.code).to.equal(404);
+                expect(res.statusCode).to.equal(404);
             }).catch(function(response: InsightResponse){
-                expect(response.code).to.equal(404);
+                expect(response.statusCode).to.equal(404);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -102,7 +102,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({GET: ["course_dept", "course_avg"], WHERE:  {"AND": [
                 {"IS": {"course_dept": "anth"}},
                 {"IS": {"course_id": "213"}}
@@ -111,7 +111,7 @@ describe("InsightFacade", function () {
             });
 
         }).catch(function (response: InsightResponse) {
-            expect(response.code).to.equal(424);
+            expect(response.statusCode).to.equal(424);
         });
     });
 
@@ -119,12 +119,12 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({GET: ["courses_dept", "courses_avg"], WHERE:  {"AND": [
                 {"IS": {"courses_dept": "anth"}},
                 {"IS": {"courses_id": "213"}}
             ]}, ORDER: 'courses_avg', AS: 'table'}).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -135,7 +135,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id", "courseAverage"],
                 "WHERE": {"IS": {"courses_dept": "anth"}} ,
@@ -144,7 +144,7 @@ describe("InsightFacade", function () {
                 "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -154,7 +154,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id", "courseAverage"],
                 "WHERE": {"IS": {"courses_dept": "anth"}} ,
@@ -163,7 +163,7 @@ describe("InsightFacade", function () {
                 "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -174,7 +174,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_dept", "courses_id", "courses_instructor"],
                 "WHERE": {
@@ -189,7 +189,7 @@ describe("InsightFacade", function () {
                 },
                 "AS": "TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -200,7 +200,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id", "courseAverage"],
                 "WHERE": {} ,
@@ -209,7 +209,7 @@ describe("InsightFacade", function () {
                 "ORDER": { "dir": "UP", "keys": ["courseAverage", "courses_id"]},
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -218,6 +218,9 @@ describe("InsightFacade", function () {
 
     it.only("Should be able to empty apply and sort numerically (200)", function () {
         var that = this;
+        var data22 = fs.readFileSync('./q3.json',"utf8");
+        data22=JSON.parse(data22);
+
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
             expect(response.statusCode).to.equal(204);
@@ -247,7 +250,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id"],
                 "WHERE": {} ,
@@ -256,7 +259,7 @@ describe("InsightFacade", function () {
                 "ORDER":  "courses_id",
                 "AS":"TABLE"
             }).then(function(res :InsightResponse){
-                expect(res.code).to.equal(200);
+                expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');
@@ -268,7 +271,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id", "courseAverage"],
                 "WHERE": {} ,
@@ -280,7 +283,7 @@ describe("InsightFacade", function () {
 
             });
         }).catch(function (response: InsightResponse) {
-            expect(response.code).to.equal(400);
+            expect(response.statusCode).to.equal(400);
         });
     });
 
@@ -288,7 +291,7 @@ describe("InsightFacade", function () {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
-            expect(response.code).to.equal(204);
+            expect(response.statusCode).to.equal(204);
             return facade.performQuery({
                 "GET": ["courses_id"],
                 "WHERE": {"IS": {"courses_dept": "anth"}} ,
@@ -299,7 +302,7 @@ describe("InsightFacade", function () {
 
             });
         }).catch(function (response: InsightResponse) {
-            expect(response.code).to.equal(400);
+            expect(response.statusCode).to.equal(400);
         });
     });
 

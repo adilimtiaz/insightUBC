@@ -24,9 +24,10 @@ export default class NegationFilter {
         // TODO this.dataStructure minus innerStructure
         var index=-2;
         for (var i=0; i<innerStructure.data.length; i++) {
-            index = structure.data.indexOf(innerStructure.data[i]);
+            index = structure.alluuids.indexOf(innerStructure.data[i]['courses_uuid']);
             if (index > -1) {
-                structure.data.splice(index, 1);
+                structure.data.splice(index,1);
+                structure.alluuids.splice(index,1);
             }
         }
 

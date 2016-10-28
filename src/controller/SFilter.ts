@@ -36,7 +36,7 @@ export default class SFilter {
             for (var i = 0; i < this.dataStructure.data.length; i++) {
                 let c = this.dataStructure.data[i];
                 let str2: string = c[key];
-                if(str2!==""  && typeof str2==="string") {
+                if(typeof str2==="string") {
                     str2 = str2.toLowerCase();
                     if (str2.indexOf(str) !== -1) {
                         structure.add(c);

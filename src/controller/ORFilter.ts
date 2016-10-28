@@ -36,7 +36,9 @@ export default class ORFilter {
 
         for (var j = 0; j < i;j++){
             for(var k=0;k<this.dataset[j].data.length;k++) {
-                innerStructure.add(this.dataset[j].data[k]);
+                if(innerStructure.alluuids.indexOf(this.dataset[j].data[k]['courses_uuid'])===-1) {
+                    innerStructure.add(this.dataset[j].data[k]);
+                }
             }
         }
 
