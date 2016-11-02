@@ -27,19 +27,14 @@ export default class ORFilter {
         var innerStructure: DataStructure = new DataStructure();
         let i=0;
         for (i = 0; i < query.length; i++) {
-
+            let d1=new DataStructure();
             let filter = new QueryFilter(this.dataStructure);
-            this.dataset[i] = filter.processFilter(query[i]);
+            d1 = filter.processFilter(query[i]);
+            for(var j=0;j<d1.data.length;j++){
+                innerStructure.add(d1.data[j]);
+            }
             console.log("ORFilter::processORFilter inner query " + i + " is... " + JSON.stringify(query[i]));
             console.log("ORFilter::processORFilter type of inner query " + i + " is... " + typeof JSON.stringify(query[i]));
-        }
-
-        for (var j = 0; j < i;j++){
-            for(var k=0;k<this.dataset[j].data.length;k++) {
-                if(innerStructure.alluuids.indexOf(this.dataset[j].data[k]['courses_uuid'])===-1) {
-                    innerStructure.add(this.dataset[j].data[k]);
-                }
-            }
         }
 
         //TODO remove duplicate

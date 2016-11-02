@@ -23,28 +23,54 @@ export default class SFilter {
         let that=this;
 
         let str: string = (<any>query)[key];
-        let c2 = str.charAt(str.length - 1); //
-        if (c2 == "*") {
-            str = str.substring(0, str.length - 1);
-        }
-        let c1 = str.charAt(0);
-        if (c1 == "*") {
-            str = str.substring(1, str.length);
-        }
-        str=str.toLowerCase();
-        if (str.length !== 0) {
+        let res=str.split("*");
+        if(res.length===1) {
             for (var i = 0; i < this.dataStructure.data.length; i++) {
                 let c = this.dataStructure.data[i];
-                let str2: string = c[key];
-                if(typeof str2==="string") {
-                    str2 = str2.toLowerCase();
-                    if (str2.indexOf(str) !== -1) {
+                if (typeof c[key] === "string") {
+                    let str2 = c[key];//str2 is equal to first seven letters
+                    if (str2 === str) {
                         structure.add(c);
                     }
                 }
             }
-
         }
+        else if(res.length===2){ //only one wildcard
+            if(res[1]===""){ //wildcard at end
+                for (var i = 0; i < this.dataStructure.data.length; i++) {
+                    let c = this.dataStructure.data[i];
+                    if (typeof c[key] === "string") {
+                        let str2 = c[key];
+                        if (str2.startsWith(res[0])) {
+                            structure.add(c);
+                        }
+                    }
+                }
+            }
+            else{
+                for (var i = 0; i < this.dataStructure.data.length; i++) {
+                    let c = this.dataStructure.data[i];
+                    if (typeof c[key] === "string") {
+                        let str2 = c[key];
+                        if (str2.endsWith(res[1])) {
+                            structure.add(c);
+                        }
+                    }
+                }
+            }
+        }
+        else if(res.length===3){
+            for (var i = 0; i < this.dataStructure.data.length; i++) {
+                let c = this.dataStructure.data[i];
+                if (typeof c[key] === "string") {
+                    let str2 = c[key];
+                    if (str2.indexOf(res[1])!==-1) {
+                        structure.add(c);
+                    }
+                }
+            }
+        }
+
         console.log("Returning from sfilter");
         return structure;
 
