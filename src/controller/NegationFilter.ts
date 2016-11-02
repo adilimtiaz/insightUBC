@@ -31,7 +31,8 @@ export default class NegationFilter {
             }
         }
 
-
+        console.log("Leaving not");
         return structure;
+
     }
 }

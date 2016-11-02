@@ -15,7 +15,7 @@ describe("InsightFacade", function () {
     before(function () {
         Log.info('InsightController::before() - start');
         // this zip might be in a different spot for you
-        zipFileContents = new Buffer(fs.readFileSync('310courses.1.0.zip')).toString('base64');
+        zipFileContents = new Buffer(fs.readFileSync('courses.zip')).toString('base64');
         try {
             // what you delete here is going to depend on your impl, just make sure
             // all of your temporary files and directories are deleted
@@ -216,7 +216,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to empty apply and sort numerically (200)", function () {
+    it("Should be able to empty apply and sort numerically (200)", function () {
         var that = this;
         var data22 = fs.readFileSync('./q3.json',"utf8");
         data22=JSON.parse(data22);
@@ -239,7 +239,8 @@ describe("InsightFacade", function () {
                 "AS": "TABLE"
             }).then(function(res :InsightResponse){
                 expect(res.statusCode).to.equal(200);
-                console.log(res.body);
+
+
             });
         }).catch(function (response: InsightResponse) {
             expect.fail('Should not happen');

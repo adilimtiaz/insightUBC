@@ -162,15 +162,19 @@ export default class QueryController {
         sortedRes=queryFilter.processFilter(where);
 
         let arr = Object.keys(query);
+        Log.trace("Right before group");
         if (arr.indexOf("GROUP") !== -1) {
-            sortedRes = this.groupHelper(sortedRes,query);
+            let groupFilter = new Groupfilter(sortedRes);
+            sortedRes = groupFilter.processGroups(query.GROUP, query.APPLY);
         }
 
-
-        Log.trace("We here now");
-
-        sortedRes=this.getHelper(sortedRes,query);
-
+        for (var i = 0; i < sortedRes.data.length; i++) {
+            for (var p in sortedRes.data[i]) {
+                        if (query.GET.indexOf(p) == -1) {
+                            delete sortedRes.data[i][p];
+                        }
+                    }
+        }
 
 
 
@@ -197,24 +201,6 @@ export default class QueryController {
         return {render: render2, result: sortedRes.data};
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
-    }
-
-    public groupHelper(data: DataStructure, groupquery: any): DataStructure{
-        let groupFilter = new Groupfilter(data);
-        let structure = groupFilter.processGroups(groupquery.GROUP, groupquery.APPLY);
-        return structure;
-    }
-
-    public getHelper(filtereddata: DataStructure, groupquery: any): DataStructure{
-        let get=groupquery.GET;
-        for (var i = 0; i < filtereddata.data.length; i++) {
-            for (var p in filtereddata.data[i]) {
-                if (get.indexOf(p) == -1) {
-                    delete filtereddata.data[i][p];
-                }
-            }
-        }
-        return filtereddata;
     }
 
 }

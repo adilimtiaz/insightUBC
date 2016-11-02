@@ -43,10 +43,7 @@ export default class QueryFilter {
         if(arr.length==0){return this.datastructure;}
         let key = Object.keys(query)[0];
         console.log("processFilter...key is"+ key);
-        console.log("processFilter...typeof key is"+ typeof key);
         let value = query[key];
-        console.log("processFilter...value is"+ JSON.stringify(value));
-        console.log("processFilter...typeof value is"+ typeof value);
 
 
         // let newKey = Object.keys(value);

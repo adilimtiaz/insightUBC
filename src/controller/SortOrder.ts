@@ -46,6 +46,8 @@ export default class SortOrder {
         return aa.length - bb.length;
     }
 
+    ///Adapted from http://www.davekoelle.com/files/alphanum.js
+
     public  chunkify(t: string):any {
         let tz:any = [];
         var x = 0, y = -1,  i=0;

@@ -641,8 +641,9 @@ describe("QueryController", function () {
 
 
 
-    it("Should be able to validate a valid query", function (done: Function) {
-        // NOTE: this is not actually a valid query for D1
+    it.only("Should be able to validate a valid query", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1;
+
         let query: QueryRequest = {
             "GET": ["courses_dept", "courses_id", "courses_instructor"],
             "WHERE": {
@@ -677,6 +678,7 @@ describe("QueryController", function () {
                 let ret = controller.query(query);
                 Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
                 expect(ret).not.to.be.equal(null);
+                let res=ret.result;
                 expect(isValid).to.equal(true);
                 done();
             });
