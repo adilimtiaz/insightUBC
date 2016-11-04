@@ -168,13 +168,7 @@ export default class QueryController {
             sortedRes = groupFilter.processGroups(query.GROUP, query.APPLY);
         }
 
-        for (var i = 0; i < sortedRes.data.length; i++) {
-            for (var p in sortedRes.data[i]) {
-                        if (query.GET.indexOf(p) == -1) {
-                            delete sortedRes.data[i][p];
-                        }
-                    }
-        }
+
 
 
 
@@ -197,8 +191,19 @@ export default class QueryController {
  */
         }
 
+        let sortedRes2:any=[];
+        for (var i = 0; i < sortedRes.data.length; i++) {
+            let c:any={};
+            for (var p in sortedRes.data[i]) {
+                if (query.GET.indexOf(p) !== -1) {
+                    c[p]=sortedRes.data[i][p];
+                }
+            }
+            sortedRes2[i]=c;
+        }
+
         Log.trace("Returning something");
-        return {render: render2, result: sortedRes.data};
+        return {render: render2, result: sortedRes2};
         //lallala
         // return {status: 'received', ts: new Date().getTime()};
     }
