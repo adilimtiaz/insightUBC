@@ -4,9 +4,13 @@
 
 import Log from "../Util";
 import JSZip = require('jszip');
+var parse5 = require('parse5');
+import { ASTNode } from 'parse5';
+
 import fs=require('fs');
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
+import {ASTAttribute} from "parse5";
 
 /**
  * In memory representation of all datasets.
@@ -55,36 +59,6 @@ export default class DatasetController {
     public getDatasets(): any {
         // TODO: if datasets is empty, load all dataset files in ./data from disk
 
-        /**
-         Log.trace("Entered get datasets");
-         let that = this;
-         if (typeof this.datasets[0] != "string") {
-            var moveFrom = "./data/";
-            if (!fs.existsSync(moveFrom)) {
-                fs.mkdir("./data/");
-            }
-            fs.readdir(moveFrom, function (err, files) {
-                if (err) {
-                    console.error("Dont you worry child. Heavens got a plan for you");
-                }
-                else {
-                    var i = 0;
-                    files.forEach(function (file, index) {
-                        var fs = require("fs");
-                        var contents = fs.readFileSync(moveFrom + file, 'utf8');
-                        let obj = JSON.parse(contents);
-                        that.datasets[file.substring(0, file.length - 5)] = obj;
-                        i++;
-                        Log.trace("22");
-                    });
-                    Log.trace("11");
-                    //   Log.trace(that.getSize("aa"));
-                    return that.datasets;
-                }
-            });
-        }
-         */
-
         let that=this;
         if (this.datasets == {}||typeof this.datasets["courses"] == "undefined"){
             try {
@@ -129,51 +103,115 @@ export default class DatasetController {
                 var promises: any = [];
                 myZip.loadAsync(data, {base64: true}).then(function (zip: JSZip) {
                     Log.trace('DatasetController::process(..) - unzipped');
-
+                    let that2=this;
+                    let arrayofrooms:any=[];
+                    let arrayofhrefs:any=[];
                     let processedDataset = new DataStructure();
+                    if(zip.file("index.htm")!==null){  //go here if the file has index.htm
+                        var promise = zip.file("index.htm").async("string").then(function (processedfile){
+                            let s=processedfile.indexOf("<tbody>");
+                            let s2=processedfile.indexOf("</tbody>");
+                            let test3=processedfile.substring(s,s2+8); //only tbody is important so we process that
+                            let tbody=parse5.parseFragment(test3).childNodes[0];
+                            for(var i=0;i<tbody.childNodes.length;i++){
+                                let node=tbody.childNodes[i];
+                                if (node.nodeName=="tr") {
+                                    let room:any={};
+                                    room=that.Nodeprocessor(tbody.childNodes[i],room,id);
+                                    if(Object.keys(room).length===3) {
+                                        arrayofrooms.push(room);
+                                    }
+                                }
+                            }          //at this point processedDataset has all the buildings
+                            //open the files that are specified in index
+                            //arrrayofrooms is actually all buildings
+                            for(var i=0;i<arrayofrooms.length;i++){
+                                var promise2 = zip.file(arrayofrooms[i]["href"]).async("string").then(function (processedfile2) {
+                                    let s=processedfile2.indexOf("<tbody>");
+                                    let s2=processedfile2.indexOf("</tbody>");
+                                    if(s2!==-1) { //element has rooms
+                                        let test3 = processedfile2.substring(s, s2 + 8); //only tbody is important so we process that
+                                        let tbody2 = parse5.parseFragment(test3).childNodes[0];
+                                        for (var i = 0; i < tbody2.childNodes.length; i++) {
+                                            let node = tbody2.childNodes[i];
+                                            if (node.nodeName == "tr") {
+                                                let room: any = {};
+                                                room = that.Nodeprocessor2(node, arrayofrooms[i], id);
+                                                if (Object.keys(room).length === 8) {
+                                                    room[id+"_fullname"]
+                                                    processedDataset.add(room);
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            promises.push(promise2);
+                            Promise.all(promises).catch(function (err) {
+                                // log that I have an error, return the entire array;
+                                console.log('A promise failed to resolve', err);
+                                reject(false);
+                            }).then(function () {
+                                if (processedDataset.data.length == 0) {
+                                    reject(false);
+                                }
+                                that.save(id, processedDataset);
+                                fulfill(true);
+                            });
+                        });
+                        promises.push(promise);
+                        Promise.all(promises).catch(function (err) {
+                            // log that I have an error, return the entire array;
+                            console.log('A promise failed to resolve', err);
+                            reject(false);
+                        }).then(function () {
+                            console.log("Wait");
+                        });
+                    }
                     // TODO: iterate through files in zip (zip.files)
                     // The contents of the file will depend on the id provided. e.g.,
                     // some zips will contain .html files, some will contain .json files.
                     // You can depend on 'id' to differentiate how the zip should be handled,
                     // although you should still be tolerant to errors.
-                    zip.folder("courses").forEach(function (relativePath, file) {
-                        var promise = file.async("string").then(function (processedfile) {
-                            let obj2 = JSON.parse(processedfile);
-                            let i = 0;
-                            for (i = 0; i < obj2.result.length; i++) {
-                                let c:any={};
-                                if (typeof obj2.result[i].hasOwnProperty(Course)) {
-                                    c[id+'_uuid'] = obj2.result[i].id;
-                                    c[id+'_id'] = obj2.result[i].Course;
-                                    c[id+'_dept'] = obj2.result[i].Subject;
-                                    c[id+'_title'] = obj2.result[i].Title;
-                                    c[id+'_avg'] = obj2.result[i].Avg;
-                                    c[id+'_instructor'] = obj2.result[i].Professor;
-                                    c[id+'_pass'] = obj2.result[i].Pass;
-                                    c[id+'_fail'] = obj2.result[i].Fail;
-                                    c[id+'_audit'] = obj2.result[i].Audit;
-                                    processedDataset.add(c);
+                    else {   //if it doesnt then to be a valid zip it must be a courses zip
+                        zip.folder("courses").forEach(function (relativePath, file) {
+                            var promise = file.async("string").then(function (processedfile) {
+                                let obj2 = JSON.parse(processedfile);
+                                let i = 0;
+                                for (i = 0; i < obj2.result.length; i++) {
+                                    let c: any = {};
+                                    if (typeof obj2.result[i].hasOwnProperty(Course)) {
+                                        c[id + '_uuid'] = obj2.result[i].id;
+                                        c[id + '_id'] = obj2.result[i].Course;
+                                        c[id + '_dept'] = obj2.result[i].Subject;
+                                        c[id + '_title'] = obj2.result[i].Title;
+                                        c[id + '_avg'] = obj2.result[i].Avg;
+                                        c[id + '_instructor'] = obj2.result[i].Professor;
+                                        c[id + '_pass'] = obj2.result[i].Pass;
+                                        c[id + '_fail'] = obj2.result[i].Fail;
+                                        c[id + '_audit'] = obj2.result[i].Audit;
+                                        processedDataset.add(c);
+                                    }
                                 }
-                            }
-                        }, function (error) {
-                            Log.trace("Rejected");
-                            reject(error);
+                            }, function (error) {
+                                Log.trace("Rejected");
+                                reject(error);
+                            });
+                            promises.push(promise);
                         });
-                        promises.push(promise);
-                    });
-
-
-                    Promise.all(promises).catch(function (err) {
-                        // log that I have an error, return the entire array;
-                        console.log('A promise failed to resolve', err);
-                        reject(false);
-                    }).then(function () {
-                        if (processedDataset.data.length == 0) {
+                        Promise.all(promises).catch(function (err) {
+                            // log that I have an error, return the entire array;
+                            console.log('A promise failed to resolve', err);
                             reject(false);
-                        }
-                        that.save(id, processedDataset);
-                        fulfill(true);
-                    });
+                        }).then(function () {
+                            if (processedDataset.data.length == 0) {
+                                reject(false);
+                            }
+                            that.save(id, processedDataset);
+                            fulfill(true);
+                        });
+                    }
+
                 }).catch(function (err) {
                     Log.trace('DatasetController::process(..) - unzip ERROR: ' + err.message);
                     reject(false);
@@ -183,6 +221,107 @@ export default class DatasetController {
                 reject(false);
             }
         });
+    }
+
+    public Nodeprocessor(node: ASTNode,room:any,id: string): any {
+        if (node.attrs) {
+            node.attrs.forEach(function (value: ASTAttribute) {
+                if((value.name=="class")&&(value.value==="views-field views-field-field-building-code")){
+                    let str=node.childNodes[0].value;  //Removing /n and spaces
+                    let p=str.indexOf("\n");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    str=str.trim();
+                    room[id+"_shortname"]=str;
+                }
+                if((value.name=="class")&&(value.value==="views-field views-field-field-building-address")){
+                    let str=node.childNodes[0].value;
+                    let p=str.indexOf("\n");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    str=str.trim();
+                    room[id+"_address"]=str;
+                }
+                if((value.name=="href")){
+                    let str=value.value;
+                    let p=str.indexOf("./");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    room["href"]=str;
+                }
+            });
+        }
+
+        if (node.value) {
+        }
+
+        if (node.childNodes) {
+            for(var i=0;i<node.childNodes.length;i++){
+                this.Nodeprocessor(node.childNodes[i],room,id);
+            }
+        }
+        return room;
+    }
+
+    public Nodeprocessor2(node: ASTNode,room:any,id: string): any {
+        if (node.attrs) {
+            node.attrs.forEach(function (value: ASTAttribute) {
+                if((value.name=="title")&&(value.value==="Room Details")){
+                    let str=node.childNodes[0].value;  //Removing /n and spaces
+                    room[id+"_number"]=str; //adding room number
+                    str=room[id+"_shortname"]+"_"+room[id+"_number"];
+                    room[id+"_name"]=str;   //adding room name
+                }
+                if((value.name=="class")&&(value.value==="views-field views-field-field-room-capacity")){
+                    let str=node.childNodes[0].value;
+                    let p=str.indexOf("\n");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    str=str.trim();
+                    let n=parseInt(str);
+                    room[id+"_seats"]=n;  //room seats 6 properties
+                }
+                if((value.name=="class")&&(value.value==="views-field views-field-field-room-furniture")){
+                    let str=node.childNodes[0].value;
+                    let p=str.indexOf("\n");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    str=str.trim();
+                    room[id+"_furniture"]=str;  //room seats 8 properties
+                }
+                if((value.name=="class")&&(value.value==="views-field views-field-field-room-type")){
+                    let str=node.childNodes[0].value;
+                    let p=str.indexOf("\n");
+                    if(p!==-1) {
+                        str = str.substring(p + 2, str.length);
+                    }
+                    str=str.trim();
+                    room[id+"_type"]=str;  //room seats 8 properties
+                }
+                if((value.name=="href")){
+                    let str=value.value;
+                    delete room["href"];
+                    room[id+"_href"]=str;  //room href 7 properties
+                }
+            });
+        }
+
+
+
+        if (node.value) {
+        }
+
+        if (node.childNodes) {
+            for(var i=0;i<node.childNodes.length;i++){
+                this.Nodeprocessor2(node.childNodes[i],room,id);
+            }
+        }
+        return room;
     }
 
 

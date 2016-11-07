@@ -15,7 +15,7 @@ describe("InsightFacade", function () {
     before(function () {
         Log.info('InsightController::before() - start');
         // this zip might be in a different spot for you
-        zipFileContents = new Buffer(fs.readFileSync('courses.zip')).toString('base64');
+        zipFileContents = new Buffer(fs.readFileSync('310courses.1.0.zip')).toString('base64');
         try {
             // what you delete here is going to depend on your impl, just make sure
             // all of your temporary files and directories are deleted
@@ -253,13 +253,14 @@ describe("InsightFacade", function () {
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
             expect(response.statusCode).to.equal(204);
             return facade.performQuery({
-                "GET": ["courses_id"],
-                "WHERE": {} ,
-                "GROUP": [ "courses_id" ],
-                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}} ],
-                "ORDER":  "courses_id",
-                "AS":"TABLE"
-            }).then(function(res :InsightResponse){
+                    "GET": ["courses_dept", "courses_id", "courseAverage", "maxFail"],
+                    "WHERE": {},
+                    "GROUP": [ "courses_dept", "courses_id" ],
+                    "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                    "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                    "AS":"TABLE"
+                }
+            ).then(function(res :InsightResponse){
                 expect(res.statusCode).to.equal(200);
             });
         }).catch(function (response: InsightResponse) {

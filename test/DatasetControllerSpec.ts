@@ -79,6 +79,29 @@ describe("DatasetController", function () {
         });
 
     });
+
+    it("Should be able to read a rooms file", function (done: Function) {
+        Log.test('Getting dataset zip');
+        let content = {key: 'value'};
+        let zipDirectory = "./310rooms.1.1.zip";
+        let zip = new JSZip();
+
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller = new DatasetController();
+            var promise = controller.process('courses', data);
+            promise.then(function () {
+                // controller.delete("courses");
+                //controller.getSize("courses");
+                done();
+            });
+
+
+        });
+
+    });
 });
 
 

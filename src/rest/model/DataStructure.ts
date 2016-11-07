@@ -9,7 +9,9 @@ export default class DataStructure {
     add(c: any){
         if(this.alluuids.indexOf(c['courses_uuid'])==-1) {
             this.data.push(c);
-            this.alluuids.push(c['courses_uuid']);
+            if(c.hasOwnProperty('courses_uuid')) {
+                this.alluuids.push(c['courses_uuid']);
+            }
         }
     }
 }
