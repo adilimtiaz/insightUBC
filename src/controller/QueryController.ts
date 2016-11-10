@@ -154,7 +154,15 @@ export default class QueryController {
         Log.trace('QueryController::query( ' + JSON.stringify(query) + ' )');
 
         // TODO: implement this
-        let id: string = "courses";
+         let _index=-1;
+        var f=0;
+        let field="";
+        while(_index==-1) {
+            field = query.GET[f];
+            _index = field.indexOf("_");
+            f++;
+        }
+        let id:string=field.substring(0,_index);
         let sortedRes = new DataStructure();
         let where: any = query.WHERE;
 
