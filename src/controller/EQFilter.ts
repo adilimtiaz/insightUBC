@@ -19,14 +19,12 @@ export default class EQFilter {
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
-        console.log("processGTFilter key is..." + key);
-        console.log("processGTFilter type of key is..." + typeof key);
-
         let equal = query[key];
+
         for(var i=0;i<this.dataStructure.data.length;i++){
-            let c=this.dataStructure.data[i];
-            if(c[key]==equal){
-                structure.add(c);
+            let data = this.dataStructure.data[i];
+            if(data[key]==equal){
+                structure.add(data);
             }
         }
         return structure;

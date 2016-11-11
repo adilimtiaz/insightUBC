@@ -25,7 +25,6 @@ export default class InsightFacade implements IInsightFacade{
         return new Promise(function (fulfill, reject) {
             try{
 
-
                 if(typeof that.controller.datasets[id] == "undefined"){
                     flag=1; // if id doesnt exist
                 }
@@ -35,17 +34,18 @@ export default class InsightFacade implements IInsightFacade{
                     if(result==true){
                         if(flag==1) {
                             console.log("204");
-                            fulfill({statusCode: 204, body: {success: result}});
+                            fulfill({code: 204, body: {success: result}});
                         }
-                        else
+                        else {
                             console.log("201");
-                        fulfill({statusCode: 201, body: {success: result}});
+                            fulfill({code: 201, body: {success: result}});
+                        }
                     }
                 }).catch(function(err){
-                    reject({statusCode: 400, body: {err: err.message}});
+                    reject({code: 400, body: {err: err.message}});
                 });
             }catch(err){
-                reject({statusCode: 400, body: {err: err.message}});
+                reject({code: 400, body: {err: err.message}});
             }
         });
 
@@ -59,10 +59,10 @@ export default class InsightFacade implements IInsightFacade{
                     throw new Error("the operation was unsuccessful because the delete was for a resource that was not previously PUT");
                 }
                 that.controller.delete(id);
-                fulfill({statusCode: 204, body: {success: "the operation was successful."}})
+                fulfill({code: 204, body: {success: "the operation was successful."}})
 
             }catch(err){
-                reject({statusCode: 404, body: {err: err.message}});
+                reject({code: 404, body: {err: err.message}});
             }
         });
     }
@@ -76,18 +76,18 @@ export default class InsightFacade implements IInsightFacade{
                 var s=query.GET[0];
                 var s2=s.substring(0,s.indexOf("_"));
                 if(typeof that.controller.datasets[s2]=="undefined"){
-                    reject({statusCode: 424, error: "Missing:"+ s});
+                    reject({code: 424, body: "Missing:"+ s});
                 }
                 var b=qcon.isValid(query);
                 if(!b){
-                    reject({statusCode: 400, error:"Bad query design"});
+                    reject({code: 400, body:"Bad query design"});
                 }
                 else {
                     let result2 = qcon.query(query);
-                    fulfill({statusCode: 200, body: result2});
+                    fulfill({code: 200, body: result2});
                 }
             }catch(err){
-                reject({statusCode: 400, error: err.message});
+                reject({code: 400, body: err.message});
             }
         });
     }

@@ -1,5 +1,6 @@
 import DataStructure from "../rest/model/DataStructure";
 import {Query} from "./QueryFilter";
+import Log from "../Util";
 /**
  * Created by Adil Imtiaz on 23-10-2016.
  */
@@ -8,7 +9,8 @@ export interface Data {
     [id: string]:DataStructure;
 }
 
-export default class Groupfilter {
+
+export default class GroupFilter {
 
     private datastructure: DataStructure = new DataStructure();
     private data:Data={};
@@ -18,14 +20,18 @@ export default class Groupfilter {
     }
 
 
-    public processGroups(query: string[],queryarr: any[]):DataStructure{
+    public processGroups(groupQuery: string[],applyQuery: any[]):DataStructure{
+
+        Log.trace('GroupFilter::processGroups( ' + JSON.stringify(groupQuery) + ', '+ JSON.stringify(applyQuery) + ' )');
+
         let that=this;
         let structure=new DataStructure();
         let groups:any[]=[];
         let flag=0;
+
         for(var i=0;i<this.datastructure.data.length;i++){
-            let c=this.datastructure.data[i];
-            let group=this.keyReturner(c,query);
+            let c = this.datastructure.data[i];
+            let group = this.keyReturner(c,groupQuery);
             flag=0;
             let arr=Object.keys(group);
             var str:string="";
@@ -54,8 +60,8 @@ export default class Groupfilter {
             }
 
         }
-        console.log(groups);
-        if(queryarr.length==0){
+
+        if(applyQuery.length==0){
             for(var k=0;k<groups.length;k++){
                 let d=that.data[groups[k]];
                 let c2=d.data[0];
@@ -63,9 +69,9 @@ export default class Groupfilter {
             }
         }
         else{
-            for(var i=0;i<queryarr.length;i++){
-                let key=Object.keys(queryarr[i])[0];
-                let value=queryarr[i][key];
+            for(var i=0;i<applyQuery.length;i++){
+                let key=Object.keys(applyQuery[i])[0];
+                let value=applyQuery[i][key];
                 let key2=Object.keys(value)[0];
                 let value2=value[key2];//courses_avg
                 if(key2==="AVG"){

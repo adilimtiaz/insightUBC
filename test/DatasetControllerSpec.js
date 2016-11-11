@@ -49,5 +49,21 @@ describe("DatasetController", function () {
             });
         });
     });
+    it("Should be able to read a rooms file", function (done) {
+        Util_1.default.test('Getting dataset zip');
+        var content = { key: 'value' };
+        var zipDirectory = "./310rooms.1.1.zip";
+        var zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err)
+                throw err;
+            console.log(data);
+            var controller = new DatasetController_1.default();
+            var promise = controller.process('courses', data);
+            promise.then(function () {
+                done();
+            });
+        });
+    });
 });
 //# sourceMappingURL=DatasetControllerSpec.js.map

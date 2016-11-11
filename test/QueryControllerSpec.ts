@@ -641,7 +641,7 @@ describe("QueryController", function () {
 
 
 
-    it.only("aaShould be able to validate a valid query", function (done: Function) {
+    it("aaShould be able to validate a valid query", function (done: Function) {
         // NOTE: this is not actually a valid query for D1;
 
         let query: QueryRequest = {

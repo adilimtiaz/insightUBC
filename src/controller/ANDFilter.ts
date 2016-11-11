@@ -20,19 +20,11 @@ export default class ANDFilter {
     public processANDFilter(query: [Query]): DataStructure {
         Log.trace('ANDFilter::processANDFilter( ' + JSON.stringify(query) + ' )');
 
-        var innerStructure: DataStructure = new DataStructure();
-
-        let filter = new QueryFilter(this.dataStructure);
-        let innerstruct2: DataStructure = filter.processFilter(query[0]);
-        for (var i=0; i<innerstruct2.data.length; i++) {
-            innerStructure.add(innerstruct2.data[i]);
+        var innerStructure: DataStructure = this.dataStructure;
+        for(var i=0; i<query.length; i++) {
+            let filter = new QueryFilter(innerStructure); // Use innerStructure for new filter to base on. The result data must fulfill all of the conditions on the filter.
+            innerStructure = filter.processFilter(query[i]);
         }
-        for (var j = 1; j < query.length; j++) {
-
-            let filter = new QueryFilter(innerStructure);
-            innerStructure= filter.processFilter(query[j]);
-        }
-
 
         return innerStructure;
     }

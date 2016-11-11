@@ -1,13 +1,16 @@
 /**
  * Created by justin on 2016/10/23.
  */
+
 //lala
+
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 
 export default class SortUp {
 
     private dataStructure: DataStructure = new DataStructure();
+
 
     constructor(dataStructure: DataStructure) {
         this.dataStructure = dataStructure;
@@ -19,13 +22,19 @@ export default class SortUp {
             for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
                 let minimum = i;
                 for (var j = i + 1; j < this.dataStructure.data.length; j++) {
-                    if (parseInt(this.dataStructure.data[j][key]) < parseInt(this.dataStructure.data[minimum][key])) {
-                        minimum = j;
+                    if (isNaN(parseInt(this.dataStructure.data[minimum][key]))) {
+                        if (this.dataStructure.data[j][key] < this.dataStructure.data[minimum][key]) {
+                            minimum = j;
+                        }
+                    } else {
+                        if (parseInt(this.dataStructure.data[j][key]) < parseInt(this.dataStructure.data[minimum][key])) {
+                            minimum = j;
+                        }
                     }
-                    var tempCourse: any = this.dataStructure.data[i];
-                    this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                    this.dataStructure.data[minimum] = tempCourse;
                 }
+                var tempCourse: any = this.dataStructure.data[i];
+                this.dataStructure.data[i] = this.dataStructure.data[minimum];
+                this.dataStructure.data[minimum] = tempCourse;
             }
         } else {
             for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
@@ -36,11 +45,11 @@ export default class SortUp {
                         if (parseInt(this.dataStructure.data[j][key]) < parseInt(this.dataStructure.data[minimum][key])) {
                             minimum = j;
                         }
-                        var tempCourse: any = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
                     }
                 }
+                var tempCourse: any = this.dataStructure.data[i];
+                this.dataStructure.data[i] = this.dataStructure.data[minimum];
+                this.dataStructure.data[minimum] = tempCourse;
             }
 
         }
@@ -59,10 +68,10 @@ export default class SortUp {
                     if (this.dataStructure.data[j][key] < this.dataStructure.data[minimum][key]) {
                         minimum = j;
                     }
-                    var tempCourse: any = this.dataStructure.data[i];
-                    this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                    this.dataStructure.data[minimum] = tempCourse;
                 }
+                var tempCourse: any = this.dataStructure.data[i];
+                this.dataStructure.data[i] = this.dataStructure.data[minimum];
+                this.dataStructure.data[minimum] = tempCourse;
             }
         } else {
             for (var i = 0; i < this.dataStructure.data.length - 1; i++) {
@@ -73,11 +82,11 @@ export default class SortUp {
                         if (this.dataStructure.data[j][key] < this.dataStructure.data[minimum][key]) {
                             minimum = j;
                         }
-                        var tempCourse: any = this.dataStructure.data[i];
-                        this.dataStructure.data[i] = this.dataStructure.data[minimum];
-                        this.dataStructure.data[minimum] = tempCourse;
                     }
                 }
+                var tempCourse: any = this.dataStructure.data[i];
+                this.dataStructure.data[i] = this.dataStructure.data[minimum];
+                this.dataStructure.data[minimum] = tempCourse;
             }
         }
 

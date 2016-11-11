@@ -10,9 +10,10 @@ import QueryController from '../controller/QueryController';
 
 import {QueryRequest} from "../controller/QueryController";
 import Log from '../Util';
+
+import {Route} from "restify";
 import InsightFacade from "../controller/InsightFacade";
 import {InsightResponse} from "../controller/IInsightFacade";
-import {Route} from "restify";
 
 export default class RouteHandler {
 
@@ -51,11 +52,11 @@ export default class RouteHandler {
                 req.body = concated.toString('base64');
                 Log.trace('RouteHandler::postDataset(..) on end; total length: ' + req.body.length);
                 RouteHandler.facade.addDataset(id, req.body).then(function (result: InsightResponse) {
-                    Log.trace('RouteHandler::postDataset(..) - processed'+result.statusCode);
-                    res.json(result.statusCode,result.body);
+                    Log.trace('RouteHandler::postDataset(..) - processed'+result.code);
+                    res.json(result.code,result.body);
                 }).catch(function (err: InsightResponse) {
                     Log.trace('RouteHandler::postDataset(..) - ERROR: ' + err.body);
-                    res.json(err.statusCode,err.body );
+                    res.json(err.code,err.body );
                 });
             });
 
@@ -71,13 +72,13 @@ export default class RouteHandler {
         try {
             let query: QueryRequest = req.params;
             RouteHandler.facade.performQuery(query).then(function(response:InsightResponse){
-                console.log("This is the code" + response.statusCode);
+                console.log("This is the code" + response.code);
                 console.log(response.body);
-                res.json(response.statusCode,response.body);
+                res.json(response.code,response.body);
             }).catch(function (err: InsightResponse) {
-                Log.trace('RouteHandler::postQuery(..) - ERROR: ' + err.error);
-                console.log("This is the rror" + err.statusCode);
-                res.json(err.statusCode,err.error );
+                Log.trace('RouteHandler::postQuery(..) - ERROR: ' + err.body);
+                console.log("This is the error" + err.code);
+                res.json(err.code,err.body );
             });
         } catch (err) {
             Log.error('RouteHandler::postQuery(..) - ERROR: ' + err);
@@ -105,10 +106,10 @@ export default class RouteHandler {
                 Log.trace('RouteHandler::deleteDataset(..) on end; total length: ' + req.body.length);
                 try {
                     RouteHandler.facade.removeDataset(id).then(function(res2:InsightResponse){
-                        res.json(res2.statusCode,res2.body);
+                        res.json(res2.code,res2.body);
                     }).catch(function (err: InsightResponse) {
                         Log.trace('RouteHandler::deleteQuery(..) - ERROR: ' + err.body);
-                        res.json(err.statusCode,err.body );
+                        res.json(err.code,err.body );
                     });
                 }catch(err) {
                     Log.trace('RouteHandler::deleteDataset(..) - ERROR: ' + err.message);

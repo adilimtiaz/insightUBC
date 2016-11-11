@@ -255,7 +255,7 @@ describe("QueryController", function () {
         var query = {
             "GET": ["courses_id", "courses_dept", "courses_pass"],
             "WHERE": {
-                "GT": { "courses_avg": 90 }
+                "IS": { "courses_instructor": "deo*" }
             },
             "GROUP": ["courses_dept", "courses_id"],
             "APPLY": [],
@@ -301,7 +301,7 @@ describe("QueryController", function () {
         Util_1.default.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
         chai_1.expect(ret).to.equal(false);
     });
-    it("Should be able to validate a valid query", function (done) {
+    it("aaShould be able to validate a valid query", function (done) {
         var query = {
             "GET": ["courses_dept", "courses_id", "courses_instructor"],
             "WHERE": {
@@ -334,6 +334,7 @@ describe("QueryController", function () {
                 var ret = controller.query(query);
                 Util_1.default.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
                 chai_1.expect(ret).not.to.be.equal(null);
+                var res = ret.result;
                 chai_1.expect(isValid).to.equal(true);
                 done();
             });

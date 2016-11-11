@@ -22,15 +22,15 @@ export default class NegationFilter {
         let innerStructure = filter.processFilter(query);
 
         // TODO this.dataStructure minus innerStructure
-        var index=-2;
+        var index = -2;
         for (var i=0; i<innerStructure.data.length; i++) {
-            index = structure.data.indexOf(innerStructure.data[i]);
+            index = structure.data.indexOf(innerStructure.data[i]); // May need to change on rooms
             if (index > -1) {
                 structure.data.splice(index,1);
             }
         }
 
-        console.log("Leaving not");
+        console.log("Leaving NegationFilter");
         return structure;
 
     }

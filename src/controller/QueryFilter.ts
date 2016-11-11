@@ -10,7 +10,7 @@ import ORFilter from "./ORFilter";
 import LTFilter from "./LTFilter";
 import GTFilter from "./GTFilter";
 import EQFilter from "./EQFilter";
-import SFilter from "./SFilter";
+import SFilter from "./ISFilter";
 import NegationFilter from "./NegationFilter";
 
 
@@ -39,10 +39,10 @@ export default class QueryFilter {
     public processFilter(query: Query): DataStructure{
         Log.trace('QueryFilter::processFilter( ' + JSON.stringify(query) + ' )');
         let structure: DataStructure = new DataStructure();
-        let arr=Object.keys(query);
-        if(arr.length==0){return this.datastructure;}
+        let keyArr = Object.keys(query);
+        if(keyArr.length==0){return this.datastructure;}
         let key = Object.keys(query)[0];
-        console.log("processFilter...key is"+ key);
+        //console.log("processFilter...key is"+ key);
         let value = query[key];
 
 

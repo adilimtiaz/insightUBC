@@ -46,8 +46,8 @@ export default class DatasetController {
 
             if (stats.isDirectory()) {
                 d = this.datasets[id];
-                console.log(d.data);
-                console.log(d.data.length);
+                //console.log(d.data);
+                //console.log(d.data.length);
                 return d;
             }
         }

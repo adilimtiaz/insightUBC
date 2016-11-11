@@ -19,15 +19,12 @@ export default class LTFilter {
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
-        console.log("processLTFilter key is..." + key);
-        console.log("processLTFilter type of key is..." + typeof key);
+        let upperBound = query[key];
 
-        let lowerBound = query[key];
-
-        for(var i=0;i<this.dataStructure.data.length;i++){
-            let c=this.dataStructure.data[i];
-            if(c[key]<lowerBound){
-                structure.add(c);
+        for(var i=0; i<this.dataStructure.data.length; i++){
+            let data = this.dataStructure.data[i];
+            if(data[key] < upperBound){
+                structure.add(data);
             }
         }
         return structure;
