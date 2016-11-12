@@ -18,12 +18,12 @@ import DataStructure from "../rest/model/DataStructure";
 
 
 export interface QueryRequest {
-    GET: string|string[];
-    WHERE: Query;
+    GET?: string|string[];
+    WHERE?: Query;
     ORDER?: string|OrderQuery;
     GROUP?: string[];
     APPLY?: Query[];
-    AS: string;
+    AS?: string;
 }
 
 
@@ -55,6 +55,9 @@ export default class QueryController {
             }
         }
         if(get.length==0){
+            return 400;
+        }
+        if(!query.hasOwnProperty(("AS"))){
             return 400;
         }
 
@@ -100,7 +103,6 @@ export default class QueryController {
             if(groupkeys.length==0){
                 return 400;
             }
-
             let applykeys:any=[];
             for(var i=0;i<query.APPLY.length;i++){
                 if(applykeys.indexOf(Object.keys(query.APPLY[i])[0])!==-1){ //apply rules should be unique
@@ -114,23 +116,12 @@ export default class QueryController {
             if(commonValues.length>0){ //group and apply should not have any intersecting values
                 return 400;
             }
-            for(var i=0;i<get.length;i++){
-                if(groupkeys.indexOf(get[i])==-1 && applykeys.indexOf(get[i])==-1){
-                    return 400;
-                }
-            }
             for(var i=0;i<applykeys.length;i++){
                 groupkeys.push(applykeys[i]);
             }
             //check if get has all of group and apply
             for(var i=0;i<groupkeys.length;i++){
                 if(get.indexOf(groupkeys[i])==-1){
-                    return 400;
-                }
-            }
-
-            for(var i=0;i<get.length;i++){
-                if(groupkeys.indexOf(get[i])==-1){
                     return 400;
                 }
             }
