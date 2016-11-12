@@ -216,7 +216,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to empty apply and sort numerically (200)", function () {
+    it("Should be able to empty apply and sort numerically (200)", function () {
         var that = this;
         var data22 = fs.readFileSync('./q3.json',"utf8");
         data22=JSON.parse(data22);
@@ -308,6 +308,84 @@ describe("InsightFacade", function () {
             expect(response.code).to.equal(400);
         });
     });
+
+    it("Should be able to invalidate bad order (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_id"],
+                "WHERE": {"IS": {"courses_dept": "anth"}} ,
+                "GROUP": [ "courses_dept" ],
+                "ORDER":  "courses_avg",
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it("Should be able to 424 (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["course_dept", "courses_id", "courses_instructor"],
+                "WHERE": {
+                    "OR": [
+                        {"AND": [
+                            {"GT": {"courses_avg": 70}},
+                            {"IS": {"courses_dept": "cp*"}},
+                            {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                        ]},
+                        {"IS": {"courses_instructor": "*gregor*"}}
+                    ]
+                },
+                "AS": "TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(424);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it.only("Should be able to 400 bad get keys(400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_i", "courses_instructor"],
+                "WHERE": {
+                    "OR": [
+                        {"AND": [
+                            {"GT": {"courses_avg": 70}},
+                            {"IS": {"courses_dept": "cp*"}},
+                            {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                        ]},
+                        {"IS": {"courses_instructor": "*gregor*"}}
+                    ]
+                },
+                "AS": "TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
 
 
 

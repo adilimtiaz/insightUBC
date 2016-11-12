@@ -16,7 +16,11 @@ export default class NegationFilter {
     public processNegationFilter(query: Query): DataStructure {
         Log.trace('NegationFilter::processNegationFilter( ' + JSON.stringify(query) + ' )');
 
-        var structure: DataStructure = this.dataStructure;
+        var structure: DataStructure = new DataStructure;
+
+        for(var i=0;i<this.dataStructure.data.length;i++){
+            structure.add(this.dataStructure.data[i]);
+        }
 
         let filter = new QueryFilter(this.dataStructure);
         let innerStructure = filter.processFilter(query);

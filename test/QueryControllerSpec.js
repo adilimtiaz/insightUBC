@@ -340,5 +340,43 @@ describe("QueryController", function () {
             });
         });
     });
+    it("aaShould be able to not", function (done) {
+        var query = {
+            "GET": ["courses_dept", "courses_id", "courses_instructor"],
+            "WHERE": {
+                "OR": [
+                    { "AND": [
+                            { "GT": { "courses_avg": 70 } },
+                            { "IS": { "courses_dept": "adhe" } }
+                        ] },
+                    { "EQ": { "courses_avg": 74.4 } }
+                ]
+            },
+            "AS": "TABLE"
+        };
+        var dataset = {};
+        var zipDirectory = "./courses.zip";
+        var zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err)
+                throw err;
+            console.log(data);
+            var controller2 = new DatasetController_1.default();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                dataset = controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                var controller = new QueryController_1.default(dataset);
+                var isValid = controller.isValid(query);
+                var ret = controller.query(query);
+                Util_1.default.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+                chai_1.expect(ret).not.to.be.equal(null);
+                var res = ret.result;
+                chai_1.expect(isValid).to.equal(true);
+                done();
+            });
+        });
+    });
 });
 //# sourceMappingURL=QueryControllerSpec.js.map

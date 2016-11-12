@@ -685,6 +685,50 @@ describe("QueryController", function () {
         });
     });
 
+    it("aaShould be able to not", function (done: Function) {
+        // NOTE: this is not actually a valid query for D1;
+
+        let query: QueryRequest = {
+            "GET": ["courses_dept", "courses_id", "courses_instructor"],
+            "WHERE":  {
+                "OR": [
+                    {"AND": [
+                        {"GT": {"courses_avg": 70}},
+                        {"IS": {"courses_dept": "adhe"}}
+                    ]},
+                    {"EQ": {"courses_avg": 74.4}}
+                ]
+            },
+            "AS": "TABLE"
+        };
+       //
+        let dataset: Datasets = {};
+        let zipDirectory = "./courses.zip";
+        let zip = new JSZip();
+        fs.readFile(zipDirectory, function (err, data) {
+            if (err) throw err;
+            console.log(data);
+
+            let controller2 = new DatasetController();
+            var promise = controller2.process('courses', data);
+            promise.then(function () {
+                console.log(controller2.datasets["courses"].data.length);
+                //controller.getDatasets();
+                //console.log(controller.getSize("aa"));
+                dataset=controller2.datasets;
+                console.log(dataset["courses"].data.length);
+                let controller = new QueryController(dataset);
+                let isValid = controller.isValid(query);
+                let ret = controller.query(query);
+                Log.test('In: ' + JSON.stringify(query) + ', out: ' + JSON.stringify(ret));
+                expect(ret).not.to.be.equal(null);
+                let res=ret.result;
+                expect(isValid).to.equal(true);
+                done();
+            });
+        });
+    });
+
 
 
 

@@ -29,7 +29,7 @@ export default class SFilter {
                 let c = this.dataStructure.data[i];
                 if (typeof c[key] === "string") {
                     let str2 = c[key];//str2 is equal to first seven letters
-                    if (str2 === str) {
+                    if (str2 == str) {
                         structure.add(c);
                     }
                 }

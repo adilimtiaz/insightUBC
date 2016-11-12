@@ -45,107 +45,49 @@ export default class QueryController {
         this.datasets = datasets;
     }
 
-    public isValid(query: QueryRequest): boolean {
-        if (typeof query !== 'undefined' && query !== null && Object.keys(query).length > 0) {
-            var flag: boolean = true;
-            let course = new Course();
-            let coursePropertyArr = Object.keys(course);//all valid course properties
-            let get = query.GET;
-            let getKeyArrOriginal: any = []; //all course properties in get
-            let getKeyArrApply:any = []; //all properties apply must have
-            let groupKeyArr: string[] = [];
-            var applyKeyArr: string[] = [];
-            let queryKeyArr = Object.keys(query);
-
-            if(queryKeyArr.indexOf("GET")==-1||queryKeyArr.indexOf("WHERE")==-1||queryKeyArr.indexOf("AS")==-1){
-                return false;
-            }
-
-            if (typeof get == "string") { // Check if key(s) in GET is/are all valid
-                if(!this.validKey(get, coursePropertyArr)){return false;} // invalid get key
-            }
-            else {
-                for (var i = 0; i < get.length; i++) {
-                    if(!this.validKey(get[i],coursePropertyArr)){return false;}
-                }
-            }
-
-            if (queryKeyArr.indexOf("GROUP") !== -1 && queryKeyArr.indexOf("APPLY") !== -1) { //check group and apply
-                if (query.GROUP.length === 0) {  //empty GROUP error
-                    return false;
-                }
-                if(typeof query.GET=="string"){ // may change query.GET to get to unify the naming
-                    getKeyArrOriginal.push(get);
-                }
-                else{
-                    for (var i = 0; i < get.length; i++) {
-                        if (coursePropertyArr.indexOf(get[i]) !== -1) {
-                            getKeyArrOriginal.push(get[i]);
-                        } else {
-                            getKeyArrApply.push(get[i]);
-                        }
-                    }
-                }
-                for (var i = 0; i < query.GROUP.length; i++) { //group has validkeys
-                    if(!this.validKey(query.GROUP[i], coursePropertyArr)){
-                        return false; //check group only has course keys
-                    }
-                    let str = query.GROUP[i];
-                    groupKeyArr.push(str);
-                }               //groupKeyArr => keys in GROUP
-
-                for (var i = 0; i < groupKeyArr.length; i++) {
-                    console.log(groupKeyArr[i]);
-                    if (getKeyArrOriginal.indexOf(groupKeyArr[i]) == -1) {
-                        return false;   //Get has a underscorekey group doesnt
-                    }
-                }
-
-
-
-                for (var i = 0; i < query.APPLY.length; i++) {
-                    coursePropertyArr.push(Object.keys(query.APPLY[i])[0]);  //v3=array of all keys in APPLY
-                    applyKeyArr.push(Object.keys(query.APPLY[i])[0]); //applyKeyArr => all valid getkeys
-                }
-                for (var i = 0; i < applyKeyArr.length; i++) {
-                    {
-                        if (getKeyArrApply.indexOf(applyKeyArr[i]) == -1) {  //get has keys that are not defined in apply
-                            return false;
-                        }
-                    }
-                }
-            }
-            if ((queryKeyArr.indexOf("GROUP") !== -1 && queryKeyArr.indexOf("APPLY") === -1) || (queryKeyArr.indexOf("GROUP") === -1 && queryKeyArr.indexOf("APPLY") !== -1)) {
-                return false; // GROUP and APPLY always appear together.
-            }
-
-            if(query.hasOwnProperty("ORDER")){
-                if (typeof query.ORDER == "string") {
-                    if (get.indexOf(<string> query.ORDER)==-1) { // If typeof query.ORDER == "string", we don't need to use <string> right? May change it to (!this.validKey(query.ORDER, get))
-                            return false;
-                    }
-                }
-                else {
-                    let order:any = query.ORDER;
-                    if(order.hasOwnProperty("dir") && order.hasOwnProperty("keys")){
-                        if(order.dir!=="UP" && order.dir!=="DOWN"){
-                            return false; // dir got wrong value
-                        }
-                        for(var i=0; i<order.keys.length; i++) { // all keys in ORDER need to appear in GET
-                            if(get.indexOf(order.keys[i])==-1) { // May change it to (!this.validKey(order.keys[i], get))
-                                return false;
-                            }
-                        }
-                    }
-                    else{
-                        return false;
-                    }
-                }
-            }
-
-            return true;
+    public isValid(query: QueryRequest): number {
+        //query without get and as
+        // empty query
+        if(!query.hasOwnProperty("AS")||!query.hasOwnProperty("GET")||!query.hasOwnProperty("WHERE")){
+            return 400;
         }
-        return false;
+        let get:any=[];
+        if(typeof get=="string"){
+            get.push(query.GET);
+        }
+        else{
+            for(var i=0;i<query.GET.length;i++){
+                get.push(query.GET[i]);
+            }
+        }
+        let validkeys:any=[];
+        for(var i=0;i<get.length;i++){
+            if(get[i].indexOf("_")!==-1) {  // if it doesnt have an underscore
+                var s = get[i].substring(0, get[i].indexOf("_"));
+                if (typeof this.datasets[s] == "undefined") { //check if that dataset exists
+                    return 424;
+                }
+                validkeys=Object.keys(this.datasets[s].data[0]);
+            }
+        }
+        //valid keys in get
+        if(!query.hasOwnProperty("GROUP")){// check that get only has course or room properties
+          for(var i=0;i<get.length;i++){
+              if(!this.validKey(get[i],validkeys)){
+                  return 400;
+              }
+          }
+        }
+        // order key should be in get
+        if(query.hasOwnProperty("ORDER")){
+            let order=query.ORDER;
+            if(typeof order=="string"){
+                if(get.indexOf(order)==-1){
+                    return 400;
+                }
+            }
+        }
+        return 200;
 }
 
     public validKey(key: any, keyArr: any): boolean {
