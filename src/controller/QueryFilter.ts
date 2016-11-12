@@ -10,7 +10,7 @@ import ORFilter from "./ORFilter";
 import LTFilter from "./LTFilter";
 import GTFilter from "./GTFilter";
 import EQFilter from "./EQFilter";
-import SFilter from "./ISFilter";
+import SFilter from "./SFilter";
 import NegationFilter from "./NegationFilter";
 
 

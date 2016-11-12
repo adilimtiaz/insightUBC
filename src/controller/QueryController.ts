@@ -211,21 +211,6 @@ export default class QueryController {
         }
         let renderAs = query.AS;
         Log.trace("Returning something");
-        var fs=require('fs');
-        var data22 = fs.readFileSync('./q3.json',"utf8");
-        data22=JSON.parse(data22);
-        for(var i=0;i<data22.result.length;i++){
-            let c=data22.result[i];
-            if(sortedRes2.indexOf(c)===-1){
-                let c2=sortedRes2[i];
-                for(var p in c2){
-                    if(c2[p]!==c[p]){
-                        console.log(p);
-                    }
-                }
-                console.log(c);
-            }
-        }
         return {render: renderAs, result: sortedRes2};
     }
 
