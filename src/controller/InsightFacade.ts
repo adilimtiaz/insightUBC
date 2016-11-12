@@ -78,12 +78,12 @@ export default class InsightFacade implements IInsightFacade{
                 var b=qcon.isValid(query);
                 if(b==200) {
                     let result = qcon.query(query);
-                    fulfill({code: 200, body: result});
+                    fulfill({code:200, body:result});
                 }
                 else
-                    reject({code: b, body:"Bad query design"});
+                    reject({code:b, body:"Bad query design"});
             }catch(err){
-                reject({code: 400, body: err.message});
+                reject({code:400, body:err.message});
             }
         });
     }

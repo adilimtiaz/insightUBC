@@ -18,12 +18,12 @@ import DataStructure from "../rest/model/DataStructure";
 
 
 export interface QueryRequest {
-    GET?: string|string[];
-    WHERE?: Query;
+    GET: string|string[];
+    WHERE: Query;
     ORDER?: string|OrderQuery;
     GROUP?: string[];
     APPLY?: Query[];
-    AS?: string;
+    AS: string;
 }
 
 
@@ -44,9 +44,7 @@ export default class QueryController {
     public isValid(query: QueryRequest): number {
         //query without get and as
         // empty query
-        if (!query.hasOwnProperty("AS") || !query.hasOwnProperty("GET") || !query.hasOwnProperty("WHERE")) {
-            return 400;
-        }
+
         let get: any = [];
         if (typeof get == "string") {
             get.push(query.GET);
@@ -56,6 +54,14 @@ export default class QueryController {
                 get.push(query.GET[i]);
             }
         }
+        if(get.length==0){
+            return 400;
+        }
+
+        if(query.AS.length==0){
+            return 400;
+        }
+
         let validkeys: any = [];
         for (var i = 0; i < get.length; i++) {
             if (get[i].indexOf("_") !== -1) {  // if it doesnt have an underscore
@@ -76,7 +82,7 @@ export default class QueryController {
         }
         //check if both group and apply are there
         if ((query.hasOwnProperty("GROUP") && !query.hasOwnProperty("APPLY")) || (query.hasOwnProperty("APPLY") && !query.hasOwnProperty("GROUP"))) {
-            return 400;
+            return 424;
         }
 
         if(query.hasOwnProperty("GROUP") && query.hasOwnProperty("APPLY")){
@@ -84,20 +90,20 @@ export default class QueryController {
             let groupkeys:any=[];
             for(var i=0;i<query.GROUP.length;i++){
                 if(!this.validKey(query.GROUP[i],validkeys)){
-                    return 400;
+                    return 424;
                 }
                 if(get.indexOf(query.GROUP[i])==-1){ //if get doesnt have group key
-                    return 400;
+                    return 424;
                 }
                 groupkeys.push(query.GROUP[i]);
             }
             if(groupkeys.length==0){
-                return 400;
+                return 424;
             }
             let applykeys:any=[];
             for(var i=0;i<query.APPLY.length;i++){
                 if(applykeys.indexOf(Object.keys(query.APPLY[i])[0])!==-1){ //apply rules should be unique
-                    return 400;
+                    return 424;
                 }
                 applykeys.push(Object.keys(query.APPLY[i])[0]);
             }
@@ -105,7 +111,7 @@ export default class QueryController {
                 return applykeys.indexOf(value) > -1;
             });
             if(commonValues.length>0){ //group and apply should not have any intersecting values
-                return 400;
+                return 424;
             }
             for(var i=0;i<applykeys.length;i++){
                 groupkeys.push(applykeys[i]);
@@ -113,7 +119,7 @@ export default class QueryController {
             //check if get has all of group and apply
             for(var i=0;i<groupkeys.length;i++){
                 if(get.indexOf(groupkeys[i])==-1){
-                    return 400;
+                    return 424;
                 }
             }
         }
@@ -124,7 +130,7 @@ export default class QueryController {
             let order = query.ORDER;
             if (typeof order == "string") {
                 if (get.indexOf(order) == -1) {
-                    return 400;
+                    return 424;
                 }
             }
         }
