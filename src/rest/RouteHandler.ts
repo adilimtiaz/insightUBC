@@ -72,13 +72,9 @@ export default class RouteHandler {
         try {
             let query: QueryRequest = req.params;
             RouteHandler.facade.performQuery(query).then(function(response:InsightResponse){
-                console.log("This is the code" + response.code);
-                console.log(response.body);
                 res.json(response.code,response.body);
             }).catch(function (err: InsightResponse) {
-                Log.trace('RouteHandler::postQuery(..) - ERROR: ' + err.body);
-                console.log("This is the error" + err.code);
-                res.json(err.code,err.body );
+                res.json(err.code,err.body);
             });
         } catch (err) {
             Log.error('RouteHandler::postQuery(..) - ERROR: ' + err);

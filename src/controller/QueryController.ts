@@ -100,6 +100,7 @@ export default class QueryController {
             if(groupkeys.length==0){
                 return 400;
             }
+
             let applykeys:any=[];
             for(var i=0;i<query.APPLY.length;i++){
                 if(applykeys.indexOf(Object.keys(query.APPLY[i])[0])!==-1){ //apply rules should be unique
@@ -113,6 +114,11 @@ export default class QueryController {
             if(commonValues.length>0){ //group and apply should not have any intersecting values
                 return 400;
             }
+            for(var i=0;i<get.length;i++){
+                if(groupkeys.indexOf(get[i])==-1 && applykeys.indexOf(get[i])==-1){
+                    return 400;
+                }
+            }
             for(var i=0;i<applykeys.length;i++){
                 groupkeys.push(applykeys[i]);
             }
@@ -122,6 +128,13 @@ export default class QueryController {
                     return 400;
                 }
             }
+
+            for(var i=0;i<get.length;i++){
+                if(groupkeys.indexOf(get[i])==-1){
+                    return 400;
+                }
+            }
+
         }
 
 
@@ -200,7 +213,7 @@ export default class QueryController {
         }
         let renderAs = query.AS;
         Log.trace("Returning something");
-        return {render: renderAs, result: sortedRes2};
+        return {"render": renderAs, "result": sortedRes2};
     }
 
 }
