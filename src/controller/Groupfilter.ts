@@ -84,9 +84,9 @@ export default class GroupFilter {
                             sum=sum+d.data[n][value2];
                         }
                         var avg=sum/(d.data.length);
+                        let rounded=Number(avg.toFixed(2));
                         let c=d.data[(d.data.length-1)];
-                        c[key]=avg;
-
+                        c[key]=rounded;
                     }
                 }
                 if(key2==="MAX"){
@@ -127,8 +127,8 @@ export default class GroupFilter {
                         var count=0;
                         var arr:any=[];
                         for(var n=0;n<d.data.length;n++){
-                            if(arr.indexOf(d.data[n]["courses_uuid"])==-1) {
-                                arr.push(d.data[n]["courses_uuid"]);
+                            if(arr.indexOf(d.data[n][value2])==-1) {
+                                arr.push(d.data[n][value2]);
                                 ++count;
                             }
                         }
