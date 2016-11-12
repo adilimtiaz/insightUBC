@@ -145,10 +145,6 @@ export default class GroupFilter {
 
         }
 
-
-       //llala
-
-
         return structure;
     }
 

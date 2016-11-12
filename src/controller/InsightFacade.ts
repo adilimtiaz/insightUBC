@@ -81,7 +81,7 @@ export default class InsightFacade implements IInsightFacade{
                     fulfill({code:200, body:result});
                 }
                 else
-                    reject({code:b, body:"Bad query design"});
+                    reject({code:b, body:{error:"Bad query design"}});
             }catch(err){
                 reject({code:400, body:err.message});
             }

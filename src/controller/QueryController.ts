@@ -82,7 +82,7 @@ export default class QueryController {
         }
         //check if both group and apply are there
         if ((query.hasOwnProperty("GROUP") && !query.hasOwnProperty("APPLY")) || (query.hasOwnProperty("APPLY") && !query.hasOwnProperty("GROUP"))) {
-            return 424;
+            return 400;
         }
 
         if(query.hasOwnProperty("GROUP") && query.hasOwnProperty("APPLY")){
@@ -90,20 +90,20 @@ export default class QueryController {
             let groupkeys:any=[];
             for(var i=0;i<query.GROUP.length;i++){
                 if(!this.validKey(query.GROUP[i],validkeys)){
-                    return 424;
+                    return 400;
                 }
                 if(get.indexOf(query.GROUP[i])==-1){ //if get doesnt have group key
-                    return 424;
+                    return 400;
                 }
                 groupkeys.push(query.GROUP[i]);
             }
             if(groupkeys.length==0){
-                return 424;
+                return 400;
             }
             let applykeys:any=[];
             for(var i=0;i<query.APPLY.length;i++){
                 if(applykeys.indexOf(Object.keys(query.APPLY[i])[0])!==-1){ //apply rules should be unique
-                    return 424;
+                    return 400;
                 }
                 applykeys.push(Object.keys(query.APPLY[i])[0]);
             }
@@ -111,7 +111,7 @@ export default class QueryController {
                 return applykeys.indexOf(value) > -1;
             });
             if(commonValues.length>0){ //group and apply should not have any intersecting values
-                return 424;
+                return 400;
             }
             for(var i=0;i<applykeys.length;i++){
                 groupkeys.push(applykeys[i]);
@@ -119,7 +119,7 @@ export default class QueryController {
             //check if get has all of group and apply
             for(var i=0;i<groupkeys.length;i++){
                 if(get.indexOf(groupkeys[i])==-1){
-                    return 424;
+                    return 400;
                 }
             }
         }
@@ -130,7 +130,7 @@ export default class QueryController {
             let order = query.ORDER;
             if (typeof order == "string") {
                 if (get.indexOf(order) == -1) {
-                    return 424;
+                    return 400;
                 }
             }
         }
