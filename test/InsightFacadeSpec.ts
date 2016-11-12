@@ -358,7 +358,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to 400 bad get keys(400)", function (done: Function) {
+    it("Should be able to 400 bad get keys(400)", function (done: Function) {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
@@ -385,6 +385,146 @@ describe("InsightFacade", function () {
             done();
         });
     });
+
+    it("Should be able to 200  get keys(400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "courses_instructor"],
+                "WHERE": {
+                    "OR": [
+                        {"AND": [
+                            {"GT": {"courses_avg": 70}},
+                            {"IS": {"courses_dept": "cp*"}},
+                            {"NOT": {"IS": {"courses_instructor": "murphy, gail"}}}
+                        ]},
+                        {"IS": {"courses_instructor": "*gregor*"}}
+                    ]
+                },
+                "AS": "TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+                console.log(res.code);
+                done();
+            });
+        }).catch(function (response: InsightResponse) {
+
+        });
+    });
+
+    it("Should be able to invalid group (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "courseAverage", "maxFail"],
+                "WHERE": {},
+                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it("Should be able to invalid laguna (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "courseAverage", "maxFail"],
+                "WHERE": {},
+                "GROUP": [ "courses_dept", "courses_id" ],
+                "APPLY": [ {"courses_dept": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it("Should be able to unique apply (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "courseAverage", "maxFail"],
+                "WHERE": {},
+                "GROUP": [ "courses_dept", "courses_id" ],
+                "APPLY": [ {"maxFail": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it("Should be able to bad query (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "maxFail"],
+                "WHERE": {},
+                "GROUP": [ "courses_dept", "courses_id" ],
+                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+
+            });
+        }).catch(function (response: InsightResponse) {
+            expect(response.code).to.equal(400);
+            console.log(response.code);
+            done();
+        });
+    });
+
+    it.only("Should be able to good query (400)", function (done: Function) {
+        var that = this;
+        Log.trace("Starting test: " + that.test.title);
+        facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
+            expect(response.code).to.equal(204);
+            return facade.performQuery({
+                "GET": ["courses_dept", "courses_id", "courseAverage", "maxFail"],
+                "WHERE": {},
+                "GROUP": [ "courses_dept", "courses_id" ],
+                "APPLY": [ {"courseAverage": {"AVG": "courses_avg"}}, {"maxFail": {"MAX": "courses_fail"}} ],
+                "ORDER": { "dir": "UP", "keys": ["courseAverage", "maxFail", "courses_dept", "courses_id"]},
+                "AS":"TABLE"
+            }).then(function(res :InsightResponse){
+                expect(res.code).to.equal(200);
+                console.log(res.code);
+                done();
+
+            });
+        }).catch(function (response: InsightResponse) {
+
+        });
+    });
+
+
 
 
 
