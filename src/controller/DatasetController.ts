@@ -271,7 +271,6 @@ export default class DatasetController {
                             room[id+"_lon"] = geo.lon;
                         }
                     });
-                    promises.push(promise);
                 }
                 if((value.name=="href")){
                     let str=value.value;
