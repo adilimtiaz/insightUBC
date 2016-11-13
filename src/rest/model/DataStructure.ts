@@ -7,19 +7,19 @@ export default class DataStructure {
     alluuids: number[]=[];
 
     add(c: any){
-       if(this.data.indexOf(c)===-1){
-           this.data.push(c);
-       }
+        this.data.push(c);
     }
-    // identical(dataIn: any) { // Check if dataIn has an identical copy in this dataStructure
-    //     for(var i=0; i<this.data.length; i++) {
-    //         let keyArr = Object.keys(this.data[i]);
-    //         for(var j=0; j<keyArr.length; j++) {
-    //             if(dataIn.keyArr[j]!==this.data[i].keyArr[j]) {
-    //                 return false;
-    //             }
-    //         }
-    //     }
-    //     return true;
-    // }
+
+    identical(dataIn: any):boolean { // Check if dataIn has an identical copy in this dataStructure
+        for(var i=0; i<this.data.length; i++) {
+            let keyArr = Object.keys(this.data[i]);
+            for(var j=0; j<keyArr.length; j++) {
+                if(dataIn[keyArr[j]]!==this.data[i][keyArr[j]]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 }

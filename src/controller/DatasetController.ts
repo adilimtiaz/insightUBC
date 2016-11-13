@@ -11,6 +11,7 @@ import fs=require('fs');
 import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import {ASTAttribute} from "parse5";
+import GeoFinder from "./GeoFinder";
 
 /**
  * In memory representation of all datasets.
@@ -46,8 +47,8 @@ export default class DatasetController {
 
             if (stats.isDirectory()) {
                 d = this.datasets[id];
-                //console.log(d.data);
-                //console.log(d.data.length);
+                console.log(d.data);
+                console.log(d.data.length);
                 return d;
             }
         }
@@ -118,15 +119,16 @@ export default class DatasetController {
                                 if (node.nodeName=="tr") {
                                     let room:any={};
                                     room=that.Nodeprocessor(tbody.childNodes[i],room,id);
-                                    if(Object.keys(room).length===3) {
+                                    if(Object.keys(room).length>3) {
                                         arrayofrooms.push(room);
                                     }
                                 }
                             }          //at this point processedDataset has all the buildings
                             //open the files that are specified in index
                             //arrrayofrooms is actually all buildings
-                            for(var i=0;i<arrayofrooms.length;i++){
-                                var promise2 = zip.file(arrayofrooms[i]["href"]).async("string").then(function (processedfile2) {
+                            for(var j=0;j<arrayofrooms.length;j++){
+                                let k=j;
+                                var promise2 = zip.file(arrayofrooms[j]["href"]).async("string").then(function (processedfile2) {
                                     let s=processedfile2.indexOf("<tbody>");
                                     let s2=processedfile2.indexOf("</tbody>");
                                     if(s2!==-1) { //element has rooms
@@ -136,15 +138,22 @@ export default class DatasetController {
                                             let node = tbody2.childNodes[i];
                                             if (node.nodeName == "tr") {
                                                 let room: any = {};
-                                                room = that.Nodeprocessor2(node, arrayofrooms[i], id);
-                                                if (Object.keys(room).length === 8) {
-                                                    room[id+"_fullname"]
+                                                room = that.Nodeprocessor2(node, room, id);
+                                                if (Object.keys(room).length == 6) {
+                                                    for(var p in arrayofrooms[k]){
+                                                        if(p!=="href"){
+                                                            room[p]=arrayofrooms[k][p];
+                                                        }
+                                                    }
+                                                    let str=room[id+"_name"];
+                                                    room[id+"_name"]=room[id+"_shortname"]+str;
                                                     processedDataset.add(room);
                                                 }
                                             }
                                         }
                                     }
                                 });
+
                             }
                             promises.push(promise2);
                             Promise.all(promises).catch(function (err) {
@@ -224,7 +233,16 @@ export default class DatasetController {
     }
 
     public Nodeprocessor(node: ASTNode,room:any,id: string): any {
+
         if (node.attrs) {
+            if((node.attrs.length==2)){
+                if(node.childNodes.length==1) {
+                    if(node.childNodes[0].value) {
+                        let v = node.childNodes[0].value;
+                        room[id+"_fullname"]=v;
+                    }
+                }
+            }
             node.attrs.forEach(function (value: ASTAttribute) {
                 if((value.name=="class")&&(value.value==="views-field views-field-field-building-code")){
                     let str=node.childNodes[0].value;  //Removing /n and spaces
@@ -243,6 +261,17 @@ export default class DatasetController {
                     }
                     str=str.trim();
                     room[id+"_address"]=str;
+                    let geoFinder=new GeoFinder;
+                    var promise=geoFinder.processGeoFinder(str).then(function(geo){
+                        if(geo.hasOwnProperty("error")) {
+                            room[id+"_lat"] = 0;    //If geoFinder get an error message on getting lat and lon, set them to default value "0"
+                            room[id+"_lon"] = 0;
+                        } else {
+                            room[id+"_lat"] = geo.lat;
+                            room[id+"_lon"] = geo.lon;
+                        }
+                    });
+                    promises.push(promise);
                 }
                 if((value.name=="href")){
                     let str=value.value;
@@ -253,9 +282,6 @@ export default class DatasetController {
                     room["href"]=str;
                 }
             });
-        }
-
-        if (node.value) {
         }
 
         if (node.childNodes) {
@@ -272,7 +298,7 @@ export default class DatasetController {
                 if((value.name=="title")&&(value.value==="Room Details")){
                     let str=node.childNodes[0].value;  //Removing /n and spaces
                     room[id+"_number"]=str; //adding room number
-                    str=room[id+"_shortname"]+"_"+room[id+"_number"];
+                    str="_"+room[id+"_number"];
                     room[id+"_name"]=str;   //adding room name
                 }
                 if((value.name=="class")&&(value.value==="views-field views-field-field-room-capacity")){
@@ -305,7 +331,6 @@ export default class DatasetController {
                 }
                 if((value.name=="href")){
                     let str=value.value;
-                    delete room["href"];
                     room[id+"_href"]=str;  //room href 7 properties
                 }
             });
@@ -375,6 +400,3 @@ export default class DatasetController {
         }
     }
 }
-
-
-

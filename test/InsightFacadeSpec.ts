@@ -501,7 +501,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to good query (400)", function (done: Function) {
+    it("Should be able to good query (400)", function (done: Function) {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
