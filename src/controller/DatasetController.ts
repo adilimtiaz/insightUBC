@@ -119,7 +119,7 @@ export default class DatasetController {
                                 if (node.nodeName=="tr") {
                                     let room:any={};
                                     room=that.Nodeprocessor(tbody.childNodes[i],room,id);
-                                    if(Object.keys(room).length>3) {
+                                    if(Object.keys(room).length==4) {
                                         arrayofrooms.push(room);
                                     }
                                 }
@@ -164,8 +164,33 @@ export default class DatasetController {
                                 if (processedDataset.data.length == 0) {
                                     reject(false);
                                 }
-                                that.save(id, processedDataset);
-                                fulfill(true);
+                                let geoFinder=new GeoFinder;
+                                for(var i25=0;i25<processedDataset.data.length;i25++){
+                                    let k=i25;
+                                    let str=processedDataset.data[i25][id+"_address"];
+                                    var promise3=geoFinder.processGeoFinder(str).then(function(geo){
+                                        if(geo.hasOwnProperty("error")) {
+                                            processedDataset.data[k][id+"_lat"] = 0;    //If geoFinder get an error message on getting lat and lon, set them to default value "0"
+                                            processedDataset.data[k][id+"_lon"] = 0;
+                                        } else {
+                                            processedDataset.data[k][id+"_lat"] = geo.lat;
+                                            processedDataset.data[k][id+"_lon"] = geo.lon;
+                                        }
+                                    });
+                                    promises.push(promise3);
+                                }
+                                /*
+
+
+                                */
+                                Promise.all(promises).catch(function (err) {
+                                    // log that I have an error, return the entire array;
+                                    console.log('A promise failed to resolve', err);
+                                    reject(false);
+                                }).then(function () {
+                                    that.save(id, processedDataset);
+                                    fulfill(true);
+                                });
                             });
                         });
                         promises.push(promise);
@@ -261,16 +286,6 @@ export default class DatasetController {
                     }
                     str=str.trim();
                     room[id+"_address"]=str;
-                    let geoFinder=new GeoFinder;
-                    var promise=geoFinder.processGeoFinder(str).then(function(geo){
-                        if(geo.hasOwnProperty("error")) {
-                            room[id+"_lat"] = 0;    //If geoFinder get an error message on getting lat and lon, set them to default value "0"
-                            room[id+"_lon"] = 0;
-                        } else {
-                            room[id+"_lat"] = geo.lat;
-                            room[id+"_lon"] = geo.lon;
-                        }
-                    });
                 }
                 if((value.name=="href")){
                     let str=value.value;
