@@ -2,7 +2,6 @@
  * Created by Justin on 2016/10/8.
  */
 
-import Course from "../rest/model/Course";
 import DataStructure from "../rest/model/DataStructure";
 import Log from "../Util";
 import {MathQuery} from "./QueryFilter"

@@ -80,7 +80,7 @@ export default class QueryFilter {
             let negationFilter = new NegationFilter(this.datastructure);
             structure = negationFilter.processNegationFilter(value);
         } else {
-            throw new Error("Bad key");
+            throw new Error("424");
         }
 
 

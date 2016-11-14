@@ -44,9 +44,12 @@ export default class QueryController {
     public isValid(query: QueryRequest): number {
         //query without get and as
         // empty query
+        if(!query.hasOwnProperty("GET")||!query.hasOwnProperty("AS")||(!query.hasOwnProperty("WHERE"))){
+            return 400;
+        }
 
         let get: any = [];
-        if (typeof get == "string") {
+        if (typeof query.GET == "string") {
             get.push(query.GET);
         }
         else {

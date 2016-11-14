@@ -80,7 +80,7 @@ describe("DatasetController", function () {
 
     });
 
-    it.only("Should be able to read a rooms file", function (done: Function) {
+    it("Should be able to read a rooms file", function (done: Function) {
         Log.test('Getting dataset zip');
         let content = {key: 'value'};
         let zipDirectory = "./310rooms.1.1.zip";

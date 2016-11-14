@@ -40,7 +40,31 @@ export default class ORFilter {
             console.log("ORFilter::processORFilter type of inner query " + i + " is... " + typeof JSON.stringify(query[i]));
         }
 
+
+        let nodups:any=[];
+        // eleminating duplicates by converting objects to JSON strings an checking for equality
+        for(var m=0;m<innerStructure.data.length;m++){
+            if(this.dup(innerStructure.data[m],nodups)){
+                nodups.push(innerStructure.data[m]);
+            }
+        }
+
+
+
+        let returnstructure=new DataStructure();
+        for(var o=0;o<nodups.length;o++){
+            returnstructure.add(nodups[o]);
+        }
         //TODO remove duplicate
-        return innerStructure;
+        return returnstructure;
+    }
+
+    public dup(elem:any,nodups:any):boolean{
+            for(var k=0;k<nodups.length;k++){
+                if(JSON.stringify(nodups[k])===JSON.stringify(elem)){
+                    return false;
+                }
+            }
+        return true;
     }
 }

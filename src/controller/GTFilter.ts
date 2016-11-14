@@ -20,12 +20,15 @@ export default class GTFilter {
         let key = Object.keys(query)[0];
         let lowerBound = query[key];
 
-        for(var i=0; i<this.dataStructure.data.length; i++){
-            let data = this.dataStructure.data[i];
-            if(data[key]>lowerBound){
-                structure.add(data);
+        for (var i = 0; i < this.dataStructure.data.length; i++) {
+                let data = this.dataStructure.data[i];
+            //    if (!data.hasOwnProperty(key)) {
+              //      throw new Error("424");
+               // }
+                if (data[key] > lowerBound) {
+                    structure.add(data);
+                }
             }
-        }
         return structure;
 
     }

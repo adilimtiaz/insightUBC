@@ -386,7 +386,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it("Should be able to 200  get keys(400)", function (done: Function) {
+    it.only("Should be able to 200  get keys(400)", function (done: Function) {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {
