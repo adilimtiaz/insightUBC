@@ -94,7 +94,16 @@ export default class QueryController {
         if(query.hasOwnProperty("GROUP") && query.hasOwnProperty("APPLY")){
             //check if group has validkeys
             let groupkeys:any=[];
+            let getunderscorekeys: any=[];
+            for(var l=0;l<get.length;l++){
+                if(get[l].indexOf("_")!==-1) {
+                    getunderscorekeys.push(get[l]);
+                }
+            }
             for(var i=0;i<query.GROUP.length;i++){
+                if(!this.validKey(query.GROUP[i],getunderscorekeys)){
+                    return 400;
+                }
                 if(!this.validKey(query.GROUP[i],validkeys)){
                     return 400;
                 }
