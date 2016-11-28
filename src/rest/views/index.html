@@ -1,53 +1,223 @@
 <!DOCTYPE html>
 <head>
-  <link rel="stylesheet" href="./public/bootstrap.min.css">
-  <link rel="stylesheet" href="./public/main.css">
-  <script src="./public/jquery.min.js"></script>
-  <script src="./public/bootstrap.min.js"></script>
-  <script src="./public/d3.min.js"></script>
-  <script src="./public/main.js"></script>
+    <link rel="stylesheet" href="./public/bootstrap.min.css">
+    <link rel="stylesheet" href="./public/main.css">
+    <script src="./public/jquery.min.js"></script>
+    <script src="./public/bootstrap.min.js"></script>
+    <script src="./public/d3.min.js"></script>
+    <script src="./public/main.js"></script>
 </head>
 <html>
-  <body>
-    <div id="dataset">
-      <div class="form-group">
-	<h3>Dataset</h3>
-	<label for="datasetId">ID:</label>
-	<input type="text" class="form-control" id="datasetId">
-	<label for="datasetZip">Archive:</label>
-	<input type="file" class="form-control" id="datasetZip">
-	</div>
-	<button type="button" class="btn btn-primary" id="datasetAdd">Add Dataset</button>
-	<button type="button" class="btn btn-primary" id="datasetRm">Remove Dataset</button>
+<body>
+<div id="dataset">
+    <div class="form-group">
+        <h3>Dataset</h3>
+        <label for="datasetId">ID:</label>
+        <input type="text" class="form-control" id="datasetId">
+        <label for="datasetZip">Archive:</label>
+        <input type="file" class="form-control" id="datasetZip">
     </div>
-    <div id="container">
-      <h3>Query</h3>
-      <form id="queryForm">
-	<div class="form-group">
-	  <label for="query">Query:</label>
-	  <textarea class="form-control" rows="10" id="query"></textarea>
-	</div>
-	<button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+    <button type="button" class="btn btn-primary" id="datasetAdd">Add Dataset</button>
+    <button type="button" class="btn btn-primary" id="datasetRm">Remove Dataset</button>
+</div>
+<div id="container">
+    <h3>Query</h3>
+    <p>Remember that you must at least enter one of the first 4 fields or one of the last two fields</p>
+    <form id="queryForm">
+        <div class="form-group row">
+            <label for="building" class="col-sm-2 col-form-label">Show rooms in building X</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="building" placeholder="For example, Hugh Dempster Pavilion">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="size" class="col-sm-2 col-form-label">Show rooms over size X</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="size" placeholder="Example: 100">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="type" class="col-sm-2 col-form-label">Show rooms with type X</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="type" placeholder="Example: Small Group">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="furniture" class="col-sm-2 col-form-label">Show rooms with furniture x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="furniture" placeholder="Example: Classroom-Fixed Tables/Movable Chairs">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="distance" class="col-sm-2 col-form-label">Show rooms within distance x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="distance" placeholder="Example: 100">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Show rooms within distance x of this building. Be sure to enter both fields. or no filtering will take place.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="name" placeholder="Example: Hugh Dempster Pavilion">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <h3>Room scheduler</h3>
+    <p>Remember that you must at least enter one of the first 4 fields or one of the last two fields</p>
+    <form id="Scheduler">
+        <div class="form-group row">
+            <label for="building" class="col-sm-2 col-form-label">Enter building shortnames. If entering more than one, separate them by commas.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="shortnames" placeholder="For example, DMP, SWNG">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="size" class="col-sm-2 col-form-label">Enter building to find distance from. If entering this, enter the next box and leave the previous box blank.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="bname" placeholder="Example: Hugh Dempster Pavilion">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="type" class="col-sm-2 col-form-label">Enter distance x in metres</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="ty" placeholder="Example: 100">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="furniture" class="col-sm-2 col-form-label">Show rooms with furniture x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="furne" placeholder="Example: Classroom-Fixed Tables/Movable Chairs">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="distance" class="col-sm-2 col-form-label">Show rooms within distance x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="disance" placeholder="Example: 100">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Show rooms within distance x of this building. Be sure to enter both fields. or no filtering will take place.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="nae" placeholder="Example: Hugh Dempster Pavilion">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <h3>Course Explorer</h3>
+    <form id="queryForm2">
+        <div class="form-group row">
+            <label for="selectShow" class="col-sm-2 col-form-label">Show</label>
+            <div class="col-sm-8">
+                <label class="custom-control custom-radio">
+                    <input id="course" name="radio" type="radio" class="custom-control-input">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">Course</span>
+                </label>
+                <label class="custom-control custom-radio">
+                    <input id="section" name="radio" type="radio" class="custom-control-input">
+                    <span class="custom-control-indicator"></span>
+                    <span class="custom-control-description">Section</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="department" class="col-sm-2 col-form-label">Department</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="department" placeholder="Department">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="courseID" class="col-sm-2 col-form-label">Course ID</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="courseID" placeholder="Course ID">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="courseTitle" class="col-sm-2 col-form-label">Course Title</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="courseTitle" placeholder="Course Title">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="instructor" class="col-sm-2 col-form-label">Instructor</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="instructor" placeholder="Instructor">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="size" class="col-sm-2 col-form-label">Size</label>
+            <div class="col-sm-2">
+                <select class="custom-select" id="sizeOperator">
+                    <option value="0">Greater than</option>
+                    <option value="1">Equals to</option>
+                    <option value="2">Less than</option>
+                </select>
+            </div>
+            <div class="col-sm-6">
+                <input type="number" min="0" class="form-control" id="size" placeholder="Size">
+            </div>
+
+        </div>
+        <div class="form-group row">
+            <label for="orderBy" class="col-sm-2 col-form-label">Order By</label>
+            <div class="col-sm-2">
+                <select class="custom-select" id="orderBy1">
+                    <option value="0">None</option>
+                    <option value="1">Number of sections</option>
+                    <option value="2">Average grade</option>
+                    <option value="3">Most passing students</option>
+                    <option value="4">Most failing students</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select class="custom-select" id="orderBy2" disabled="true">
+                    <option value="0">None</option>
+                    <option value="1">Number of sections</option>
+                    <option value="2">Average grade</option>
+                    <option value="3">Most passing students</option>
+                    <option value="4">Most failing students</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select class="custom-select" id="orderBy3" disabled="true">
+                    <option value="0">None</option>
+                    <option value="1">Number of sections</option>
+                    <option value="2">Average grade</option>
+                    <option value="3">Most passing students</option>
+                    <option value="4">Most failing students</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <select class="custom-select" id="orderBy4" disabled="true">
+                    <option value="0">None</option>
+                    <option value="1">Number of sections</option>
+                    <option value="2">Average grade</option>
+                    <option value="3">Most passing students</option>
+                    <option value="4">Most failing students</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div id="render">
+    <h3>Result</h3>
+</div>
+<div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-    <div id="render">
-      <h3>Result</h3>
-    </div>
-    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-	<div class="modal-content">
-	  <div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	    <h4 class="modal-title"></h4>
-	  </div>
-	  <div class="modal-body">
-	    <p></p>
-	  </div>
-	  <div class="modal-footer">
-	    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	  </div>
-	</div>
-      </div>
-      </div>
-  </body>
+</div>
+</body>
 </html>

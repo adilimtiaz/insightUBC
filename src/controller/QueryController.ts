@@ -86,6 +86,8 @@ export default class QueryController {
                 }
             }
         }
+
+
         //check if both group and apply are there
         if ((query.hasOwnProperty("GROUP") && !query.hasOwnProperty("APPLY")) || (query.hasOwnProperty("APPLY") && !query.hasOwnProperty("GROUP"))) {
             return 400;

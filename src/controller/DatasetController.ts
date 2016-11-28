@@ -224,6 +224,13 @@ export default class DatasetController {
                                         c[id + '_pass'] = obj2.result[i].Pass;
                                         c[id + '_fail'] = obj2.result[i].Fail;
                                         c[id + '_audit'] = obj2.result[i].Audit;
+                                        c[id + '_year'] = obj2.result[i].Section;
+                                        if(c[id + '_year']=="overall"){
+                                            c[id + '_year']=1900;
+                                        }
+                                        else{
+                                            c[id + '_year']= obj2.result[i].Year;
+                                        }
                                         processedDataset.add(c);
                                     }
                                 }
