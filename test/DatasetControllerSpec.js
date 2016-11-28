@@ -49,7 +49,7 @@ describe("DatasetController", function () {
             });
         });
     });
-    it.only("Should be able to read a rooms file", function (done) {
+    it("Should be able to read a rooms file", function (done) {
         Util_1.default.test('Getting dataset zip');
         var content = { key: 'value' };
         var zipDirectory = "./310rooms.1.1.zip";

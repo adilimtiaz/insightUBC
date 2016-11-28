@@ -152,30 +152,161 @@ $(function () {
 
     $("#Scheduler").submit(function (e) {
         e.preventDefault();
-        var query2={};
-        query2.GET=["rooms_name"];
-        query2.AS="TABLE";
-        var where2={};
-        where2["AND"]=[];
+        var roomsarray = [];
+        var courses = [];
+        var query2 = {};
+        query2.GET = ["rooms_name"];
+        query2.AS = "TABLE";
+        var where2 = {};
+        where2["AND"] = [];
         console.log("Entered");
-        if($("#shortnames").val().length!==0) {
+        if ($("#shortnames").val().length !== 0) {
             //var dept=JSON.stringify($("#dept").val());
-            var str=$("#shortnames").val();
-            var res=str.split(",");
-            var or={};
-            or["OR"]=[];
-            for(var i=0;i<res.length;i++){
+            console.log("Should not be here");
+            var str = $("#shortnames").val();
+            var res = str.split(",");
+            var or = {};
+            or["OR"] = [];
+            for (var i = 0; i < res.length; i++) {
                 var b = {"IS": {"rooms_shortname": res[i]}};
                 or["OR"].push(b);
             }
             where2["AND"].push(or);
+            query2.WHERE = where2;
+            query2 = JSON.stringify(query2);
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: query2,
+                    async: false,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for (var i = 0; i < data["result"].length; i++) {
+                            roomsarray.push(data["result"][i]);
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
         }
-        query2.WHERE=where2;
-        query2=JSON.stringify(query2);
-        var roomsarray=[];
+
+        if (($("#bname").val().length !== 0) && ($("#ty").val().length !== 0)) {
+            var str = $("#ty").val();
+            var num = parseInt(str);
+            var q = {
+                "GET": ["rooms_fullname", "rooms_lat", "rooms_lon"],
+                "WHERE": {"IS": {"rooms_fullname": $("#bname").val()}},
+                "AS": "TABLE"
+            };
+            q = JSON.stringify(q);
+            var targetlat = 0;
+            var targetlon = 0;// These are the target buildings latlon. so dist can be computed.
+            try {
+                $.ajax("/query", {
+                    type: "POST", data: q, async: false,contentType: "application/json", dataType: "json", success: function (data) {
+                        if (data["render"] === "TABLE") {
+                            targetlat = data["result"][0]["rooms_lat"];
+                            targetlon = data["result"][0]["rooms_lon"];
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+
+            var query = {
+                "GET": ["rooms_name", "rooms_lat", "rooms_lon"],
+                "WHERE": {},
+                "AS": "TABLE"
+            };
+            query = JSON.stringify(query);
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: query,
+                    async: false,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        var distarray = [];
+                        for (var i = 0; i < data["result"].length; i++) {
+                            //taken from http://stackoverflow.com/questions/1420045/how-to-find-distance-from-the-latitude-and-longitude-of-two-locations
+                            var radlat1 = Math.PI * data["result"][i]["rooms_lat"] / 180;
+                            var radlat2 = Math.PI * targetlat / 180;
+                            var radlon1 = Math.PI * data["result"][i]["rooms_lon"] / 180;
+                            var radlon2 = Math.PI * targetlon / 180;
+                            var theta = data["result"][i]["rooms_lon"] - targetlon;
+                            var radtheta = Math.PI * theta / 180;
+                            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+                            dist = Math.acos(dist);
+                            dist = dist * 180 / Math.PI;
+                            dist = dist * 60 * 1.1515;
+
+                            //Get in in meters
+                            dist = dist * 1.609344 * 1000;
+                            if (dist <= num) {
+                                var r = {};
+                                r["rooms_name"] = data["result"][i]["rooms_name"];
+                                distarray.push(r);
+                            }
+                        }
+                        for (var i = 0; i < distarray.length; i++) {
+                            roomsarray.push(distarray[i]);
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+        }
+
+        console.log(courses.length);
+        var courseq = {};
+        courseq.GET = ["courses_dept", "courses_id", "maxSize" ,"numSections"];
+        courseq.AS = "TABLE";
+        courseq.APPLY=[ {"numSections": {"COUNT": "courses_uuid"}},{"maxSize": {"MAX": "courses_size"}}];
+        courseq.GROUP=[ "courses_dept", "courses_id" ];
+        var where2 = {};
+        where2["AND"] = [];
+        if ($("#dept").val().length !== 0) {
+            //var dept=JSON.stringify($("#dept").val());
+            var str = $("#dept").val();
+            var b = {"IS": {"courses_dept": str}};
+            where2["AND"].push(b);
+        }
+
+        if ($("#number").val().length !== 0) {
+            //var dept=JSON.stringify($("#dept").val());
+            var num = $("#number").val();
+            var str = num.toString();
+            var b = {"IS": {"courses_id": str}};
+            where2["AND"].push(b);
+        }
+        var c = {"EQ": {"courses_year": 2014}};
+        where2["AND"].push(c);
+        courseq.WHERE = where2;
+        courseq = JSON.stringify(courseq);
+
         try {
-            $.ajax("/query", {type:"POST", data: query2, contentType: "application/json", dataType: "json", success: function(data) {
-                    roomsarray=data["result"];
+            $.ajax("/query", {
+                type: "POST",
+                data: courseq,
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    for (var i = 0; i < data["result"].length; i++) {
+                        courses.push(data["result"][i]);
+                    }
+                    console.log(JSON.stringify(courses));
                 }
             }).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -183,73 +314,9 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }
-
-        if(($("#bname").val().length!==0) && ($("#ty").val().length!==0)){
-            var str=$("#ty").val();
-            var num=parseInt(str);
-            var q={
-                "GET": ["rooms_fullname", "rooms_lat", "rooms_lon"],
-                "WHERE": {"IS": {"rooms_fullname": $("#bname").val()}},
-                "AS": "TABLE"
-            };
-            q=JSON.stringify(q);
-            var targetlat=0;
-            var targetlon=0;// These are the target buildings latlon. so dist can be computed.
-            try {
-                $.ajax("/query", {type:"POST", data: q, contentType: "application/json", dataType: "json", success: function(data) {
-                    if (data["render"] === "TABLE") {
-                        targetlat=data["result"][0]["rooms_lat"];
-                        targetlon=data["result"][0]["rooms_lon"];
-                    }
-                }}).fail(function (e) {
-                    spawnHttpErrorModal(e)
-                });
-            } catch (err) {
-                spawnErrorModal("Query Error", err);
-            }
-
-            var query={
-                "GET": ["rooms_name", "rooms_lat", "rooms_lon"],
-                "WHERE": {},
-                "AS": "TABLE"
-            };
-            query=JSON.stringify(query);
-            try {
-                $.ajax("/query", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
-                    var distarray=[];
-                    for(var i=0;i<data["result"].length;i++){
-                        //taken from http://stackoverflow.com/questions/1420045/how-to-find-distance-from-the-latitude-and-longitude-of-two-locations
-                        var radlat1 = Math.PI * data["result"][i]["rooms_lat"] / 180;
-                        var radlat2 = Math.PI * targetlat / 180;
-                        var radlon1 = Math.PI * data["result"][i]["rooms_lon"] / 180;
-                        var radlon2 = Math.PI * targetlon / 180;
-                        var theta = data["result"][i]["rooms_lon"] - targetlon;
-                        var radtheta = Math.PI * theta / 180;
-                        var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-                        dist = Math.acos(dist);
-                        dist = dist * 180 / Math.PI;
-                        dist = dist * 60 * 1.1515;
-                        console.log("Distarray should have stuff");
-
-                        //Get in in meters
-                        dist = dist * 1.609344*1000;
-                        if(dist<=num){
-                            var r={};
-                            r["rooms_name"]=data["result"][i]["rooms_name"];
-                            distarray.push(r);
-                        }
-                    }
-                    generateTable(distarray);
-                }}).fail(function (e) {
-                    spawnHttpErrorModal(e)
-                });
-            } catch (err) {
-                spawnErrorModal("Query Error", err);
-            }
+        for(var i=0;i<courses.length;i++){
 
         }
-
-
 
     });
 
@@ -257,7 +324,7 @@ $(function () {
         var $ob2 = $('#orderBy2');
         var $ob3 = $('#orderBy3');
         var $ob4 = $('#orderBy4');
-        if(this.value == 0) {
+        if(this.value == "0") {
             $ob2.prop('disabled', true);
             $ob2.val('0');
             $ob3.prop('disabled', true);
@@ -273,7 +340,7 @@ $(function () {
     $('#orderBy2').on('change', function() {
         var $ob3 = $('#orderBy3');
         var $ob4 = $('#orderBy4');
-        if(this.value == 0) {
+        if(this.value == "0") {
             $ob3.prop('disabled', true);
             $ob3.val('0');
             $ob4.prop('disabled', true);
@@ -286,7 +353,7 @@ $(function () {
     });
     $('#orderBy3').on('change', function() {
         var $ob4 = $('#orderBy4');
-        if(this.value == 0) {
+        if(this.value == "0") {
             $ob4.prop('disabled', true);
             $ob4.val('0');
         } else {
@@ -296,24 +363,48 @@ $(function () {
         }
     });
 
+    $('#orderBys2').on('change', function() {
+        var $obs3 = $('#orderBys3');
+        if(this.value == "0" ) {
+            $obs3.prop('disabled', true);
+            $obs3.val('0');
+        } else {
+            if($obs3.is(':disabled')) {
+                $obs3.prop('disabled', false);
+            }
+        }
+    });
+
+    $('input[name=radio]','#queryForm2').change( function() {
+        if ($('input[name=radio]:checked','#queryForm2').attr('id') === "section") {
+            $('#courseOrder').hide();
+            $('#sectionOrder').show();
+        }
+        if ($('input[name=radio]:checked','#queryForm2').attr('id') === "course") {
+            $('#sectionOrder').hide();
+            $('#courseOrder').show();
+        }
+    });
+
     $("#queryForm2").submit(function (e) {
         e.preventDefault();
         // var query = $("#query").val();
         var id = $("#datasetId").val();
         var query = {};
+        var radioChecked = $('input[name=radio]:checked','#queryForm2').attr('id');
 
         // Fill in "GET" according to which way the user chooses, course or section
         var getArr = [];
         getArr.push(id + "_dept");
         getArr.push(id + "_id");
         getArr.push(id + "_title");
-        if ($('input[name=radio]:checked','#queryForm').attr('id') === "course") {
+        if (radioChecked === "course") {
             getArr.push("numSections");
             getArr.push("courseAverage");
             getArr.push("maxPass");
             getArr.push("maxFail");
         }
-        if ($('input[name=radio]:checked','#queryForm').attr('id') === "section") {
+        if (radioChecked === "section") {
             getArr.push(id + "_instructor");
             getArr.push(id + "_avg");
         }
@@ -360,8 +451,8 @@ $(function () {
             isObj["IS"] = isContent;
             andObj.push(isObj);
         }
-        if($('#size').val()) {
-            sizeInput = parseInt($('#size').val(),10);
+        if($('#sizeCS').val()) {
+            sizeInput = parseInt($('#sizeCS').val(),10);
             var sizeOperator = $('#sizeOperator').val();
             if(sizeOperator === 0) {
                 // TODO
@@ -378,7 +469,7 @@ $(function () {
         }
         query["WHERE"] = whereObj;
 
-        if ($('input[name=radio]:checked','#queryForm').attr('id') === "course") {
+        if (radioChecked === "course") {
             // Fill in "GROUP"
             var groupArr = [];
             groupArr.push(id+"_dept");
@@ -413,14 +504,42 @@ $(function () {
             applyArr.push(maxFail);
             query["APPLY"] = applyArr;
         }
-
-        var orderBy = parseInt($('orderBy').val(),10);
-        if(orderBy === 0) {
-            query["ORDER"] = id + "_dept"; // "ORDER": "courses_dept",
-        } else {
-            var orderObj = {}
+        // Fill in "ORDER"
+        var orderObj = {};
+        if($('#orderBy0').val() == 0) {
             orderObj["dir"] = "UP";
-            var orderKeys = [];
+        } else {
+            orderObj["dir"] = "DOWN";
+        }
+        var orderKeys = [];
+        if(radioChecked === "section") {
+            var $obs1 = $('#orderBys1');
+            var $obs2 = $('#orderBys2');
+            var $obs3 = $('#orderBys3');
+            function svalToString(val) {
+                if(val === "0") {
+                    return "null";
+                } else if (val === "1") {
+                    return id+"_dept";
+                } else if (val === "2") {
+                    return id+"_id";
+                } else if (val === "3") {
+                    return id+"_avg";
+                }
+            }
+            var keys1 = svalToString($obs1.val());
+            var keys2;
+            var keys3;
+            orderKeys.push(keys1);
+            keys2 = svalToString($obs2.val());
+            if(keys2 !== "null") {
+                orderKeys.push(keys2);
+                keys3 = svalToString($obs3.val());
+                if(keys3 !== "null") {
+                    orderKeys.push(keys3);
+                }
+            }
+        } else {
             var $ob1 = $('#orderBy1');
             var $ob2 = $('#orderBy2');
             var $ob3 = $('#orderBy3');
@@ -458,21 +577,26 @@ $(function () {
                     }
                 }
             }
-            if(orderKeys.length == 0) { // If the user does not choose any order, set to default "courses_dept"
-                orderKeys.push(id+"_dept");
-            }
-            orderObj["keys"] = orderKeys;
-            query["ORDER"] = orderObj; // "ORDER": { "dir": "UP", "keys": ["numSections", "courseAverage", "maxPass", "maxFail"]},
         }
+        if(orderKeys.length == 0) { // If the user does not choose any order, set to default "courses_dept"
+            orderKeys.push(id+"_dept");
+        }
+        orderObj["keys"] = orderKeys;
+        query["ORDER"] = orderObj; // "ORDER": { "dir": "UP", "keys": ["numSections", "courseAverage", "maxPass", "maxFail"]}
 
         query["AS"] = "TABLE";
 
         query = JSON.stringify(query);
-
         try {
             $.ajax("/query", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
-                    generateTable(data["result"]);
+                    if (data["result"].length > 0) {
+                        generateTable(data["result"]);
+                    } else {
+                        alert("Empty Result");
+                        var container = $("#render");
+                        container.empty();
+                    }
                 }
             }}).fail(function (e) {
                 spawnHttpErrorModal(e)

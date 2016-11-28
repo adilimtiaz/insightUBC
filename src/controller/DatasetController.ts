@@ -231,6 +231,7 @@ export default class DatasetController {
                                         else{
                                             c[id + '_year']= obj2.result[i].Year;
                                         }
+                                        c[id + '_size'] = c[id + '_pass']+c[id + '_fail'];
                                         processedDataset.add(c);
                                     }
                                 }

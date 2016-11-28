@@ -216,7 +216,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it("Should be able to empty apply and sort numerically (200)", function () {
+    it.only("Should be able to empty apply and sort numerically (200)", function () {
         var that = this;
         var data22 = fs.readFileSync('./q3.json',"utf8");
         data22=JSON.parse(data22);
@@ -386,7 +386,7 @@ describe("InsightFacade", function () {
         });
     });
 
-    it.only("Should be able to 200  get keys(400)", function (done: Function) {
+    it("Should be able to 200  get keys(400)", function (done: Function) {
         var that = this;
         Log.trace("Starting test: " + that.test.title);
         facade.addDataset('courses', zipFileContents).then(function (response: InsightResponse) {

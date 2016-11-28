@@ -84,15 +84,15 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="furniture" class="col-sm-2 col-form-label">Show rooms with furniture x</label>
+            <label for="furniture" class="col-sm-2 col-form-label">Show classes in dept x</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="furne" placeholder="Example: Classroom-Fixed Tables/Movable Chairs">
+                <input type="text" class="form-control" id="dept" placeholder="Example: cpsc">
             </div>
         </div>
         <div class="form-group row">
-            <label for="distance" class="col-sm-2 col-form-label">Show rooms within distance x</label>
+            <label for="distance" class="col-sm-2 col-form-label">Show classes with id x</label>
             <div class="col-sm-8">
-                <input type="text" class="form-control" id="disance" placeholder="Example: 100">
+                <input type="text" class="form-control" id="number" placeholder="Example: 100">
             </div>
         </div>
         <div class="form-group row">
@@ -109,7 +109,7 @@
             <label for="selectShow" class="col-sm-2 col-form-label">Show</label>
             <div class="col-sm-8">
                 <label class="custom-control custom-radio">
-                    <input id="course" name="radio" type="radio" class="custom-control-input">
+                    <input id="course" name="radio" type="radio" class="custom-control-input" checked="checked">
                     <span class="custom-control-indicator"></span>
                     <span class="custom-control-description">Course</span>
                 </label>
@@ -154,47 +154,79 @@
                 </select>
             </div>
             <div class="col-sm-6">
-                <input type="number" min="0" class="form-control" id="size" placeholder="Size">
+                <input type="number" min="0" class="form-control" id="sizeCS" placeholder="Size">
             </div>
-
         </div>
         <div class="form-group row">
             <label for="orderBy" class="col-sm-2 col-form-label">Order By</label>
             <div class="col-sm-2">
-                <select class="custom-select" id="orderBy1">
-                    <option value="0">None</option>
-                    <option value="1">Number of sections</option>
-                    <option value="2">Average grade</option>
-                    <option value="3">Most passing students</option>
-                    <option value="4">Most failing students</option>
+                <select class="custom-select" id="orderBy0">
+                    <option value="0">low to high</option>
+                    <option value="1">high to low</option>
                 </select>
             </div>
-            <div class="col-sm-2">
-                <select class="custom-select" id="orderBy2" disabled="true">
-                    <option value="0">None</option>
-                    <option value="1">Number of sections</option>
-                    <option value="2">Average grade</option>
-                    <option value="3">Most passing students</option>
-                    <option value="4">Most failing students</option>
-                </select>
+            <div id="courseOrder">
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBy1">
+                        <option value="0">None</option>
+                        <option value="1">Number of sections</option>
+                        <option value="2">Average grade</option>
+                        <option value="3">Most passing students</option>
+                        <option value="4">Most failing students</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBy2" disabled="true">
+                        <option value="0">None</option>
+                        <option value="1">Number of sections</option>
+                        <option value="2">Average grade</option>
+                        <option value="3">Most passing students</option>
+                        <option value="4">Most failing students</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBy3" disabled="true">
+                        <option value="0">None</option>
+                        <option value="1">Number of sections</option>
+                        <option value="2">Average grade</option>
+                        <option value="3">Most passing students</option>
+                        <option value="4">Most failing students</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBy4" disabled="true">
+                        <option value="0">None</option>
+                        <option value="1">Number of sections</option>
+                        <option value="2">Average grade</option>
+                        <option value="3">Most passing students</option>
+                        <option value="4">Most failing students</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-sm-2">
-                <select class="custom-select" id="orderBy3" disabled="true">
-                    <option value="0">None</option>
-                    <option value="1">Number of sections</option>
-                    <option value="2">Average grade</option>
-                    <option value="3">Most passing students</option>
-                    <option value="4">Most failing students</option>
-                </select>
-            </div>
-            <div class="col-sm-2">
-                <select class="custom-select" id="orderBy4" disabled="true">
-                    <option value="0">None</option>
-                    <option value="1">Number of sections</option>
-                    <option value="2">Average grade</option>
-                    <option value="3">Most passing students</option>
-                    <option value="4">Most failing students</option>
-                </select>
+            <div id="sectionOrder" style="display:none;">
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBys1">
+                        <option value="1">Department</option>
+                        <option value="2">Course ID</option>
+                        <option value="3">Section Average</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBys2">
+                        <option value="0">None</option>
+                        <option value="1">Department</option>
+                        <option value="2">Course ID</option>
+                        <option value="3">Section Average</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="custom-select" id="orderBys3" disabled="true">
+                        <option value="0">None</option>
+                        <option value="1">Department</option>
+                        <option value="2">Course ID</option>
+                        <option value="3">Section Average</option>
+                    </select>
+                </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
