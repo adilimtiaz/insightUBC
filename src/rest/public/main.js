@@ -155,7 +155,7 @@ $(function () {
         var roomsarray = [];
         var courses = [];
         var query2 = {};
-        query2.GET = ["rooms_name"];
+        query2.GET = ["rooms_name","rooms_seats"];
         query2.AS = "TABLE";
         var where2 = {};
         where2["AND"] = [];
@@ -221,7 +221,7 @@ $(function () {
             }
 
             var query = {
-                "GET": ["rooms_name", "rooms_lat", "rooms_lon"],
+                "GET": ["rooms_name", "rooms_lat", "rooms_lon","rooms_seats"],
                 "WHERE": {},
                 "AS": "TABLE"
             };
@@ -253,6 +253,7 @@ $(function () {
                             if (dist <= num) {
                                 var r = {};
                                 r["rooms_name"] = data["result"][i]["rooms_name"];
+                                r["rooms_seats"] = data["result"][i]["rooms_seats"];
                                 distarray.push(r);
                             }
                         }
@@ -306,7 +307,6 @@ $(function () {
                     for (var i = 0; i < data["result"].length; i++) {
                         courses.push(data["result"][i]);
                     }
-                    console.log(JSON.stringify(courses));
                 }
             }).fail(function (e) {
                 spawnHttpErrorModal(e)
@@ -314,10 +314,141 @@ $(function () {
         } catch (err) {
             spawnErrorModal("Query Error", err);
         }
-        for(var i=0;i<courses.length;i++){
-
+        var days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+        console.log(JSON.stringify(roomsarray));
+        var slots=[];
+        for(var i=0;i<roomsarray.length;i++){ //creating slots for all rooms
+            for(var j=0;j<2;j++){ //5 days a week
+                if(j%2==0) {  //its MWF
+                    for (var k = 0; k < 24; k++) { //24 hours a day
+                        var slot = {};
+                        slot["days"] = days[j]+days[j+2]+days[j+4];
+                        slot["time"] = (800+(k*100))%2400;
+                        slot["room"]=roomsarray[i]["rooms_name"];
+                        slot["seats"]=roomsarray[i]["rooms_seats"];
+                        slot["taken"]=false;
+                        slot["farr"]=[];
+                        slots.push(slot);
+                    }
+                }
+                else {
+                    for (var k = 0; k < 16; k++) { //24 hours a day
+                        var slot = {};
+                        slot["days"] = days[j]+days[j+2];
+                        slot["time"] = (800+(k*150))%2400;
+                        if(slot["time"]%100!==0){
+                            slot["time"]=slot["time"]-20; //950 would be 930
+                        }
+                        slot["room"]=roomsarray[i]["rooms_name"];
+                        slot["seats"]=roomsarray[i]["rooms_seats"];
+                        slot["taken"]=false;
+                        slot["farr"]=[]; //indicates if another class is scheduled during this slot
+                        slots.push(slot);
+                    }
+                }
+            }
         }
-
+        var schcourses=[];
+        for(var i=0;i<courses.length;i++){
+            var secsnum=Math.ceil((courses[i]["numSections"])/3);
+            for(var j=0;j<secsnum;j++){
+                var newc={};
+                newc["name"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+j;
+                newc["reqdseats"]=courses[i]["maxSize"];
+                newc["scheduled"]=false;
+                newc["f"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]; // indicates value to push into flag
+                schcourses.push(newc);
+            }
+        }
+        schcourses.sort(function(a, b) {  //sort both arrays in ascending order so that the smallest rooms get matched with the smallest courses
+            return parseFloat(a["reqdseats"]) - parseFloat(b["reqdseats"]);
+        });
+        slots.sort(function(a, b) {
+            return parseFloat(a["seats"]) - parseFloat(b["seats"]);
+        });
+        console.log(JSON.stringify(slots));
+        var schslots=[];
+        var goodoourses=0; //number of courses scheduled between 800 and 1700
+        var badcourses=0; //number of courses scheduled outside of those times
+        var coursesnotscheduled=schcourses.length;
+        for(var i=0;i<schcourses.length;i++){
+            var day=[];
+            var time=0;
+            var coursetitle=schcourses[i]["f"]; //course that is currently being scheduled
+            for(var j=0;j<slots.length;j++){ //first try to schedule between 8 and 5
+                if((slots[j]["time"]>=800)&&(slots[j]["time"]<=1600)) {
+                    if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
+                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                            slots[j]["course"] = schcourses[i]["name"];
+                            day = slots[j]["days"];
+                            time = slots[j]["time"];
+                            slots[j]["taken"] = true;
+                            schcourses[i]["scheduled"] = true;
+                            var s={};
+                            s["days"]=slots[j]["days"];
+                            s["time"]=slots[j]["time"];
+                            s["room"]=slots[j]["room"];
+                            s["course"]=schcourses[i]["name"];
+                            s["seats"]=slots[j]["seats"];
+                            s["coursereqdseats"]=schcourses[i]["reqdseats"];
+                            schslots.push(s);
+                            goodoourses++;
+                            coursesnotscheduled--;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(schcourses[i]["scheduled"] == false){
+                for(var j=0;j<slots.length;j++){
+                        if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
+                            if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                                slots[j]["course"] = schcourses[i]["name"];
+                                day = slots[j]["days"];
+                                time = slots[j]["time"];
+                                slots[j]["taken"] = true;
+                                schcourses[i]["scheduled"] = true;
+                                var s={};
+                                s["days"]=slots[j]["days"];
+                                s["time"]=slots[j]["time"];
+                                s["room"]=slots[j]["room"];
+                                s["course"]=schcourses[i]["name"];
+                                s["seats"]=slots[j]["seats"];
+                                s["coursereqdseats"]=schcourses[i]["reqdseats"];
+                                schslots.push(s);
+                                badcourses++;
+                                coursesnotscheduled--;
+                                break;
+                            }
+                        }
+                    }
+            }
+            for(var j=0;j<slots.length;j++){
+                if(slots[j]["taken"]==false){
+                    if(slots[j]["taken"]==false){
+                        if((slots[j]["days"]==day)&&(slots[j]["time"]==time)){ //all slots with the same time and day now know that this class is scheduled now
+                            slots[j]["farr"].push(coursetitle);
+                        }
+                    }
+                }
+            }
+        }
+        var notsch=[];
+        for(var i=0;i<schcourses.length;i++){
+            if(schcourses[i]["scheduled"]==false){
+                notsch.push(schcourses[i]["name"]);
+            }
+        }
+        console.log(JSON.stringify(schslots));
+        console.log("Good courses:" + goodoourses);
+        console.log("Bad courses:" + badcourses);
+        console.log("not scheduled:" + coursesnotscheduled);
+        generateTable(schslots);
+        var message="Quality is :- "+(100-((badcourses/(schcourses.length))*100)) +"\n";
+        message=message+"This indicates the percentage of classes that were scheduled but not scheduled between 8:00 and 17:00" +"\n";
+        message=message+"This measure includes classes that could not be scheduled plus classes outside of the above times :- "+(100-((badcourses+coursesnotscheduled)/(schcourses.length))*100) + "\n";
+        message=message+"These classes could not be scheduled"+JSON.stringify(notsch);
+        spawnErrorModal("Quality",message);
     });
 
     $('#orderBy1').on('change', function() {
@@ -403,16 +534,18 @@ $(function () {
             getArr.push("courseAverage");
             getArr.push("maxPass");
             getArr.push("maxFail");
+            getArr.push("maxSize");
         }
         if (radioChecked === "section") {
             getArr.push(id + "_instructor");
             getArr.push(id + "_avg");
+            getArr.push(id + "_size");
         }
         query["GET"] = getArr;
 
         // Fill in "WHERE" according to what inputs the user puts in
         var whereObj = {};
-        var andObj = [];
+        var andArr = [];
         var departmentInput = {};
         var courseIDInput = {};
         var courseTitleInput = {};
@@ -425,7 +558,7 @@ $(function () {
             var isContent = {};
             isContent[id + "_dept"] = departmentInput;
             isObj["IS"] = isContent;
-            andObj.push(isObj);
+            andArr.push(isObj);
         }
         if($('#courseID').val()) {
             courseIDInput = $('#courseID').val();
@@ -433,7 +566,7 @@ $(function () {
             var isContent = {};
             isContent[id + "_id"] = courseIDInput;
             isObj["IS"] = isContent;
-            andObj.push(isObj);
+            andArr.push(isObj);
         }
         if($('#courseTitle').val()) {
             courseTitleInput = $('#courseTitle').val();
@@ -441,7 +574,7 @@ $(function () {
             var isContent = {};
             isContent[id + "_title"] = courseTitleInput;
             isObj["IS"] = isContent;
-            andObj.push(isObj);
+            andArr.push(isObj);
         }
         if( $('#instructor').val()) {
             instructorInput = $('#instructor').val();
@@ -449,24 +582,44 @@ $(function () {
             var isContent = {};
             isContent[id + "_instructor"] = instructorInput;
             isObj["IS"] = isContent;
-            andObj.push(isObj);
+            andArr.push(isObj);
         }
-        if($('#sizeCS').val()) {
-            sizeInput = parseInt($('#sizeCS').val(),10);
-            var sizeOperator = $('#sizeOperator').val();
-            if(sizeOperator === 0) {
-                // TODO
-                // var gtObj = {};
-                // gtObj = sizeInput;
-            } else if (sizeOperator === 1) {
-
-            } else if (sizeOperator === 2) {
-
+        if(radioChecked === "section") {
+            if($('#sizeCS').val()) {
+                sizeInput = parseInt($('#sizeCS').val(),10);
+                var sizeOperator = $('#sizeOperator').val();
+                if(sizeOperator === "0") {
+                    // TODO
+                    var gtObj = {};
+                    var gtContent = {};
+                    gtContent[id+"_size"] = sizeInput;
+                    gtObj["GT"] = gtContent;
+                    andArr.push(gtObj);
+                } else if (sizeOperator === "1") {
+                    var eqObj = {};
+                    var eqContent = {};
+                    eqContent[id+"_size"] = sizeInput;
+                    eqObj["EQ"] = eqContent;
+                    andArr.push(eqObj);
+                } else if (sizeOperator === "2") {
+                    var ltObj = {};
+                    var ltContent = {};
+                    ltContent[id+"_size"] = sizeInput;
+                    ltObj["LT"] = ltContent;
+                    andArr.push(ltObj);
+                }
             }
         }
-        if(andObj.length != 0) {
-            whereObj["AND"] = andObj;
-        }
+        // {"NOT": {"EQ": {"courses_year": 1900}}}
+        var notObj = {};
+        var eqObj = {};
+        var eqContent = {};
+        eqContent[id+"_year"] = 1900;
+        eqObj["EQ"] = eqContent;
+        notObj["NOT"] = eqObj;
+        andArr.push(notObj);
+
+        whereObj["AND"] = andArr;
         query["WHERE"] = whereObj;
 
         if (radioChecked === "course") {
@@ -476,6 +629,7 @@ $(function () {
             groupArr.push(id+"_id");
             groupArr.push(id+"_title");
             query["GROUP"] = groupArr;
+
             // Fill in "APPLY"
             var applyArr = [];
             // {"numSections": {"COUNT": "courses_uuid"}}
@@ -502,6 +656,13 @@ $(function () {
             var maxFail = {};
             maxFail["maxFail"] = maxf;
             applyArr.push(maxFail);
+            // {"maxSize": {"MAX": "courses_size"}}
+            var maxs = {};
+            maxs["MAX"] = id + "_size";
+            var maxSize = {};
+            maxSize["maxSize"] = maxs;
+            applyArr.push(maxSize);
+
             query["APPLY"] = applyArr;
         }
         // Fill in "ORDER"
@@ -587,10 +748,51 @@ $(function () {
         query["AS"] = "TABLE";
 
         query = JSON.stringify(query);
+
+        function gtFilter(data, limit) {
+            var newData = [];
+            for(var i=0; i<data.length; i++) {
+                if(data[i]["maxSize"] > limit) {
+                    newData.push(data[i]);
+                }
+            }
+            return newData;
+        }
+        function eqFilter(data, limit) {
+            var newData = [];
+            for(var i=0; i<data.length; i++) {
+                if(data[i]["maxSize"] = limit) {
+                    newData.push(data[i]);
+                }
+            }
+            return newData;
+        }
+        function ltFilter(data, limit) {
+            var newData = [];
+            for(var i=0; i<data.length; i++) {
+                if(data[i]["maxSize"] < limit) {
+                    newData.push(data[i]);
+                }
+            }
+            return newData;
+        }
         try {
             $.ajax("/query", {type:"POST", data: query, contentType: "application/json", dataType: "json", success: function(data) {
                 if (data["render"] === "TABLE") {
                     if (data["result"].length > 0) {
+                        if(radioChecked === "course") {
+                            if($('#sizeCS').val()) {
+                                sizeInput = parseInt($('#sizeCS').val(),10);
+                                var sizeOperator = $('#sizeOperator').val();
+                                if(sizeOperator === "0") {
+                                    data["result"] = gtFilter(data["result"], sizeInput);
+                                } else if (sizeOperator === "1") {
+                                    data["result"] = eqFilter(data["result"], sizeInput);
+                                } else if (sizeOperator === "2") {
+                                    data["result"] = ltFilter(data["result"], sizeInput);
+                                }
+                            }
+                        }
                         generateTable(data["result"]);
                     } else {
                         alert("Empty Result");
@@ -609,75 +811,81 @@ $(function () {
 
     function generateTable(data) {
         var columns = [];
-        Object.keys(data[0]).forEach(function (title) {
-            var colTitle;
-            if(title.indexOf("_dept") != -1) {
-                colTitle = "Department";
-            } else if (title.indexOf("_id") != -1) {
-                colTitle = "Course ID";
-            } else if (title.indexOf("_title") != -1) {
-                colTitle = "Title";
-            } else if (title.indexOf("_instructor") != -1) {
-                colTitle = "Instructor";
-            } else if (title.indexOf("_avg") != -1) {
-                colTitle = "Section Average";
-            } else if (title.indexOf("numSections") != -1) {
-                colTitle = "Number of Sections";
-            } else if (title.indexOf("courseAverage") != -1) {
-                colTitle = "Course Average";
-            } else if (title.indexOf("maxPass") != -1) {
-                colTitle = "Max Pass";
-            } else if (title.indexOf("maxFail") != -1) {
-                colTitle = "Max Fail";
-            } else {
-                colTitle = title;
-            }
-            columns.push({
-                head: colTitle,
-                cl: "title",
-                html: function (d) {
-                    return d[title]
+        if(data.length>0) {
+            Object.keys(data[0]).forEach(function (title) {
+                var colTitle;
+                if(title.indexOf("_dept") != -1) {
+                    colTitle = "Department";
+                } else if (title.indexOf("_id") != -1) {
+                    colTitle = "Course ID";
+                } else if (title.indexOf("_title") != -1) {
+                    colTitle = "Title";
+                } else if (title.indexOf("_instructor") != -1) {
+                    colTitle = "Instructor";
+                } else if (title.indexOf("_avg") != -1) {
+                    colTitle = "Section Average";
+                } else if (title.indexOf("_size") != -1) {
+                    colTitle = "Section Size";
+                } else if (title.indexOf("numSections") != -1) {
+                    colTitle = "Number of Sections";
+                } else if (title.indexOf("courseAverage") != -1) {
+                    colTitle = "Course Average";
+                } else if (title.indexOf("maxPass") != -1) {
+                    colTitle = "Max Pass";
+                } else if (title.indexOf("maxFail") != -1) {
+                    colTitle = "Max Fail";
+                } else if (title.indexOf("maxSize") != -1) {
+                    colTitle = "Course Size";
+                } else {
+                    colTitle = title;
                 }
-            });
-        });
-        var container = d3.select("#render");
-        container.html("");
-        container.selectAll("*").remove();
-        var table = container.append("table").style("margin", "auto");
-
-        table.append("thead").append("tr")
-            .selectAll("th")
-            .data(columns).enter()
-            .append("th")
-            .attr("class", function (d) {
-                return d["cl"]
-            })
-            .text(function (d) {
-                return d["head"]
-            });
-
-        table.append("tbody")
-            .selectAll("tr")
-            .data(data).enter()
-            .append("tr")
-            .selectAll("td")
-            .data(function (row, i) {
-                return columns.map(function (c) {
-                    // compute cell values for this specific row
-                    var cell = {};
-                    d3.keys(c).forEach(function (k) {
-                        cell[k] = typeof c[k] == "function" ? c[k](row, i) : c[k];
-                    });
-                    return cell;
+                columns.push({
+                    head: colTitle,
+                    cl: "title",
+                    html: function (d) {
+                        return d[title]
+                    }
                 });
-            }).enter()
-            .append("td")
-            .html(function (d) {
-                return d["html"]
-            })
-            .attr("class", function (d) {
-                return d["cl"]
             });
+            var container = d3.select("#render");
+            container.html("");
+            container.selectAll("*").remove();
+            var table = container.append("table").style("margin", "auto");
+
+            table.append("thead").append("tr")
+                .selectAll("th")
+                .data(columns).enter()
+                .append("th")
+                .attr("class", function (d) {
+                    return d["cl"]
+                })
+                .text(function (d) {
+                    return d["head"]
+                });
+
+            table.append("tbody")
+                .selectAll("tr")
+                .data(data).enter()
+                .append("tr")
+                .selectAll("td")
+                .data(function (row, i) {
+                    return columns.map(function (c) {
+                        // compute cell values for this specific row
+                        var cell = {};
+                        d3.keys(c).forEach(function (k) {
+                            cell[k] = typeof c[k] == "function" ? c[k](row, i) : c[k];
+                        });
+                        return cell;
+                    });
+                }).enter()
+                .append("td")
+                .html(function (d) {
+                    return d["html"]
+                })
+                .attr("class", function (d) {
+                    return d["cl"]
+                });
+        }
     }
 
     function spawnHttpErrorModal(e) {
