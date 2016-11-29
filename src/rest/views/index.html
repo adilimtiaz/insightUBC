@@ -21,7 +21,7 @@
     <button type="button" class="btn btn-primary" id="datasetRm">Remove Dataset</button>
 </div>
 <div id="container">
-    <h3>Query</h3>
+    <h3>Room Explorer</h3>
     <p>Remember that you must at least enter one of the first 4 fields or one of the last two fields</p>
     <form id="queryForm">
         <div class="form-group row">
@@ -93,6 +93,41 @@
             <label for="distance" class="col-sm-2 col-form-label">Show classes with id x</label>
             <div class="col-sm-8">
                 <input type="text" class="form-control" id="number" placeholder="Example: 100">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <h3>Room scheduler with Instructor constraint</h3>
+    <p>Remember that you must at least enter one of the first 4 fields or one of the last two fields</p>
+    <form id="Scheduler2">
+        <div class="form-group row">
+            <label for="building" class="col-sm-2 col-form-label">Enter building shortnames. If entering more than one, separate them by commas.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="shortname" placeholder="For example, DMP, SWNG">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="size" class="col-sm-2 col-form-label">Enter building to find distance from. If entering this, enter the next box and leave the previous box blank.</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="bnames" placeholder="Example: Hugh Dempster Pavilion">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="type" class="col-sm-2 col-form-label">Enter distance x in metres</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="typ" placeholder="Example: 100">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="furniture" class="col-sm-2 col-form-label">Show classes in dept x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="depat" placeholder="Example: cpsc">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="distance" class="col-sm-2 col-form-label">Show classes with id x</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="numer" placeholder="Example: 100">
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>

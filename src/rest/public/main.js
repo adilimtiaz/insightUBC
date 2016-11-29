@@ -269,7 +269,6 @@ $(function () {
             }
         }
 
-        console.log(courses.length);
         var courseq = {};
         courseq.GET = ["courses_dept", "courses_id", "maxSize" ,"numSections"];
         courseq.AS = "TABLE";
@@ -315,7 +314,6 @@ $(function () {
             spawnErrorModal("Query Error", err);
         }
         var days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
-        console.log(JSON.stringify(roomsarray));
         var slots=[];
         for(var i=0;i<roomsarray.length;i++){ //creating slots for all rooms
             for(var j=0;j<2;j++){ //5 days a week
@@ -356,6 +354,7 @@ $(function () {
                 newc["name"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+j;
                 newc["reqdseats"]=courses[i]["maxSize"];
                 newc["scheduled"]=false;
+                newc["Professor"]=courses[i]["courses_instructor"];
                 newc["f"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]; // indicates value to push into flag
                 schcourses.push(newc);
             }
@@ -422,6 +421,312 @@ $(function () {
                             }
                         }
                     }
+            }
+            for(var j=0;j<slots.length;j++){
+                if(slots[j]["taken"]==false){
+                    if(slots[j]["taken"]==false){
+                        if((slots[j]["days"]==day)&&(slots[j]["time"]==time)){ //all slots with the same time and day now know that this class is scheduled now
+                            slots[j]["farr"].push(coursetitle);
+                        }
+                    }
+                }
+            }
+        }
+        var notsch=[];
+        for(var i=0;i<schcourses.length;i++){
+            if(schcourses[i]["scheduled"]==false){
+                notsch.push(schcourses[i]["name"]);
+            }
+        }
+        console.log(JSON.stringify(schslots));
+        console.log("Good courses:" + goodoourses);
+        console.log("Bad courses:" + badcourses);
+        console.log("not scheduled:" + coursesnotscheduled);
+        generateTable(schslots);
+        var message="Quality is :- "+(100-((badcourses/(schcourses.length))*100)) +"\n";
+        message=message+"This indicates the percentage of classes that were scheduled but not scheduled between 8:00 and 17:00" +"\n";
+        message=message+"This measure includes classes that could not be scheduled plus classes outside of the above times :- "+(100-((badcourses+coursesnotscheduled)/(schcourses.length))*100) + "\n";
+        message=message+"These classes could not be scheduled"+JSON.stringify(notsch);
+        spawnErrorModal("Quality",message);
+    });
+
+    $("#Scheduler2").submit(function (e) {
+        e.preventDefault();
+        var roomsarray = [];
+        var courses = [];
+        var query2 = {};
+        query2.GET = ["rooms_name","rooms_seats"];
+        query2.AS = "TABLE";
+        var where2 = {};
+        where2["AND"] = [];
+        console.log("Entered");
+        if ($("#shortname").val().length !== 0) {
+            //var dept=JSON.stringify($("#dept").val());
+            console.log("Should not be here");
+            var str = $("#shortname").val();
+            var res = str.split(",");
+            var or = {};
+            or["OR"] = [];
+            for (var i = 0; i < res.length; i++) {
+                var b = {"IS": {"rooms_shortname": res[i]}};
+                or["OR"].push(b);
+            }
+            where2["AND"].push(or);
+            query2.WHERE = where2;
+            query2 = JSON.stringify(query2);
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: query2,
+                    async: false,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        for (var i = 0; i < data["result"].length; i++) {
+                            roomsarray.push(data["result"][i]);
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+        }
+
+        if (($("#bnames").val().length !== 0) && ($("#typ").val().length !== 0)) {
+            var str = $("#typ").val();
+            var num = parseInt(str);
+            var q = {
+                "GET": ["rooms_fullname", "rooms_lat", "rooms_lon"],
+                "WHERE": {"IS": {"rooms_fullname": $("#bnames").val()}},
+                "AS": "TABLE"
+            };
+            q = JSON.stringify(q);
+            var targetlat = 0;
+            var targetlon = 0;// These are the target buildings latlon. so dist can be computed.
+            try {
+                $.ajax("/query", {
+                    type: "POST", data: q, async: false,contentType: "application/json", dataType: "json", success: function (data) {
+                        if (data["render"] === "TABLE") {
+                            targetlat = data["result"][0]["rooms_lat"];
+                            targetlon = data["result"][0]["rooms_lon"];
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+
+            var query = {
+                "GET": ["rooms_name", "rooms_lat", "rooms_lon","rooms_seats"],
+                "WHERE": {},
+                "AS": "TABLE"
+            };
+            query = JSON.stringify(query);
+            try {
+                $.ajax("/query", {
+                    type: "POST",
+                    data: query,
+                    async: false,
+                    contentType: "application/json",
+                    dataType: "json",
+                    success: function (data) {
+                        var distarray = [];
+                        for (var i = 0; i < data["result"].length; i++) {
+                            //taken from http://stackoverflow.com/questions/1420045/how-to-find-distance-from-the-latitude-and-longitude-of-two-locations
+                            var radlat1 = Math.PI * data["result"][i]["rooms_lat"] / 180;
+                            var radlat2 = Math.PI * targetlat / 180;
+                            var radlon1 = Math.PI * data["result"][i]["rooms_lon"] / 180;
+                            var radlon2 = Math.PI * targetlon / 180;
+                            var theta = data["result"][i]["rooms_lon"] - targetlon;
+                            var radtheta = Math.PI * theta / 180;
+                            var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+                            dist = Math.acos(dist);
+                            dist = dist * 180 / Math.PI;
+                            dist = dist * 60 * 1.1515;
+
+                            //Get in in meters
+                            dist = dist * 1.609344 * 1000;
+                            if (dist <= num) {
+                                var r = {};
+                                r["rooms_name"] = data["result"][i]["rooms_name"];
+                                r["rooms_seats"] = data["result"][i]["rooms_seats"];
+                                distarray.push(r);
+                            }
+                        }
+                        for (var i = 0; i < distarray.length; i++) {
+                            roomsarray.push(distarray[i]);
+                        }
+                    }
+                }).fail(function (e) {
+                    spawnHttpErrorModal(e)
+                });
+            } catch (err) {
+                spawnErrorModal("Query Error", err);
+            }
+        }
+
+        console.log(courses.length);
+        var courseq = {};
+        courseq.GET = ["courses_dept", "courses_id", "courses_instructor","maxSize" ,"numSections"];
+        courseq.AS = "TABLE";
+        courseq.APPLY=[ {"numSections": {"COUNT": "courses_uuid"}},{"maxSize": {"MAX": "courses_size"}}];
+        courseq.GROUP=[ "courses_dept", "courses_id" ,"courses_instructor"];
+        var where2 = {};
+        where2["AND"] = [];
+        if ($("#depat").val().length !== 0) {
+            //var dept=JSON.stringify($("#dept").val());
+            var str = $("#depat").val();
+            var b = {"IS": {"courses_dept": str}};
+            where2["AND"].push(b);
+        }
+
+        if ($("#numer").val().length !== 0) {
+            //var dept=JSON.stringify($("#dept").val());
+            var num = $("#numer").val();
+            var str = num.toString();
+            var b = {"IS": {"courses_id": str}};
+            where2["AND"].push(b);
+        }
+        var c = {"EQ": {"courses_year": 2014}};
+        where2["AND"].push(c);
+        courseq.WHERE = where2;
+        courseq = JSON.stringify(courseq);
+
+        try {
+            $.ajax("/query", {
+                type: "POST",
+                data: courseq,
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                success: function (data) {
+                    for (var i = 0; i < data["result"].length; i++) {
+                        courses.push(data["result"][i]);
+                    }
+                }
+            }).fail(function (e) {
+                spawnHttpErrorModal(e)
+            });
+        } catch (err) {
+            spawnErrorModal("Query Error", err);
+        }
+        var days=["Monday","Tuesday","Wednesday","Thursday","Friday"];
+        console.log(JSON.stringify(courses));
+        console.log(JSON.stringify(courses.length));
+        var slots=[];
+        for(var i=0;i<roomsarray.length;i++){ //creating slots for all rooms
+            for(var j=0;j<2;j++){ //5 days a week
+                if(j%2==0) {  //its MWF
+                    for (var k = 0; k < 24; k++) { //24 hours a day
+                        var slot = {};
+                        slot["days"] = days[j]+days[j+2]+days[j+4];
+                        slot["time"] = (800+(k*100))%2400;
+                        slot["room"]=roomsarray[i]["rooms_name"];
+                        slot["seats"]=roomsarray[i]["rooms_seats"];
+                        slot["taken"]=false;
+                        slot["farr"]=[];
+                        slots.push(slot);
+                    }
+                }
+                else {
+                    for (var k = 0; k < 16; k++) { //24 hours a day
+                        var slot = {};
+                        slot["days"] = days[j]+days[j+2];
+                        slot["time"] = (800+(k*150))%2400;
+                        if(slot["time"]%100!==0){
+                            slot["time"]=slot["time"]-20; //950 would be 930
+                        }
+                        slot["room"]=roomsarray[i]["rooms_name"];
+                        slot["seats"]=roomsarray[i]["rooms_seats"];
+                        slot["taken"]=false;
+                        slot["farr"]=[]; //indicates if another class is scheduled during this slot
+                        slots.push(slot);
+                    }
+                }
+            }
+        }
+        var schcourses=[];
+        for(var i=0;i<courses.length;i++){
+            var secsnum=Math.ceil((courses[i]["numSections"])/3);
+            for(var j=0;j<secsnum;j++){
+                var newc={};
+                newc["name"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+j;
+                newc["reqdseats"]=courses[i]["maxSize"];
+                newc["scheduled"]=false;
+                newc["f"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+courses[i]["courses_instructor"];// indicates value to push into flag
+                newc["Professor"]=courses[i]["courses_instructor"];
+                schcourses.push(newc);
+            }
+        }
+        console.log(JSON.stringify(schcourses));
+        schcourses.sort(function(a, b) {  //sort both arrays in ascending order so that the smallest rooms get matched with the smallest courses
+            return parseFloat(a["reqdseats"]) - parseFloat(b["reqdseats"]);
+        });
+        slots.sort(function(a, b) {
+            return parseFloat(a["seats"]) - parseFloat(b["seats"]);
+        });
+        console.log(JSON.stringify(slots));
+        var schslots=[];
+        var goodoourses=0; //number of courses scheduled between 800 and 1700
+        var badcourses=0; //number of courses scheduled outside of those times
+        var coursesnotscheduled=schcourses.length;
+        for(var i=0;i<schcourses.length;i++){
+            var day=[];
+            var time=0;
+            var coursetitle=schcourses[i]["f"]; //course that is currently being scheduled
+            for(var j=0;j<slots.length;j++){ //first try to schedule between 8 and 5
+                if((slots[j]["time"]>=800)&&(slots[j]["time"]<=1600)) {
+                    if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
+                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                            slots[j]["course"] = schcourses[i]["name"];
+                            day = slots[j]["days"];
+                            time = slots[j]["time"];
+                            slots[j]["taken"] = true;
+                            schcourses[i]["scheduled"] = true;
+                            var s={};
+                            s["days"]=slots[j]["days"];
+                            s["time"]=slots[j]["time"];
+                            s["room"]=slots[j]["room"];
+                            s["course"]=schcourses[i]["name"];
+                            s["seats"]=slots[j]["seats"];
+                            s["coursereqdseats"]=schcourses[i]["reqdseats"];
+                            s["Professor"]=schcourses[i]["Professor"];
+                            schslots.push(s);
+                            goodoourses++;
+                            coursesnotscheduled--;
+                            break;
+                        }
+                    }
+                }
+            }
+            if(schcourses[i]["scheduled"] == false){
+                for(var j=0;j<slots.length;j++){
+                    if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
+                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                            slots[j]["course"] = schcourses[i]["name"];
+                            day = slots[j]["days"];
+                            time = slots[j]["time"];
+                            slots[j]["taken"] = true;
+                            schcourses[i]["scheduled"] = true;
+                            var s={};
+                            s["days"]=slots[j]["days"];
+                            s["time"]=slots[j]["time"];
+                            s["room"]=slots[j]["room"];
+                            s["course"]=schcourses[i]["name"];
+                            s["seats"]=slots[j]["seats"];
+                            s["coursereqdseats"]=schcourses[i]["reqdseats"];
+                            s["Professor"]=schcourses[i]["Professor"];
+                            schslots.push(s);
+                            badcourses++;
+                            coursesnotscheduled--;
+                            break;
+                        }
+                    }
+                }
             }
             for(var j=0;j<slots.length;j++){
                 if(slots[j]["taken"]==false){
