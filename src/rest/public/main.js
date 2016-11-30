@@ -629,6 +629,7 @@ $(function () {
                         slot["seats"]=roomsarray[i]["rooms_seats"];
                         slot["taken"]=false;
                         slot["farr"]=[];
+                        slot["instrarr"]=[];
                         slots.push(slot);
                     }
                 }
@@ -644,6 +645,7 @@ $(function () {
                         slot["seats"]=roomsarray[i]["rooms_seats"];
                         slot["taken"]=false;
                         slot["farr"]=[]; //indicates if another class is scheduled during this slot
+                        slot["instrarr"]=[];
                         slots.push(slot);
                     }
                 }
@@ -657,7 +659,7 @@ $(function () {
                 newc["name"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+j;
                 newc["reqdseats"]=courses[i]["maxSize"];
                 newc["scheduled"]=false;
-                newc["f"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"]+"_"+courses[i]["courses_instructor"];// indicates value to push into flag
+                newc["f"]=courses[i]["courses_dept"]+"_"+courses[i]["courses_id"];// indicates value to push into flag
                 newc["Professor"]=courses[i]["courses_instructor"];
                 schcourses.push(newc);
             }
@@ -677,11 +679,12 @@ $(function () {
         for(var i=0;i<schcourses.length;i++){
             var day=[];
             var time=0;
-            var coursetitle=schcourses[i]["f"]; //course that is currently being scheduled
+            var coursetitle=schcourses[i]["f"];
+            var prof=schcourses[i]["Professor"];//course that is currently being scheduled
             for(var j=0;j<slots.length;j++){ //first try to schedule between 8 and 5
                 if((slots[j]["time"]>=800)&&(slots[j]["time"]<=1600)) {
                     if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
-                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)&&(slots[j]["instrarr"].indexOf(prof) == -1)) {  //slots not taken and that class is not scheduled during this time
                             slots[j]["course"] = schcourses[i]["name"];
                             day = slots[j]["days"];
                             time = slots[j]["time"];
@@ -706,7 +709,7 @@ $(function () {
             if(schcourses[i]["scheduled"] == false){
                 for(var j=0;j<slots.length;j++){
                     if (slots[j]["seats"] >= schcourses[i]["reqdseats"]) { //slot can take this class
-                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1)) {  //slots not taken and that class is not scheduled during this time
+                        if ((slots[j]["taken"] == false) && (slots[j]["farr"].indexOf(coursetitle) == -1) && (slots[j]["instrarr"].indexOf(prof) == -1)) {  //slots not taken and that class is not scheduled during this time
                             slots[j]["course"] = schcourses[i]["name"];
                             day = slots[j]["days"];
                             time = slots[j]["time"];
@@ -733,6 +736,7 @@ $(function () {
                     if(slots[j]["taken"]==false){
                         if((slots[j]["days"]==day)&&(slots[j]["time"]==time)){ //all slots with the same time and day now know that this class is scheduled now
                             slots[j]["farr"].push(coursetitle);
+                            slots[j]["instrarr"].push(prof);
                         }
                     }
                 }
@@ -1114,6 +1118,7 @@ $(function () {
     });
 
 
+
     function generateTable(data) {
         var columns = [];
         if(data.length>0) {
@@ -1190,6 +1195,10 @@ $(function () {
                 .attr("class", function (d) {
                     return d["cl"]
                 });
+        } else {
+            alert("Empty Result");
+            var container = $("#render");
+            container.empty();
         }
     }
 

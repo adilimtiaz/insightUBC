@@ -14,7 +14,7 @@ export default class EQFilter {
     }
 
     public processEQFilter(query: MathQuery):  DataStructure {
-        Log.trace('GTFilter::processGTFilter( ' + JSON.stringify(query) + ' )');
+        Log.trace('EQFilter::processGTFilter( ' + JSON.stringify(query) + ' )');
         var structure: DataStructure = new DataStructure();
 
         let key = Object.keys(query)[0];
